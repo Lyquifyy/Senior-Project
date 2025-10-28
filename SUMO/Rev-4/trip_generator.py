@@ -2,8 +2,9 @@ import csv
 import random
 import subprocess
 import xml.etree.ElementTree as ET
+import os
 
-# CONFIGURATION
+# CONFIGURATION #
 
 # Raw car emmission data.
 CSV = "carData.csv"
@@ -21,7 +22,7 @@ NET_FILE = "net.net.xml"
 
 SIM_END = 1000
 
-# Step One: Generate vtypes.xml from CSV
+# Step One: Generate vtypes.xml from CSV #
 
 def generate_vtypes(csv_file, vtypes_file):
     
@@ -46,18 +47,25 @@ def generate_vtypes(csv_file, vtypes_file):
             f.write("  " + v + "\n")
         f.write("</vTypeDistribution>\n")
 
-# Step two: Call randomTrips.py
+# Step two: Call randomTrips.py #
 def run_random_trips(net_file,trips_file, sim_end):
-    
+
+    # For simplicity purposes, I included the randomTrips.py file within this rev so
+    # adding environment variables is not needed.
+
+    # random_trips = os.path.join(os.environ["SUMO_HOME"], "tools", "randomTrips.py")
     subprocess.run([
         "python", "randomTrips.py",
         "-n", net_file,
         "-e", str(sim_end),
         "-o", trips_file,
-        "--seed", "42" # Reproducibility
-    ])
+        "--seed", "42"
+    ], check=True)
 
-# Step 3: Rewrite trips with random vtypes
+    if not os.path.exists(trips_file):
+        raise FileNotFoundError(f"Trips file {trips_file} not found after running randomTrips.")
+
+# Step 3: Rewrite trips with random vtypes #
 def assign_vtypes(trips_file, vtypes_file, custom_trips_file):
     
     # parse vtypes
@@ -76,7 +84,7 @@ def assign_vtypes(trips_file, vtypes_file, custom_trips_file):
 
     trips_tree.write(custom_trips_file)
 
-# Step Four: Convert trips to routes
+# Step Four: Convert trips to routes #
 def run_duarouter(net_file, custom_trips_file, routes_file, vtypes_file):
     
     subprocess.run([

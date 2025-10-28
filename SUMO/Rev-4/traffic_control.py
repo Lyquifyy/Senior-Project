@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # Run trip generator beforehand
     rou_file, vtypes_file = trip_generator.generate_trips(
         csv_file="cars.csv",
-        net_file="net.net.xml",
+        net_file="Town03.net.xml",
         sim_end=500
     )
 
