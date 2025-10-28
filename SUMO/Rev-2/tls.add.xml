@@ -1,0 +1,8 @@
+<additional>
+  <tlLogic id="junction1" type="static" programID="custom1" offset="0">
+    <phase duration="30" state="GrGr"/>
+    <phase duration="5"  state="yryr"/>
+    <phase duration="30" state="rGrG"/>
+    <phase duration="5"  state="ryry"/>
+  </tlLogic>
+</additional>
