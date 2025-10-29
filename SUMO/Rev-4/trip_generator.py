@@ -3,6 +3,8 @@ import random
 import subprocess
 import xml.etree.ElementTree as ET
 import os
+import re
+
 
 # CONFIGURATION #
 
@@ -22,6 +24,16 @@ NET_FILE = "net.net.xml"
 
 SIM_END = 1000
 
+import re
+
+def sanitize_id(raw_id: str, index: int) -> str:
+    # Replace any character not alphanumeric, underscore, or hyphen with underscore
+    safe = re.sub(r'[^A-Za-z0-9_\-\.]', '_', raw_id)
+    # Ensure it starts with a letter (prefix if needed)
+    if not safe[0].isalpha():
+        safe = f"veh_{safe}"
+    return f"{safe}_{index}"
+
 # Step One: Generate vtypes.xml from CSV #
 
 def generate_vtypes(csv_file, vtypes_file):
@@ -32,13 +44,19 @@ def generate_vtypes(csv_file, vtypes_file):
         vtypes = []
         for i, row in enumerate(reader):
             # Appending vtype_id to keep unique.
-            vtype_id = row.get("vehicle_type", "car") + f"_{i}"
+            vtype_id = sanitize_id(row.get("Test Vehicle ID", "car"), i)
             emission = row.get("emmissionClass", "HBEFA3/PC_G_EU4")
             max_speed = row.get("maxSpeed", "33")
             length = row.get("length", "5.0")
+            co2 = row.get("CO2 (g/mi)", "0")
 
-            vtypes.append(f'<vType id="{vtype_id}" vClass="passenger" '
-                          f'emissionClass="{emission}" maxSpeed="{max_speed}" length="{length}"/>')
+            vtypes.append(
+                f'<vType id="{vtype_id}" vClass="passenger" '
+                f'emissionClass="{emission}" maxSpeed="{max_speed}" length="{length}">\n'
+                f'  <param key="customCO2" value="{co2}"/>\n'
+                f'</vType>'
+            )
+
     
     # Writing file to VTYPES.
     with open(vtypes_file, "w") as f:

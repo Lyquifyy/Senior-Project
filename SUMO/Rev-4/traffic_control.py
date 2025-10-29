@@ -25,9 +25,12 @@ def collect_lane_emissions(tls_id, step):
         lane_emissions[lane_id] = []
 
         for vid in veh_ids:
+            vtype_id = traci.vehicle.getTypeID(vid)
+            custom_co2 = traci.vehicletype.getParameter(vtype_id, "customCO2")
+
             data = {
                 "vehicle_id": vid,
-                "co2": traci.vehicle.getCO2Emission(vid),
+                "co2": float(custom_co2) if custom_co2 else None,
                 "nox": traci.vehicle.getNOxEmission(vid),
                 "fuel": traci.vehicle.getFuelConsumption(vid),
                 "speed": traci.vehicle.getSpeed(vid)
