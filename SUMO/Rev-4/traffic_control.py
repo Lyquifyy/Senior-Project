@@ -2,6 +2,7 @@ import trip_generator
 import traci
 import json
 import time
+
 # Procedure to change traffic light phase.
 def change_light_phase(tls_id):
     current_phase = traci.trafficlight.getPhase(tls_id)
@@ -73,11 +74,16 @@ def run():
 
 if __name__ == "__main__":
 
+    heavyCO2Percent = 0.3  # Change this value between 0 and 1 to adjust heavy vehicle ratio, comment out to disable.
+    threshold = 250.0  # CO2 threshold in g/mi to classify heavy vs light vehicles.
+
     # Run trip generator beforehand
     rou_file, vtypes_file = trip_generator.generate_trips(
         csv_file="cars.csv",
         net_file="Town03.net.xml",
-        sim_end=500
+        sim_end=300,
+        heavyCO2Percent=heavyCO2Percent,
+        threshold=threshold
     )
 
     # Run the actual simulation

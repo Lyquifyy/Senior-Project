@@ -84,23 +84,54 @@ def run_random_trips(net_file,trips_file, sim_end):
         raise FileNotFoundError(f"Trips file {trips_file} not found after running randomTrips.")
 
 # Step 3: Rewrite trips with random vtypes #
-def assign_vtypes(trips_file, vtypes_file, custom_trips_file):
+def assign_vtypes(trips_file, vtypes_file, custom_trips_file, heavyCO2Percent, threshold):
     
-    # parse vtypes
+    # Parse vtypes with customCO2
     vtypes = []
+    heavy_vtypes = []
+    light_vtypes = []
+
     tree = ET.parse(vtypes_file)
     root = tree.getroot()
     for v in root.findall("vType"):
-        vtypes.append(v.attrib["id"])
+        vtype_id = v.attrib["id"]
+        # Default to 0 if no customCO2 param
+        custom_co2 = 0.0
+        for param in v.findall("param"):
+            if param.attrib.get("key") == "customCO2":
+                try:
+                    custom_co2 = float(param.attrib["value"])
+                except ValueError:
+                    custom_co2 = 0.0
+        # Classify
+        if custom_co2 >= threshold:
+            heavy_vtypes.append(vtype_id)
+        else:
+            light_vtypes.append(vtype_id)
 
-    # parse trips
+    # Parse trips
     trips_tree = ET.parse(trips_file)
     trips_root = trips_tree.getroot()
+    trips = trips_root.findall("trip")
 
-    for trip in trips_root.findall("trip"):
-        trip.set("type", random.choice(vtypes))
+    if heavyCO2Percent is not None and heavy_vtypes and light_vtypes:
+        total_trips = len(trips)
+        num_heavy = int(total_trips * heavyCO2Percent)
+        heavy_indices = set(random.sample(range(total_trips), num_heavy))
+
+        for i, trip in enumerate(trips):
+            if i in heavy_indices:
+                trip.set("type", random.choice(heavy_vtypes))
+            else:
+                trip.set("type", random.choice(light_vtypes))
+    else:
+        # Fallback: assign randomly from all vtypes
+        all_vtypes = heavy_vtypes + light_vtypes
+        for trip in trips:
+            trip.set("type", random.choice(all_vtypes))
 
     trips_tree.write(custom_trips_file)
+
 
 # Step Four: Convert trips to routes #
 def run_duarouter(net_file, custom_trips_file, routes_file, vtypes_file):
@@ -115,7 +146,7 @@ def run_duarouter(net_file, custom_trips_file, routes_file, vtypes_file):
 
 
 
-def generate_trips(csv_file, net_file, sim_end=1000):
+def generate_trips(csv_file, net_file, sim_end=1000, heavyCO2Percent=None, threshold=250.0):
     print("Starting trip generator.")
     print("Generating vtypes.xml...")
     generate_vtypes(csv_file, "vtypes.xml")
@@ -124,7 +155,7 @@ def generate_trips(csv_file, net_file, sim_end=1000):
     run_random_trips(net_file, "random.trips.xml", sim_end)
 
     print("Assigning custom vtypes...")
-    assign_vtypes("random.trips.xml", "vtypes.xml", "custom.trips.xml")
+    assign_vtypes("random.trips.xml", "vtypes.xml", "custom.trips.xml", heavyCO2Percent, threshold)
 
     print("Running duarouter...")
     run_duarouter(net_file, "custom.trips.xml", "custom.rou.xml", "vtypes.xml")
