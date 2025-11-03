@@ -1,0 +1,2207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-10-31 08:49:29 by Eclipse SUMO duarouter Version 1.24.0
+<duarouterConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="Town03.net.xml"/>
+        <additional-files value="vtypes.xml"/>
+        <route-files value="custom.trips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="custom.rou.xml"/>
+    </output>
+
+</duarouterConfiguration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vType id="veh_361_730_136_13_1384" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="171.3281165142857"/>
+    </vType>
+    <vehicle id="0" type="veh_361_730_136_13_1384" depart="0.00">
+        <routeDistribution last="0">
+            <route cost="62.04" probability="1.00000000" edges="22 21 62 61 -13 -14 -10"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C117E20DETC-Z5021-3_970" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="239.475"/>
+    </vType>
+    <vehicle id="1" type="C117E20DETC-Z5021-3_970" depart="1.00">
+        <routeDistribution last="0">
+            <route cost="105.84" probability="1.00000000" edges="-44 21 62 61 -13 -14 -10 -11 -36"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2ECPE31-012_940" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="204.625"/>
+    </vType>
+    <vehicle id="2" type="veh_2ECPE31-012_940" depart="2.00">
+        <routeDistribution last="0">
+            <route cost="74.16" probability="1.00000000" edges="4 3 2 29"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="V221DE30TC-Z3856_1048" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="307.135"/>
+    </vType>
+    <vehicle id="3" type="V221DE30TC-Z3856_1048" depart="3.00">
+        <routeDistribution last="0">
+            <route cost="76.08" probability="1.00000000" edges="68 67 66 65 -0 -1 29 -19"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3ETTP008_873" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="295.0573380727273"/>
+    </vType>
+    <vehicle id="4" type="veh_3ETTP008_873" depart="4.00">
+        <routeDistribution last="0">
+            <route cost="35.20" probability="1.00000000" edges="-68 -69 -24 30 -10 -11"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EG1M1C_592" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.9855878"/>
+    </vType>
+    <vehicle id="5" type="EG1M1C_592" depart="5.00">
+        <routeDistribution last="0">
+            <route cost="33.86" probability="1.00000000" edges="-36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C994902_131" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="303.76132882"/>
+    </vType>
+    <vehicle id="6" type="C994902_131" depart="6.00">
+        <routeDistribution last="0">
+            <route cost="82.58" probability="1.00000000" edges="-10 -11 -36 -38 -12 -13 16 -30 -31"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="DPE438_702" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="209.25"/>
+    </vType>
+    <vehicle id="7" type="DPE438_702" depart="7.00">
+        <routeDistribution last="0">
+            <route cost="97.60" probability="1.00000000" edges="23 22 21 20 2 1 0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="QF2F4AU02A1_781" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="238.1568937970588"/>
+    </vType>
+    <vehicle id="8" type="QF2F4AU02A1_781" depart="8.00">
+        <routeDistribution last="0">
+            <route cost="74.27" probability="1.00000000" edges="-36 -38 -12 -13 -14 -10 -11 15 -28 18"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FB71-3.5-F-586_455" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="425.37800000000004"/>
+    </vType>
+    <vehicle id="9" type="FB71-3.5-F-586_455" depart="9.00">
+        <routeDistribution last="0">
+            <route cost="37.09" probability="1.00000000" edges="50#1 50#0 49 47 66 65 -0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_20P5094_1271" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="277.73580000000004"/>
+    </vType>
+    <vehicle id="10" type="veh_20P5094_1271" depart="10.00">
+        <routeDistribution last="0">
+            <route cost="23.49" probability="1.00000000" edges="50#1 50#0 49 80 79 78#1 78#0 77 30"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_206GKE4204_249" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="288.35"/>
+    </vType>
+    <vehicle id="11" type="veh_206GKE4204_249" depart="11.00">
+        <routeDistribution last="0">
+            <route cost="88.67" probability="1.00000000" edges="-52 -81 -60 52 51 50#1 50#0 49 47 66 65 -0 -1 29 28 -25"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="GTH1-3.5-J-690_511" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="431.24459515"/>
+    </vType>
+    <vehicle id="12" type="GTH1-3.5-J-690_511" depart="12.00">
+        <routeDistribution last="0">
+            <route cost="52.84" probability="1.00000000" edges="78#0 77 30 -10 46 8 7 6 -66 -47 -48 -50#0 -50#1 -51 -52"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_16X5HV553A_289" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="224.6505"/>
+    </vType>
+    <vehicle id="13" type="veh_16X5HV553A_289" depart="13.00">
+        <routeDistribution last="0">
+            <route cost="68.93" probability="1.00000000" edges="-19 2 1 -41 -18 -29 -2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HSB052_697" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.5625"/>
+    </vType>
+    <vehicle id="14" type="HSB052_697" depart="14.00">
+        <routeDistribution last="0">
+            <route cost="109.64" probability="1.00000000" edges="61 -13 -14 -10 -11 15 -28 -29 -2 19"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EB16-CB7A_925" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="246.490935"/>
+    </vType>
+    <vehicle id="15" type="EB16-CB7A_925" depart="15.00">
+        <routeDistribution last="0">
+            <route cost="32.01" probability="1.00000000" edges="50#1 50#0 49 80 79 78#1 78#0 77 24 4"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_11-ZA1H_820" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="181.92298432857143"/>
+    </vType>
+    <vehicle id="16" type="veh_11-ZA1H_820" depart="16.00">
+        <routeDistribution last="0">
+            <route cost="15.23" probability="1.00000000" edges="-81 -60 52 51 50#1 50#0 49 80 79"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="17" type="veh_3ETTP008_873" depart="17.00">
+        <routeDistribution last="0">
+            <route cost="64.16" probability="1.00000000" edges="-61 3 2 1"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C117E20DETC-Z4022_969" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="215.10000000000002"/>
+    </vType>
+    <vehicle id="18" type="C117E20DETC-Z4022_969" depart="18.00">
+        <routeDistribution last="0">
+            <route cost="88.62" probability="1.00000000" edges="52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 23 22 21 20"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_10EDV-1_1317" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="250.30465264166665"/>
+    </vType>
+    <vehicle id="19" type="veh_10EDV-1_1317" depart="19.00">
+        <routeDistribution last="0">
+            <route cost="92.11" probability="1.00000000" edges="65 -0 -1 29 28 -25 -38 -12 -13 16"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MLE353_672" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="331.27272727272725"/>
+    </vType>
+    <vehicle id="20" type="MLE353_672" depart="20.00">
+        <routeDistribution last="0">
+            <route cost="77.30" probability="1.00000000" edges="31 30 -10 -11 -36 -38 -12"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_4ECPE31-029_909" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="220.4785031973913"/>
+    </vType>
+    <vehicle id="21" type="veh_4ECPE31-029_909" depart="21.00">
+        <routeDistribution last="0">
+            <route cost="46.02" probability="1.00000000" edges="-38 -12 -13 -14 -10 46 8 7 6 -66 -47"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="WH97510_1096" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="244.295157025"/>
+    </vType>
+    <vehicle id="22" type="WH97510_1096" depart="22.00">
+        <routeDistribution last="0">
+            <route cost="38.59" probability="1.00000000" edges="-18 28 -25 -38"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HSB051_696" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="210.0"/>
+    </vType>
+    <vehicle id="23" type="HSB051_696" depart="23.00">
+        <routeDistribution last="0">
+            <route cost="42.68" probability="1.00000000" edges="-2 -3 -44"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FKB337_1106" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="245.4"/>
+    </vType>
+    <vehicle id="24" type="FKB337_1106" depart="24.00">
+        <routeDistribution last="0">
+            <route cost="60.63" probability="1.00000000" edges="22 21 62 -4 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="W212DE22TC-Z4010-1_979" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="237.57500000000002"/>
+    </vType>
+    <vehicle id="25" type="W212DE22TC-Z4010-1_979" depart="25.00">
+        <routeDistribution last="0">
+            <route cost="47.03" probability="1.00000000" edges="-60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="KPE537_1174" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="196.25"/>
+    </vType>
+    <vehicle id="26" type="KPE537_1174" depart="26.00">
+        <routeDistribution last="0">
+            <route cost="115.13" probability="1.00000000" edges="-43 -8 34 15 -28 -29 1 0 -65 -5 75"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="LY63000_203" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="429.7675"/>
+    </vType>
+    <vehicle id="27" type="LY63000_203" depart="27.00">
+        <routeDistribution last="0">
+            <route cost="48.71" probability="1.00000000" edges="23 22 21 20 2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_08-UF2H_843" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="394.5036022076923"/>
+    </vType>
+    <vehicle id="28" type="veh_08-UF2H_843" depart="28.00">
+        <routeDistribution last="0">
+            <route cost="68.95" probability="1.00000000" edges="-29 -2 -3 -44 -22 -23 4"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EEK11C_549" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="153.6335933"/>
+    </vType>
+    <vehicle id="29" type="EEK11C_549" depart="29.00">
+        <routeDistribution last="0">
+            <route cost="59.44" probability="1.00000000" edges="-28 -29 1 -41 -18 28 -25 -61"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HKE589_1183" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="207.125"/>
+    </vType>
+    <vehicle id="30" type="HKE589_1183" depart="30.00">
+        <routeDistribution last="0">
+            <route cost="77.51" probability="1.00000000" edges="8 7 6 -66 -47 80 79 78#1 78#0 77 24 23 22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="K290728_92" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="213.041473775"/>
+    </vType>
+    <vehicle id="31" type="K290728_92" depart="31.00">
+        <routeDistribution last="0">
+            <route cost="41.29" probability="1.00000000" edges="1 -41 -18 28 -25 -61 3"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="WL99204_1075" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="262.6746267375"/>
+    </vType>
+    <vehicle id="32" type="WL99204_1075" depart="32.00">
+        <routeDistribution last="0">
+            <route cost="41.12" probability="1.00000000" edges="61 -13 16 -30 -76 -78#0 -78#1 -79 -80 47"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FPE260_1111" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="260.3333333333333"/>
+    </vType>
+    <vehicle id="33" type="FPE260_1111" depart="33.00">
+        <routeDistribution last="0">
+            <route cost="32.80" probability="1.00000000" edges="-38 -12 -13 -14 -10 -11"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FBE-UG74_1310" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="345.4675465"/>
+    </vType>
+    <vehicle id="34" type="FBE-UG74_1310" depart="34.00">
+        <routeDistribution last="0">
+            <route cost="103.85" probability="1.00000000" edges="-50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="TX95505_1081" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="210.07999999999998"/>
+    </vType>
+    <vehicle id="35" type="TX95505_1081" depart="35.00">
+        <routeDistribution last="0">
+            <route cost="164.76" probability="1.00000000" edges="-32 -68 -69 4 3 2 1 0 -65 -5 75"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="TD1F0GU04A1_771" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="237.65287815696203"/>
+    </vType>
+    <vehicle id="36" type="TD1F0GU04A1_771" depart="36.00">
+        <routeDistribution last="0">
+            <route cost="126.28" probability="1.00000000" edges="66 65 -0 -1 29 28 -25 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EC1Z1A_562" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="161.8655"/>
+    </vType>
+    <vehicle id="37" type="EC1Z1A_562" depart="37.00">
+        <routeDistribution last="0">
+            <route cost="141.85" probability="1.00000000" edges="24 4 3 2 1 0 -65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_0G93507_195" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="448.22"/>
+    </vType>
+    <vehicle id="38" type="veh_0G93507_195" depart="38.00">
+        <routeDistribution last="0">
+            <route cost="122.20" probability="1.00000000" edges="7 6 -66 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 17 -74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_6216Y15822_283" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="401.0535"/>
+    </vType>
+    <vehicle id="39" type="veh_6216Y15822_283" depart="39.00">
+        <routeDistribution last="0">
+            <route cost="65.44" probability="1.00000000" edges="-43 -8 34 15 -28 -29 1 -41"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MD3N8GF73A1_624" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="208.555770975"/>
+    </vType>
+    <vehicle id="40" type="MD3N8GF73A1_624" depart="40.00">
+        <routeDistribution last="0">
+            <route cost="26.56" probability="1.00000000" edges="15 -28 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_62XEKSB359_534" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="461.93825"/>
+    </vType>
+    <vehicle id="41" type="veh_62XEKSB359_534" depart="41.00">
+        <routeDistribution last="0">
+            <route cost="90.99" probability="1.00000000" edges="17 -74 -75 -7 -8 34 -36 -38 -12 -13 16 -30 24 69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="DFDF1D_11" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="246.02795345833337"/>
+    </vType>
+    <vehicle id="42" type="DFDF1D_11" depart="42.00">
+        <routeDistribution last="0">
+            <route cost="76.21" probability="1.00000000" edges="-65 -5 -7 -8 34 -36"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201001_1406" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="329.8"/>
+    </vType>
+    <vehicle id="43" type="veh_201001_1406" depart="43.00">
+        <routeDistribution last="0">
+            <route cost="48.98" probability="1.00000000" edges="80 79 78#1 78#0 77 -31 -58 -69 -24 -76 -78#0 -78#1 -79"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HSB053_692" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="207.35714285714286"/>
+    </vType>
+    <vehicle id="44" type="HSB053_692" depart="44.00">
+        <routeDistribution last="0">
+            <route cost="25.14" probability="1.00000000" edges="-19 -3 61 -13"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MNE291_1132" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="385.6741573033708"/>
+    </vType>
+    <vehicle id="45" type="MNE291_1132" depart="45.00">
+        <routeDistribution last="0">
+            <route cost="27.84" probability="1.00000000" edges="-20 62 -44 21"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HJE319_1181" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="209.0"/>
+    </vType>
+    <vehicle id="46" type="HJE319_1181" depart="46.00">
+        <routeDistribution last="0">
+            <route cost="39.92" probability="1.00000000" edges="49 80 79 78#1 78#0 77 -31 -32 -68"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="VX62501_171" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="195.51000000000002"/>
+    </vType>
+    <vehicle id="47" type="VX62501_171" depart="47.00">
+        <routeDistribution last="0">
+            <route cost="100.46" probability="1.00000000" edges="-14 -10 -11 15 -28 -29 1 -41 -18 28 -25 -61"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EHC3-2.5-L-613_513" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="278.886"/>
+    </vType>
+    <vehicle id="48" type="EHC3-2.5-L-613_513" depart="48.00">
+        <routeDistribution last="0">
+            <route cost="49.35" probability="1.00000000" edges="80 79 78#1 78#0 77 -31 -58 -69 -24 -76 -78#0 -78#1 -79 -80"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EFLA1C_573" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="231.8247309375"/>
+    </vType>
+    <vehicle id="49" type="EFLA1C_573" depart="49.00">
+        <routeDistribution last="0">
+            <route cost="80.67" probability="1.00000000" edges="78#1 78#0 77 24 69 68 67 66 65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2ECPES2-018_941" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="205.85013066666667"/>
+    </vType>
+    <vehicle id="50" type="veh_2ECPES2-018_941" depart="50.00">
+        <routeDistribution last="0">
+            <route cost="35.32" probability="1.00000000" edges="-1 29 18 -42 -43 -8 34"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="DPC240_683" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="227.0"/>
+    </vType>
+    <vehicle id="51" type="DPC240_683" depart="51.00">
+        <routeDistribution last="0">
+            <route cost="92.60" probability="1.00000000" edges="29 28 -25 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3A04503_1083" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="204.83261976923075"/>
+    </vType>
+    <vehicle id="52" type="veh_3A04503_1083" depart="52.00">
+        <routeDistribution last="0">
+            <route cost="86.81" probability="1.00000000" edges="-43 -8 34 -36 -38 -12 -13 16 -30 24 23 22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="GMB013_1154" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="241.3781717"/>
+    </vType>
+    <vehicle id="53" type="GMB013_1154" depart="53.00">
+        <routeDistribution last="0">
+            <route cost="45.75" probability="1.00000000" edges="-20 62 -4 -24 -31 -58 -69"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="54" type="veh_3A04503_1083" depart="54.00">
+        <routeDistribution last="0">
+            <route cost="79.81" probability="1.00000000" edges="-73 -17 41 0 -65 -66 -47 80 79 78#1 78#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="A451E10-Z8010-1_1072" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="177.725"/>
+    </vType>
+    <vehicle id="55" type="A451E10-Z8010-1_1072" depart="55.00">
+        <routeDistribution last="0">
+            <route cost="59.88" probability="1.00000000" edges="66 65 -0 -1 29 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="56" type="FBE-UG74_1310" depart="56.00">
+        <routeDistribution last="0">
+            <route cost="82.00" probability="1.00000000" edges="-78#1 -79 -80 47 66 65 -0 -1 -2 -3"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="KJEG37_1177" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="231.0047372"/>
+    </vType>
+    <vehicle id="57" type="KJEG37_1177" depart="57.00">
+        <routeDistribution last="0">
+            <route cost="46.77" probability="1.00000000" edges="7 6 -66 -47 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 47 66"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2AVP1033_819" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="489.51500000000004"/>
+    </vType>
+    <vehicle id="58" type="veh_2AVP1033_819" depart="58.00">
+        <routeDistribution last="0">
+            <route cost="70.19" probability="1.00000000" edges="-48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 23 22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="F099010_90" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="200.955"/>
+    </vType>
+    <vehicle id="59" type="F099010_90" depart="59.00">
+        <routeDistribution last="0">
+            <route cost="37.62" probability="1.00000000" edges="2 29 28 -25"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="JF6F4AU05AC_786" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="221.5703"/>
+    </vType>
+    <vehicle id="60" type="JF6F4AU05AC_786" depart="60.00">
+        <routeDistribution last="0">
+            <route cost="96.25" probability="1.00000000" edges="43 42 41 0 -65 -66 -47 -48 -50#0 -50#1 -51 -52 -81"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C800682_132" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="290.13465753424657"/>
+    </vType>
+    <vehicle id="61" type="C800682_132" depart="61.00">
+        <routeDistribution last="0">
+            <route cost="50.98" probability="1.00000000" edges="47 -67 33 31 -76 -78#0 -78#1 -79 -80"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_08-ZP1M_1354" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="218.2406692"/>
+    </vType>
+    <vehicle id="62" type="veh_08-ZP1M_1354" depart="62.00">
+        <routeDistribution last="0">
+            <route cost="102.21" probability="1.00000000" edges="-0 -1 29 28 -25 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201614_1429" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="359.69818274285717"/>
+    </vType>
+    <vehicle id="63" type="veh_201614_1429" depart="63.00">
+        <routeDistribution last="0">
+            <route cost="129.77" probability="1.00000000" edges="-10 -11 15 -28 -29 1 0 -65 -5 75 74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="ED9C2C_1" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="184.7711111111111"/>
+    </vType>
+    <vehicle id="64" type="ED9C2C_1" depart="64.00">
+        <routeDistribution last="0">
+            <route cost="45.81" probability="1.00000000" edges="67 -47 -48 -50#0 -50#1 -51 -52 -81 -60 52"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C453E09TC-Z6024_1070" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="198.69383333333334"/>
+    </vType>
+    <vehicle id="65" type="C453E09TC-Z6024_1070" depart="65.00">
+        <routeDistribution last="0">
+            <route cost="76.89" probability="1.00000000" edges="-5 -7 -8 34 -36 -38 -12 -13 -14"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="66" type="HSB052_697" depart="66.00">
+        <routeDistribution last="0">
+            <route cost="153.95" probability="1.00000000" edges="66 65 -0 -1 29 28 -25 -38 -12 -13 -14 -10 46 8 7 6 -66 -47 80 79 78#1 78#0 77"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3A81005_1086" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="220.4001940677966"/>
+    </vType>
+    <vehicle id="67" type="veh_3A81005_1086" depart="67.00">
+        <routeDistribution last="0">
+            <route cost="72.79" probability="1.00000000" edges="-19 -3 -4 -24 -76 -78#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FBF-RH15_1296" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.64221707500002"/>
+    </vType>
+    <vehicle id="68" type="FBF-RH15_1296" depart="68.00">
+        <routeDistribution last="0">
+            <route cost="69.32" probability="1.00000000" edges="-17 41 0 -73 -74 -75 -7 43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HKB165_1184" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="194.0"/>
+    </vType>
+    <vehicle id="69" type="HKB165_1184" depart="69.00">
+        <routeDistribution last="0">
+            <route cost="40.74" probability="1.00000000" edges="43 42 -18 28 -25 -61 -44 -22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_07-GL2A_1359" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="327.25148005"/>
+    </vType>
+    <vehicle id="70" type="veh_07-GL2A_1359" depart="70.00">
+        <routeDistribution last="0">
+            <route cost="48.44" probability="1.00000000" edges="-75 -7 43 42 41 0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="D3UB-CAQ_27" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="354.2"/>
+    </vType>
+    <vehicle id="71" type="D3UB-CAQ_27" depart="71.00">
+        <routeDistribution last="0">
+            <route cost="77.73" probability="1.00000000" edges="-43 -8 34 -36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 47 66"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="72" type="HSB051_696" depart="72.00">
+        <routeDistribution last="0">
+            <route cost="31.83" probability="1.00000000" edges="-68 -69 -24 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="T739201_1078" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="206.085"/>
+    </vType>
+    <vehicle id="73" type="T739201_1078" depart="73.00">
+        <routeDistribution last="0">
+            <route cost="43.44" probability="1.00000000" edges="-81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 4"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EB16-ZA42_931" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="247.63574568888887"/>
+    </vType>
+    <vehicle id="74" type="EB16-ZA42_931" depart="74.00">
+        <routeDistribution last="0">
+            <route cost="39.10" probability="1.00000000" edges="-31 -58 -69 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="75" type="JF6F4AU05AC_786" depart="75.00">
+        <routeDistribution last="0">
+            <route cost="48.76" probability="1.00000000" edges="80 79 78#1 78#0 77 24 23"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="CLE230_1140" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="309.5"/>
+    </vType>
+    <vehicle id="76" type="CLE230_1140" depart="76.00">
+        <routeDistribution last="0">
+            <route cost="85.01" probability="1.00000000" edges="-69 -24 30 -10 -11 15 -28 18 -42 -43 -8"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_37XESP9600_314" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="402.1725"/>
+    </vType>
+    <vehicle id="77" type="veh_37XESP9600_314" depart="77.00">
+        <routeDistribution last="0">
+            <route cost="100.52" probability="1.00000000" edges="-21 -22 -23 -24 30 -10 -11 -36 -38"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="E6NA1A_566" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="217.15020105"/>
+    </vType>
+    <vehicle id="78" type="E6NA1A_566" depart="78.00">
+        <routeDistribution last="0">
+            <route cost="112.37" probability="1.00000000" edges="-52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FPB063_1108" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="207.64289387083332"/>
+    </vType>
+    <vehicle id="79" type="FPB063_1108" depart="79.00">
+        <routeDistribution last="0">
+            <route cost="64.21" probability="1.00000000" edges="-38 -12 -13 -14 -10 -11 -36"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="80" type="veh_11-ZA1H_820" depart="80.00">
+        <routeDistribution last="0">
+            <route cost="52.35" probability="1.00000000" edges="-17 -18 28 -25 -61 -44 21"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="L5FBB0722_433" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="230.50833749999998"/>
+    </vType>
+    <vehicle id="81" type="L5FBB0722_433" depart="81.00">
+        <routeDistribution last="0">
+            <route cost="27.50" probability="1.00000000" edges="-38 -12 -13 16 -30 24 69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HRE748_695" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="308.25"/>
+    </vType>
+    <vehicle id="82" type="HRE748_695" depart="82.00">
+        <routeDistribution last="0">
+            <route cost="98.67" probability="1.00000000" edges="62 3 2 1 0 -73 -17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EL100003_487" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="213.54475000000002"/>
+    </vType>
+    <vehicle id="83" type="EL100003_487" depart="83.00">
+        <routeDistribution last="0">
+            <route cost="84.00" probability="1.00000000" edges="-4 23 22 21 20 19 28"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C204E35DEH-Z2018-3_957" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="298.365"/>
+    </vType>
+    <vehicle id="84" type="C204E35DEH-Z2018-3_957" depart="84.00">
+        <routeDistribution last="0">
+            <route cost="37.96" probability="1.00000000" edges="-32 -68 -69 4 -44 -22 -23"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="F099010_91" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="213.9175"/>
+    </vType>
+    <vehicle id="85" type="F099010_91" depart="85.00">
+        <routeDistribution last="0">
+            <route cost="54.91" probability="1.00000000" edges="75 -59 -43 -8 34 -36 -38 -12 -13 16"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="JK2N8GF01A1_625" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="201.41950526666668"/>
+    </vType>
+    <vehicle id="86" type="JK2N8GF01A1_625" depart="86.00">
+        <routeDistribution last="0">
+            <route cost="78.26" probability="1.00000000" edges="-75 -7 -8 34 -36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 47"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2515279363_309" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="321.1095625"/>
+    </vType>
+    <vehicle id="87" type="veh_2515279363_309" depart="87.00">
+        <routeDistribution last="0">
+            <route cost="84.93" probability="1.00000000" edges="50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 -36 -38 -12 -13 16 -30"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HTF3FUP110A_783" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="175.01415"/>
+    </vType>
+    <vehicle id="88" type="HTF3FUP110A_783" depart="88.00">
+        <routeDistribution last="0">
+            <route cost="90.33" probability="1.00000000" edges="-2 -3 -4 -24 -31 -58 -69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AWE503_1168" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.41666666666666"/>
+    </vType>
+    <vehicle id="89" type="AWE503_1168" depart="89.00">
+        <routeDistribution last="0">
+            <route cost="99.86" probability="1.00000000" edges="-68 -69 -24 30 -10 -11 15 -28 18 17 -74"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="90" type="GMB013_1154" depart="90.00">
+        <routeDistribution last="0">
+            <route cost="74.16" probability="1.00000000" edges="4 3 2 29"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EC5A1A_574" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="261.24"/>
+    </vType>
+    <vehicle id="91" type="EC5A1A_574" depart="91.00">
+        <routeDistribution last="0">
+            <route cost="124.40" probability="1.00000000" edges="8 7 6 -66 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 -2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="KJEG38_1180" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="211.33333333333334"/>
+    </vType>
+    <vehicle id="92" type="KJEG38_1180" depart="92.00">
+        <routeDistribution last="0">
+            <route cost="11.64" probability="1.00000000" edges="-66 -47 -48 -50#0 -50#1 -51 -52"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_144HV712DA_343" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="216.0176754261905"/>
+    </vType>
+    <vehicle id="93" type="veh_144HV712DA_343" depart="93.00">
+        <routeDistribution last="0">
+            <route cost="85.99" probability="1.00000000" edges="65 -0 -1 29 -19 2 1 -41"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="SRE417_1123" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="310.0"/>
+    </vType>
+    <vehicle id="94" type="SRE417_1123" depart="94.00">
+        <routeDistribution last="0">
+            <route cost="137.15" probability="1.00000000" edges="-30 24 4 3 2 1 0 -73"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_14-ZE1C_1326" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="184.76375742222223"/>
+    </vType>
+    <vehicle id="95" type="veh_14-ZE1C_1326" depart="95.00">
+        <routeDistribution last="0">
+            <route cost="23.64" probability="1.00000000" edges="-68 -69 4 -44"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_0C06535_197" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="318.9871428571428"/>
+    </vType>
+    <vehicle id="96" type="veh_0C06535_197" depart="96.00">
+        <routeDistribution last="0">
+            <route cost="12.89" probability="1.00000000" edges="-41 17 73"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MD4N8GF01A1_649" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="211.62003333333334"/>
+    </vType>
+    <vehicle id="97" type="MD4N8GF01A1_649" depart="97.00">
+        <routeDistribution last="0">
+            <route cost="98.21" probability="1.00000000" edges="-7 -8 34 -36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 47 66 65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C593806_126" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="254.3"/>
+    </vType>
+    <vehicle id="98" type="C593806_126" depart="98.00">
+        <routeDistribution last="0">
+            <route cost="72.07" probability="1.00000000" edges="0 -73 -17 -18 28 -25 -38 -12 -13"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="A451E10-Z8010_1071" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="177.725"/>
+    </vType>
+    <vehicle id="99" type="A451E10-Z8010_1071" depart="99.00">
+        <routeDistribution last="0">
+            <route cost="39.61" probability="1.00000000" edges="80 79 78#1 78#0 77 30 -10 46 8 7 6"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="100" type="veh_14-ZE1C_1326" depart="100.00">
+        <routeDistribution last="0">
+            <route cost="151.31" probability="1.00000000" edges="78#1 78#0 77 30 -10 -11 15 -28 -29 1 0 -65 -5 75 74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_221941181_269" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="222.79174999999998"/>
+    </vType>
+    <vehicle id="101" type="veh_221941181_269" depart="101.00">
+        <routeDistribution last="0">
+            <route cost="68.31" probability="1.00000000" edges="61 -13 -14 -10 -11 15 -28"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AWE318_1172" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="237.33333333333334"/>
+    </vType>
+    <vehicle id="102" type="AWE318_1172" depart="102.00">
+        <routeDistribution last="0">
+            <route cost="69.66" probability="1.00000000" edges="-76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_37XESP9600_312" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="366.5555"/>
+    </vType>
+    <vehicle id="103" type="veh_37XESP9600_312" depart="103.00">
+        <routeDistribution last="0">
+            <route cost="96.58" probability="1.00000000" edges="-65 -5 -7 -8 34 -36 -38 -12 -13 -14"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="104" type="C453E09TC-Z6024_1070" depart="104.00">
+        <routeDistribution last="0">
+            <route cost="33.25" probability="1.00000000" edges="-61 -4 -24 30 -10 46 8"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="L4BFF8525_432" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="238.7251311166667"/>
+    </vType>
+    <vehicle id="105" type="L4BFF8525_432" depart="105.00">
+        <routeDistribution last="0">
+            <route cost="71.69" probability="1.00000000" edges="-43 -8 34 -36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 47"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="STB321_1189" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="469.25"/>
+    </vType>
+    <vehicle id="106" type="STB321_1189" depart="106.00">
+        <routeDistribution last="0">
+            <route cost="123.17" probability="1.00000000" edges="-73 -17 -18 28 -25 -38 -12 -13 16 -30 -31 -32 -68"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_16-AA2H_1350" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="197.62318264615385"/>
+    </vType>
+    <vehicle id="107" type="veh_16-AA2H_1350" depart="107.00">
+        <routeDistribution last="0">
+            <route cost="52.76" probability="1.00000000" edges="78#0 77 30 -10 46 8 7 6 -66 -47 80"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EBTW1C_580" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="211.32057633333335"/>
+    </vType>
+    <vehicle id="108" type="EBTW1C_580" depart="108.00">
+        <routeDistribution last="0">
+            <route cost="129.66" probability="1.00000000" edges="1 0 -65 -66 -67 33"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AM2N0GF11A1_796" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="221.31760214000002"/>
+    </vType>
+    <vehicle id="109" type="AM2N0GF11A1_796" depart="109.00">
+        <routeDistribution last="0">
+            <route cost="61.56" probability="1.00000000" edges="-25 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2418Z46934_284" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.16899999999998"/>
+    </vType>
+    <vehicle id="110" type="veh_2418Z46934_284" depart="110.00">
+        <routeDistribution last="0">
+            <route cost="74.60" probability="1.00000000" edges="78#1 78#0 77 30 -10 -11 -36 -38 -12 -13 16"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="111" type="EFLA1C_573" depart="111.00">
+        <routeDistribution last="0">
+            <route cost="40.87" probability="1.00000000" edges="0 -73 -74 -59 42"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_14-GE4A_833" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="296.50147515000003"/>
+    </vType>
+    <vehicle id="112" type="veh_14-GE4A_833" depart="112.00">
+        <routeDistribution last="0">
+            <route cost="75.24" probability="1.00000000" edges="-14 -10 -11 15 -28 18 17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="GAUA-GRM_1380" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="355.14285714285717"/>
+    </vType>
+    <vehicle id="113" type="GAUA-GRM_1380" depart="113.00">
+        <routeDistribution last="0">
+            <route cost="84.45" probability="1.00000000" edges="-78#1 -79 -80 47 -67 -68 -69 23 22 21 62"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="114" type="KJEG38_1180" depart="114.00">
+        <routeDistribution last="0">
+            <route cost="77.99" probability="1.00000000" edges="-25 -38 -12 -13 -14 -10 46 8 7 6 -66 -47 80 79 78#1 78#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2026M17534_1198" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="296.0525"/>
+    </vType>
+    <vehicle id="115" type="veh_2026M17534_1198" depart="115.00">
+        <routeDistribution last="0">
+            <route cost="44.75" probability="1.00000000" edges="-18 -19 -3"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="PLF5NAUP11A_641" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="161.8257304"/>
+    </vType>
+    <vehicle id="116" type="PLF5NAUP11A_641" depart="116.00">
+        <routeDistribution last="0">
+            <route cost="93.17" probability="1.00000000" edges="18 41 0 -73 -17 -18 -19 2 29"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EE1J1M_556" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="199.65799782741936"/>
+    </vType>
+    <vehicle id="117" type="EE1J1M_556" depart="117.00">
+        <routeDistribution last="0">
+            <route cost="46.48" probability="1.00000000" edges="-4 -24 -31 -58 -69 4 -62 -21"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3EFPE31-004_937" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="236.6851851851852"/>
+    </vType>
+    <vehicle id="118" type="veh_3EFPE31-004_937" depart="118.00">
+        <routeDistribution last="0">
+            <route cost="135.28" probability="1.00000000" edges="68 67 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 -41"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MD1N8GF29A1_623" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="203.47916666666666"/>
+    </vType>
+    <vehicle id="119" type="MD1N8GF29A1_623" depart="119.00">
+        <routeDistribution last="0">
+            <route cost="104.35" probability="1.00000000" edges="18 41 0 -73 -17 -18 28 -25 -61 -62 20"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="120" type="AM2N0GF11A1_796" depart="120.00">
+        <routeDistribution last="0">
+            <route cost="130.97" probability="1.00000000" edges="-67 33 31 30 -10 -11 15 -28 18 17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_7R31-4.0-L-653_411" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="420.3215"/>
+    </vType>
+    <vehicle id="121" type="veh_7R31-4.0-L-653_411" depart="121.00">
+        <routeDistribution last="0">
+            <route cost="109.68" probability="1.00000000" edges="-8 34 15 -28 -29 1 0 -65 -5 75"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="KPB086_1170" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="190.460998425"/>
+    </vType>
+    <vehicle id="122" type="KPB086_1170" depart="122.00">
+        <routeDistribution last="0">
+            <route cost="68.72" probability="1.00000000" edges="-31 -58 -69 -24 -76 -78#0 -78#1 -79 -80 47 -67 33"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_12-NP1H_1344" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="158.957579915"/>
+    </vType>
+    <vehicle id="123" type="veh_12-NP1H_1344" depart="123.00">
+        <routeDistribution last="0">
+            <route cost="131.96" probability="1.00000000" edges="-4 -24 30 -10 -11 15 -28 -29 1 0 -65"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="124" type="KPE537_1174" depart="124.00">
+        <routeDistribution last="0">
+            <route cost="123.26" probability="1.00000000" edges="28 -25 -61 3 2 1 0 -65 -5"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2488LN8043_1285" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="238.5865"/>
+    </vType>
+    <vehicle id="125" type="veh_2488LN8043_1285" depart="125.00">
+        <routeDistribution last="0">
+            <route cost="129.93" probability="1.00000000" edges="-50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 17 -74 -59 42"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="126" type="veh_6216Y15822_283" depart="126.00">
+        <routeDistribution last="0">
+            <route cost="39.49" probability="1.00000000" edges="-17 41 0 -73 -74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_351_00031_10_1403" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="217.5"/>
+    </vType>
+    <vehicle id="127" type="veh_351_00031_10_1403" depart="127.00">
+        <routeDistribution last="0">
+            <route cost="0.06" probability="1.00000000" edges="80"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FBF-VC14_1301" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="232.61521862"/>
+    </vType>
+    <vehicle id="128" type="FBF-VC14_1301" depart="128.00">
+        <routeDistribution last="0">
+            <route cost="112.30" probability="1.00000000" edges="-17 -18 28 -25 -38 -12 -13 16 -30 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="129" type="JK2N8GF01A1_625" depart="129.00">
+        <routeDistribution last="0">
+            <route cost="119.31" probability="1.00000000" edges="-43 -8 34 15 -28 -29 1 0 -65 -5 75 74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="V6ND15059_380" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="467.9369765"/>
+    </vType>
+    <vehicle id="130" type="V6ND15059_380" depart="130.00">
+        <routeDistribution last="0">
+            <route cost="23.00" probability="1.00000000" edges="67"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="VW370_50379__15_1393" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="207.5"/>
+    </vType>
+    <vehicle id="131" type="VW370_50379__15_1393" depart="131.00">
+        <routeDistribution last="0">
+            <route cost="85.58" probability="1.00000000" edges="-60 52 51 50#1 50#0 49 47 66 65 -0 -1 29 28 -25"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="DME679_682" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="343.5"/>
+    </vType>
+    <vehicle id="132" type="DME679_682" depart="132.00">
+        <routeDistribution last="0">
+            <route cost="65.67" probability="1.00000000" edges="6 -66 -67 33 31"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="DR100015_497" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="242.3634872"/>
+    </vType>
+    <vehicle id="133" type="DR100015_497" depart="133.00">
+        <routeDistribution last="0">
+            <route cost="89.64" probability="1.00000000" edges="2 29 28 -25 -38 -12 -13 -14 -10 46 8"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="LK25003_211" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="462.84499999999997"/>
+    </vType>
+    <vehicle id="134" type="LK25003_211" depart="134.00">
+        <routeDistribution last="0">
+            <route cost="86.75" probability="1.00000000" edges="23 22 21 62 -4 -24 -76 -78#0 -78#1 -79 -80 47 66 65 -0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201311_1428" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="324.0"/>
+    </vType>
+    <vehicle id="135" type="veh_201311_1428" depart="135.00">
+        <routeDistribution last="0">
+            <route cost="142.90" probability="1.00000000" edges="51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 0 -65 -5"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EC5A3A_571" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="254.128294275"/>
+    </vType>
+    <vehicle id="136" type="EC5A3A_571" depart="136.00">
+        <routeDistribution last="0">
+            <route cost="157.87" probability="1.00000000" edges="24 4 3 2 1 0 -65 -5 75"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FS6R6AU01AC_646" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="221.16311701929826"/>
+    </vType>
+    <vehicle id="137" type="FS6R6AU01AC_646" depart="137.00">
+        <routeDistribution last="0">
+            <route cost="27.27" probability="1.00000000" edges="-23 4 -62 -21"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MC0D6U04A1_618" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="217.36736527000002"/>
+    </vType>
+    <vehicle id="138" type="MC0D6U04A1_618" depart="138.00">
+        <routeDistribution last="0">
+            <route cost="80.03" probability="1.00000000" edges="-20 62 3 2 1"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="139" type="veh_361_730_136_13_1384" depart="139.00">
+        <routeDistribution last="0">
+            <route cost="63.04" probability="1.00000000" edges="-44 21 20 19"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="BKA00062_472" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="375.0339"/>
+    </vType>
+    <vehicle id="140" type="BKA00062_472" depart="140.00">
+        <routeDistribution last="0">
+            <route cost="114.95" probability="1.00000000" edges="33 31 30 -10 -11 -36 -38 -12 -13 16 -30 -31"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HLF6NAUP11A_639" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="185.60254343333335"/>
+    </vType>
+    <vehicle id="141" type="HLF6NAUP11A_639" depart="141.00">
+        <routeDistribution last="0">
+            <route cost="98.59" probability="1.00000000" edges="21 20 19 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AM71-2.5-C-947_918" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="227.80966666666666"/>
+    </vType>
+    <vehicle id="142" type="AM71-2.5-C-947_918" depart="142.00">
+        <routeDistribution last="0">
+            <route cost="50.44" probability="1.00000000" edges="-78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 69"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="143" type="QF2F4AU02A1_781" depart="143.00">
+        <routeDistribution last="0">
+            <route cost="76.05" probability="1.00000000" edges="61 -13 -14 -10 -11 15 -28 -19"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="144" type="EBTW1C_580" depart="144.00">
+        <routeDistribution last="0">
+            <route cost="23.64" probability="1.00000000" edges="-68 -69 4 -44"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="KHC863_1134" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="230.5"/>
+    </vType>
+    <vehicle id="145" type="KHC863_1134" depart="145.00">
+        <routeDistribution last="0">
+            <route cost="89.88" probability="1.00000000" edges="-0 -1 29 28 -25 -38 -12 -13 -14 -10 46"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="L4WKJ4240_761" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="453.46698"/>
+    </vType>
+    <vehicle id="146" type="L4WKJ4240_761" depart="146.00">
+        <routeDistribution last="0">
+            <route cost="103.98" probability="1.00000000" edges="22 21 20 19 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="P157025_109" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="352.52"/>
+    </vType>
+    <vehicle id="147" type="P157025_109" depart="147.00">
+        <routeDistribution last="0">
+            <route cost="50.69" probability="1.00000000" edges="41 0 -73 -17 -18 -29 1"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FLB106_1114" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="208.0"/>
+    </vType>
+    <vehicle id="148" type="FLB106_1114" depart="148.00">
+        <routeDistribution last="0">
+            <route cost="72.84" probability="1.00000000" edges="-68 -69 -24 -76 -78#0 -78#1 -79 -80 47 66 65 -0 -1"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_12-ZW2H_1345" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="151.56278941538463"/>
+    </vType>
+    <vehicle id="149" type="veh_12-ZW2H_1345" depart="149.00">
+        <routeDistribution last="0">
+            <route cost="64.97" probability="1.00000000" edges="-18 28 -25 -61 -4 69 68 67"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="MD4N0AU17A2_647" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="227.17316033571427"/>
+    </vType>
+    <vehicle id="150" type="MD4N0AU17A2_647" depart="150.00">
+        <routeDistribution last="0">
+            <route cost="157.96" probability="1.00000000" edges="69 68 67 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 0"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="151" type="GMB013_1154" depart="151.00">
+        <routeDistribution last="0">
+            <route cost="112.39" probability="1.00000000" edges="6 -66 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201411_1424" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="372.35714285714283"/>
+    </vType>
+    <vehicle id="152" type="veh_201411_1424" depart="152.00">
+        <routeDistribution last="0">
+            <route cost="36.83" probability="1.00000000" edges="-24 -31 -58 -69 4 -44 -22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="JLB049_1142" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="232.96719083333335"/>
+    </vType>
+    <vehicle id="153" type="JLB049_1142" depart="153.00">
+        <routeDistribution last="0">
+            <route cost="86.76" probability="1.00000000" edges="-5 -7 -8 34 -36 -38 -12 -13 16 -30 24 69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AU373-6-0813_16_18" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="176.1721178"/>
+    </vType>
+    <vehicle id="154" type="AU373-6-0813_16_18" depart="154.00">
+        <routeDistribution last="0">
+            <route cost="32.04" probability="1.00000000" edges="50#0 49 47 66 65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HJE320_1182" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="186.3"/>
+    </vType>
+    <vehicle id="155" type="HJE320_1182" depart="155.00">
+        <routeDistribution last="0">
+            <route cost="76.51" probability="1.00000000" edges="69 68 67 -47 80 79 78#1 78#0 77 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EGBB1M_558" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="210.9025"/>
+    </vType>
+    <vehicle id="156" type="EGBB1M_558" depart="156.00">
+        <routeDistribution last="0">
+            <route cost="24.21" probability="1.00000000" edges="-41 -18 -29 -2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_0E95003_188" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="250.07"/>
+    </vType>
+    <vehicle id="157" type="veh_0E95003_188" depart="157.00">
+        <routeDistribution last="0">
+            <route cost="78.07" probability="1.00000000" edges="47 -67 33 31 24 69 68 67"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="158" type="veh_361_730_136_13_1384" depart="158.00">
+        <routeDistribution last="0">
+            <route cost="94.35" probability="1.00000000" edges="-66 -47 80 79 78#1 78#0 77 24 23 22 21 20"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="X156E20DETC-Z5021-2_1018" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.29"/>
+    </vType>
+    <vehicle id="159" type="X156E20DETC-Z5021-2_1018" depart="159.00">
+        <routeDistribution last="0">
+            <route cost="129.24" probability="1.00000000" edges="-25 -61 3 2 1 0 -65 -5 75 74"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="160" type="EG1M1C_592" depart="160.00">
+        <routeDistribution last="0">
+            <route cost="137.65" probability="1.00000000" edges="65 -0 -1 29 28 -25 -38 -12 -13 -14 -10 46 8 7 6 -66 -47 80 79"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201608_1414" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="243.5"/>
+    </vType>
+    <vehicle id="161" type="veh_201608_1414" depart="161.00">
+        <routeDistribution last="0">
+            <route cost="59.61" probability="1.00000000" edges="50#1 50#0 49 80 79 78#1 78#0 77 24 69 68 67"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="162" type="veh_12-NP1H_1344" depart="162.00">
+        <routeDistribution last="0">
+            <route cost="76.14" probability="1.00000000" edges="-10 -11 -36 -38 -12 -13 16 -30 24 4"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="CDH1-0.0-L-346_485" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="212.41598260869566"/>
+    </vType>
+    <vehicle id="163" type="CDH1-0.0-L-346_485" depart="163.00">
+        <routeDistribution last="0">
+            <route cost="169.92" probability="1.00000000" edges="-51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 0 -65 -5 75 74"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="164" type="EC1Z1A_562" depart="164.00">
+        <routeDistribution last="0">
+            <route cost="32.04" probability="1.00000000" edges="50#0 49 47 66 65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_1444J61466_352" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="244.1785"/>
+    </vType>
+    <vehicle id="165" type="veh_1444J61466_352" depart="165.00">
+        <routeDistribution last="0">
+            <route cost="89.08" probability="1.00000000" edges="50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_12-NP1A_1374" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="197.99297503773585"/>
+    </vType>
+    <vehicle id="166" type="veh_12-NP1A_1374" depart="166.00">
+        <routeDistribution last="0">
+            <route cost="85.27" probability="1.00000000" edges="49 80 79 78#1 78#0 77 24 4 3 -20"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="VW351_780169_09_1382" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="243.99635188000002"/>
+    </vType>
+    <vehicle id="167" type="VW351_780169_09_1382" depart="167.00">
+        <routeDistribution last="0">
+            <route cost="65.60" probability="1.00000000" edges="66 65 -0 -1 -2 -20 62"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_11-NJ1C_1288" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="210.28055254814814"/>
+    </vType>
+    <vehicle id="168" type="veh_11-NJ1C_1288" depart="168.00">
+        <routeDistribution last="0">
+            <route cost="53.95" probability="1.00000000" edges="-36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="169" type="veh_12-ZW2H_1345" depart="169.00">
+        <routeDistribution last="0">
+            <route cost="68.29" probability="1.00000000" edges="-74 -59 42 41 0 -65 -5"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="F132_436" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="374.62"/>
+    </vType>
+    <vehicle id="170" type="F132_436" depart="170.00">
+        <routeDistribution last="0">
+            <route cost="72.12" probability="1.00000000" edges="50#0 49 80 79 78#1 78#0 77 30 -10 -11 -36 -38"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EB421M_551" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="252.27499999999998"/>
+    </vType>
+    <vehicle id="171" type="EB421M_551" depart="171.00">
+        <routeDistribution last="0">
+            <route cost="59.36" probability="1.00000000" edges="-10 -11 -36 -38 -12 -13 16 -30"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="R197E63-Z1023-1_1068" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="486.99375"/>
+    </vType>
+    <vehicle id="172" type="R197E63-Z1023-1_1068" depart="172.00">
+        <routeDistribution last="0">
+            <route cost="46.69" probability="1.00000000" edges="-51 -52 -81 -60 52 51 50#1 50#0 49 47 66 65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AWE319_1191" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="279.0"/>
+    </vType>
+    <vehicle id="173" type="AWE319_1191" depart="173.00">
+        <routeDistribution last="0">
+            <route cost="35.46" probability="1.00000000" edges="78#1 78#0 77 24 4 -44"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="174" type="KHC863_1134" depart="174.00">
+        <routeDistribution last="0">
+            <route cost="110.56" probability="1.00000000" edges="22 21 20 2 1 0 -65"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="175" type="HKE589_1183" depart="175.00">
+        <routeDistribution last="0">
+            <route cost="54.12" probability="1.00000000" edges="79 78#1 78#0 77 30 -10 46 8 7 6 -66 -47 -48 -50#0 -50#1 -51 -52 -81"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="176" type="veh_16X5HV553A_289" depart="176.00">
+        <routeDistribution last="0">
+            <route cost="84.57" probability="1.00000000" edges="75 74 -17 -18 28 -25 -61 -62 -21"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="177" type="veh_12-ZW2H_1345" depart="177.00">
+        <routeDistribution last="0">
+            <route cost="85.40" probability="1.00000000" edges="78#1 78#0 77 30 -10 -11 15 -28 -19 -3"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HRE758_716" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="301.25"/>
+    </vType>
+    <vehicle id="178" type="HRE758_716" depart="178.00">
+        <routeDistribution last="0">
+            <route cost="84.95" probability="1.00000000" edges="78#0 77 30 -10 -11 15 -28 18 -42 -43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="T826907_1084" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="204.6105064333333"/>
+    </vType>
+    <vehicle id="179" type="T826907_1084" depart="179.00">
+        <routeDistribution last="0">
+            <route cost="45.75" probability="1.00000000" edges="-20 62 -4 -24 -31 -58 -69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EGBB1C_560" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="190.5014238090909"/>
+    </vType>
+    <vehicle id="180" type="EGBB1C_560" depart="180.00">
+        <routeDistribution last="0">
+            <route cost="63.29" probability="1.00000000" edges="34 -36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="181" type="F099010_90" depart="181.00">
+        <routeDistribution last="0">
+            <route cost="68.82" probability="1.00000000" edges="19 28 -25 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="182" type="FBF-RH15_1296" depart="182.00">
+        <routeDistribution last="0">
+            <route cost="41.24" probability="1.00000000" edges="-62 20 -3 61 -13 16"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2B27706_1085" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="214.22533333333334"/>
+    </vType>
+    <vehicle id="183" type="veh_2B27706_1085" depart="183.00">
+        <routeDistribution last="0">
+            <route cost="139.77" probability="1.00000000" edges="-42 -43 -8 34 -36 -38 -12 -13 -14 -10 46 8 7 6 -66 -67 33 31"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="CBF-GJ15_1299" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="227.1578947368421"/>
+    </vType>
+    <vehicle id="184" type="CBF-GJ15_1299" depart="184.00">
+        <routeDistribution last="0">
+            <route cost="87.88" probability="1.00000000" edges="-0 -1 29 18 17 73 -65 -5 75 74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EM100153_491" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="223.0"/>
+    </vType>
+    <vehicle id="185" type="EM100153_491" depart="185.00">
+        <routeDistribution last="0">
+            <route cost="45.72" probability="1.00000000" edges="-81 -60 52 51 50#1 50#0 49 47 -67 33"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="TD1F0GU09A1_772" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="218.7999505"/>
+    </vType>
+    <vehicle id="186" type="TD1F0GU09A1_772" depart="186.00">
+        <routeDistribution last="0">
+            <route cost="48.95" probability="1.00000000" edges="41 0 -73 -17 -18 28"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="PPE437_1117" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="236.37039206153847"/>
+    </vType>
+    <vehicle id="187" type="PPE437_1117" depart="187.00">
+        <routeDistribution last="0">
+            <route cost="46.21" probability="1.00000000" edges="-59 42 41 0 -73 -17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AWE502_1166" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="241.71428571428572"/>
+    </vType>
+    <vehicle id="188" type="AWE502_1166" depart="188.00">
+        <routeDistribution last="0">
+            <route cost="68.85" probability="1.00000000" edges="28 -25 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="189" type="EGBB1M_558" depart="189.00">
+        <routeDistribution last="0">
+            <route cost="52.55" probability="1.00000000" edges="-50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 4 61"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201607_1430" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="251.5101668"/>
+    </vType>
+    <vehicle id="190" type="veh_201607_1430" depart="190.00">
+        <routeDistribution last="0">
+            <route cost="98.89" probability="1.00000000" edges="34 15 -28 -29 1 0 -65 -5"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="191" type="C117E20DETC-Z5021-3_970" depart="191.00">
+        <routeDistribution last="0">
+            <route cost="61.59" probability="1.00000000" edges="-50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 46 8 7 6 -66"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_12-AV1H_1328" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="154.1775575"/>
+    </vType>
+    <vehicle id="192" type="veh_12-AV1H_1328" depart="192.00">
+        <routeDistribution last="0">
+            <route cost="8.76" probability="1.00000000" edges="-66 -47 -48"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="193" type="EGBB1C_560" depart="193.00">
+        <routeDistribution last="0">
+            <route cost="83.75" probability="1.00000000" edges="-22 -23 -24 -76 -78#0 -78#1 -79 -80 47 -67"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EGAA1C_559" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="196.04640720909092"/>
+    </vType>
+    <vehicle id="194" type="EGAA1C_559" depart="194.00">
+        <routeDistribution last="0">
+            <route cost="81.33" probability="1.00000000" edges="75 74 -17 -18 -19 2 29"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="S212E55DETC-Z2023-5_1010" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="378.74"/>
+    </vType>
+    <vehicle id="195" type="S212E55DETC-Z2023-5_1010" depart="195.00">
+        <routeDistribution last="0">
+            <route cost="134.50" probability="1.00000000" edges="69 68 67 -47 80 79 78#1 78#0 77 24 4 3 2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="BTE698_1160" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="233.7"/>
+    </vType>
+    <vehicle id="196" type="BTE698_1160" depart="196.00">
+        <routeDistribution last="0">
+            <route cost="66.46" probability="1.00000000" edges="-5 -7 43 42 41 0"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="197" type="EG1M1C_592" depart="197.00">
+        <routeDistribution last="0">
+            <route cost="111.70" probability="1.00000000" edges="-0 -1 29 28 -25 -38 -12 -13 -14 -10 46 8 7 6 -66 -47"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_16-ZE1M_1287" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="207.615710125"/>
+    </vType>
+    <vehicle id="198" type="veh_16-ZE1M_1287" depart="198.00">
+        <routeDistribution last="0">
+            <route cost="95.16" probability="1.00000000" edges="-68 -69 -24 30 -10 -11 15 -28 18 17"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_201213_1416" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="296.75"/>
+    </vType>
+    <vehicle id="199" type="veh_201213_1416" depart="199.00">
+        <routeDistribution last="0">
+            <route cost="113.01" probability="1.00000000" edges="24 4 3 19 18 17 -74"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="GGA00064_464" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="329.519775"/>
+    </vType>
+    <vehicle id="200" type="GGA00064_464" depart="200.00">
+        <routeDistribution last="0">
+            <route cost="86.75" probability="1.00000000" edges="-7 -8 34 -36 -38 -12 -13 16 -30 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="YD4R6AU10B1_777" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="251.94112666666666"/>
+    </vType>
+    <vehicle id="201" type="YD4R6AU10B1_777" depart="201.00">
+        <routeDistribution last="0">
+            <route cost="68.74" probability="1.00000000" edges="-75 -7 -8 34 -36 -38 -12 -13 16 -30 24 69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="UB3R6AU15A1_792" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="205.58975"/>
+    </vType>
+    <vehicle id="202" type="UB3R6AU15A1_792" depart="202.00">
+        <routeDistribution last="0">
+            <route cost="89.90" probability="1.00000000" edges="50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_1412P03137_316" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="213.47769305731708"/>
+    </vType>
+    <vehicle id="203" type="veh_1412P03137_316" depart="203.00">
+        <routeDistribution last="0">
+            <route cost="79.42" probability="1.00000000" edges="-19 2 1 -41 -42 -43 -8"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_9FP1-4.6-H-891_862" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="347.854000075"/>
+    </vType>
+    <vehicle id="204" type="veh_9FP1-4.6-H-891_862" depart="204.00">
+        <routeDistribution last="0">
+            <route cost="44.07" probability="1.00000000" edges="21 62 -4 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="205" type="C994902_131" depart="205.00">
+        <routeDistribution last="0">
+            <route cost="115.31" probability="1.00000000" edges="51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 18 17 -74 -59 42"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="206" type="MC0D6U04A1_618" depart="206.00">
+        <routeDistribution last="0">
+            <route cost="32.31" probability="1.00000000" edges="28 -25 -38"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EB401A_554" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="245.54225996666665"/>
+    </vType>
+    <vehicle id="207" type="EB401A_554" depart="207.00">
+        <routeDistribution last="0">
+            <route cost="27.30" probability="1.00000000" edges="-31 -58 -69 -24 30 -10"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="208" type="EE1J1M_556" depart="208.00">
+        <routeDistribution last="0">
+            <route cost="30.51" probability="1.00000000" edges="-41 17 -74 -75"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_10-AF1H_830" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="186.19112809166666"/>
+    </vType>
+    <vehicle id="209" type="veh_10-AF1H_830" depart="209.00">
+        <routeDistribution last="0">
+            <route cost="127.15" probability="1.00000000" edges="61 -13 -14 -10 -11 15 -28 -29 1 0 -73 -17"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="210" type="HSB052_697" depart="210.00">
+        <routeDistribution last="0">
+            <route cost="71.04" probability="1.00000000" edges="-67 -68 -69 23 22 21"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="W205E20DETC-Z6029_959" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="213.995"/>
+    </vType>
+    <vehicle id="211" type="W205E20DETC-Z6029_959" depart="211.00">
+        <routeDistribution last="0">
+            <route cost="52.94" probability="1.00000000" edges="-30 -31 -58 -69 -24 30"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AU641_40848__15_31" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="433.5461379071429"/>
+    </vType>
+    <vehicle id="212" type="AU641_40848__15_31" depart="212.00">
+        <routeDistribution last="0">
+            <route cost="122.02" probability="1.00000000" edges="-78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 -41"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="213" type="MC0D6U04A1_618" depart="213.00">
+        <routeDistribution last="0">
+            <route cost="70.93" probability="1.00000000" edges="24 69 68 67 66 65 -0"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="214" type="T739201_1078" depart="214.00">
+        <routeDistribution last="0">
+            <route cost="67.70" probability="1.00000000" edges="42 -18 28 -25 -38 -12 -13 -14 -10 46"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="SJE208_1196" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="457.5"/>
+    </vType>
+    <vehicle id="215" type="SJE208_1196" depart="215.00">
+        <routeDistribution last="0">
+            <route cost="55.65" probability="1.00000000" edges="-20 62 -4 -24 -31 -32 -68"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FE-Spyder-M6_1240" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="298.372968"/>
+    </vType>
+    <vehicle id="216" type="FE-Spyder-M6_1240" depart="216.00">
+        <routeDistribution last="0">
+            <route cost="89.14" probability="1.00000000" edges="-29 1 0 -65 -66 -47 80 79 78#1 78#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_16-GL3H_853" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="235.0317762076923"/>
+    </vType>
+    <vehicle id="217" type="veh_16-GL3H_853" depart="217.00">
+        <routeDistribution last="0">
+            <route cost="30.34" probability="1.00000000" edges="-8 34 -36 -38 -12 -13"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_60XEGCA050_326" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="527.387"/>
+    </vType>
+    <vehicle id="218" type="veh_60XEGCA050_326" depart="218.00">
+        <routeDistribution last="0">
+            <route cost="54.75" probability="1.00000000" edges="-41 -18 -19 -3 61"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_6ECP5V31-007_908" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="197.20147865714284"/>
+    </vType>
+    <vehicle id="219" type="veh_6ECP5V31-007_908" depart="219.00">
+        <routeDistribution last="0">
+            <route cost="91.66" probability="1.00000000" edges="-73 -17 41 0 -65 -66 -47 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="S212E30DETC-Z5010-2_998" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="305.24"/>
+    </vType>
+    <vehicle id="220" type="S212E30DETC-Z5010-2_998" depart="220.00">
+        <routeDistribution last="0">
+            <route cost="58.82" probability="1.00000000" edges="28 -25 -38 -12 -13 -14 -10 46 8"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="221" type="EEK11C_549" depart="221.00">
+        <routeDistribution last="0">
+            <route cost="101.41" probability="1.00000000" edges="18 17 73 -65 -66 -47 80 79 78#1 78#0 77"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="222" type="veh_3EFPE31-004_937" depart="222.00">
+        <routeDistribution last="0">
+            <route cost="127.46" probability="1.00000000" edges="68 67 -47 80 79 78#1 78#0 77 24 4 3 2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C190E40DETC-Z6013_950" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="368.36"/>
+    </vType>
+    <vehicle id="223" type="C190E40DETC-Z6013_950" depart="223.00">
+        <routeDistribution last="0">
+            <route cost="19.90" probability="1.00000000" edges="33 31 -76 -78#0 -78#1 -79"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="SEE591_1145" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="344.0"/>
+    </vType>
+    <vehicle id="224" type="SEE591_1145" depart="224.00">
+        <routeDistribution last="0">
+            <route cost="119.48" probability="1.00000000" edges="52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_16X5HV553A_277" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="242.0145"/>
+    </vType>
+    <vehicle id="225" type="veh_16X5HV553A_277" depart="225.00">
+        <routeDistribution last="0">
+            <route cost="90.17" probability="1.00000000" edges="69 68 67 66 65 -0 -1 29 18 41"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="226" type="C453E09TC-Z6024_1070" depart="226.00">
+        <routeDistribution last="0">
+            <route cost="53.26" probability="1.00000000" edges="-75 -7 -8 34 15 -28 18 -42"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="227" type="AWE318_1172" depart="227.00">
+        <routeDistribution last="0">
+            <route cost="42.02" probability="1.00000000" edges="-41 -18 28 -25 -61 -4 23 22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FE-981S-M6-13_1229" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="285.21500000000003"/>
+    </vType>
+    <vehicle id="228" type="FE-981S-M6-13_1229" depart="228.00">
+        <routeDistribution last="0">
+            <route cost="46.61" probability="1.00000000" edges="43 42 17 -74 -75 -7 -8"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="229" type="veh_201608_1414" depart="229.00">
+        <routeDistribution last="0">
+            <route cost="12.37" probability="1.00000000" edges="21 62 -44"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_36Z9L19796_1286" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="235.4129189"/>
+    </vType>
+    <vehicle id="230" type="veh_36Z9L19796_1286" depart="230.00">
+        <routeDistribution last="0">
+            <route cost="88.42" probability="1.00000000" edges="-18 -29 1 0 -65 -66 -47"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="231" type="MD4N0AU17A2_647" depart="231.00">
+        <routeDistribution last="0">
+            <route cost="64.77" probability="1.00000000" edges="-44 -22 -23 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="232" type="KJEG38_1180" depart="232.00">
+        <routeDistribution last="0">
+            <route cost="61.25" probability="1.00000000" edges="-81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 4 -44 -22 -23"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C451E10-Z2027_1073" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="218.506639825"/>
+    </vType>
+    <vehicle id="233" type="C451E10-Z2027_1073" depart="233.00">
+        <routeDistribution last="0">
+            <route cost="60.44" probability="1.00000000" edges="-38 -12 -13 16 -30 -31 -58 -69 -24 30"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="234" type="C117E20DETC-Z5021-3_970" depart="234.00">
+        <routeDistribution last="0">
+            <route cost="94.80" probability="1.00000000" edges="31 30 -10 -11 -36 -38 -12 -13 -14"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2AVP1032_816" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="464.49"/>
+    </vType>
+    <vehicle id="235" type="veh_2AVP1032_816" depart="235.00">
+        <routeDistribution last="0">
+            <route cost="125.21" probability="1.00000000" edges="-66 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 0"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="236" type="veh_2418Z46934_284" depart="236.00">
+        <routeDistribution last="0">
+            <route cost="79.98" probability="1.00000000" edges="-67 -68 -69 -24 -31 -32"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="237" type="L5FBB0722_433" depart="237.00">
+        <routeDistribution last="0">
+            <route cost="43.92" probability="1.00000000" edges="-67 33 31 24 69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_16-GL1H_854" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="235.5054032936508"/>
+    </vType>
+    <vehicle id="238" type="veh_16-GL1H_854" depart="238.00">
+        <routeDistribution last="0">
+            <route cost="87.05" probability="1.00000000" edges="17 73 -65 -66 -47 80 79 78#1 78#0 77 30"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="239" type="EGBB1C_560" depart="239.00">
+        <routeDistribution last="0">
+            <route cost="106.60" probability="1.00000000" edges="62 3 19 18 17 -74 -75 -7 43"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="T384700_1077" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="240.375"/>
+    </vType>
+    <vehicle id="240" type="T384700_1077" depart="240.00">
+        <routeDistribution last="0">
+            <route cost="71.58" probability="1.00000000" edges="-61 -4 -24 -76 -78#0 -78#1 -79 -80 47 66 65 -0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="CBE-DK14_1295" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="243.03768082717394"/>
+    </vType>
+    <vehicle id="241" type="CBE-DK14_1295" depart="241.00">
+        <routeDistribution last="0">
+            <route cost="111.17" probability="1.00000000" edges="-58 -69 -24 30 -10 -11 15 -28 18 17 -74 -59 42"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="L5ND14804_379" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="425.81248500000004"/>
+    </vType>
+    <vehicle id="242" type="L5ND14804_379" depart="242.00">
+        <routeDistribution last="0">
+            <route cost="84.30" probability="1.00000000" edges="62 61 -13 -14 -10 46 8 7 6 -66 -47 80 79 78#1 78#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2488LP8032_1282" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="305.995"/>
+    </vType>
+    <vehicle id="243" type="veh_2488LP8032_1282" depart="243.00">
+        <routeDistribution last="0">
+            <route cost="115.99" probability="1.00000000" edges="-67 33 31 30 -10 -11 15 -28 18 41"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="244" type="E6NA1A_566" depart="244.00">
+        <routeDistribution last="0">
+            <route cost="61.39" probability="1.00000000" edges="0 -73 -17 -18 -29 -2 19"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="245" type="C451E10-Z2027_1073" depart="245.00">
+        <routeDistribution last="0">
+            <route cost="0.15" probability="1.00000000" edges="-36"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="246" type="PPE437_1117" depart="246.00">
+        <routeDistribution last="0">
+            <route cost="30.54" probability="1.00000000" edges="-69 -24 30 -10 -11"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="247" type="veh_11-NJ1C_1288" depart="247.00">
+        <routeDistribution last="0">
+            <route cost="63.94" probability="1.00000000" edges="-51 -52 -81 -60 52 51 50#1 50#0 49 47 66 65 -0 -1 29"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="248" type="veh_36Z9L19796_1286" depart="248.00">
+        <routeDistribution last="0">
+            <route cost="77.47" probability="1.00000000" edges="-66 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="249" type="UB3R6AU15A1_792" depart="249.00">
+        <routeDistribution last="0">
+            <route cost="52.74" probability="1.00000000" edges="-75 -7 43 42 -18 28 -25 -61 -44 -22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="FX99511_85" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="237.36569325000002"/>
+    </vType>
+    <vehicle id="250" type="FX99511_85" depart="250.00">
+        <routeDistribution last="0">
+            <route cost="50.97" probability="1.00000000" edges="20 -3 61 -13 -14 -10"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="STE248_1157" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="410.63157894736844"/>
+    </vType>
+    <vehicle id="251" type="STE248_1157" depart="251.00">
+        <routeDistribution last="0">
+            <route cost="70.78" probability="1.00000000" edges="-65 -5 -7 -8 34 15"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="252" type="A451E10-Z8010_1071" depart="252.00">
+        <routeDistribution last="0">
+            <route cost="98.67" probability="1.00000000" edges="-10 -11 -36 -38 -12 -13 16 -30 24 23 22"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="T996307_1080" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="237.88232824285714"/>
+    </vType>
+    <vehicle id="253" type="T996307_1080" depart="253.00">
+        <routeDistribution last="0">
+            <route cost="121.75" probability="1.00000000" edges="-23 -24 30 -10 -11 15 -28 18 17 -74"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="254" type="MC0D6U04A1_618" depart="254.00">
+        <routeDistribution last="0">
+            <route cost="117.04" probability="1.00000000" edges="-13 -14 -10 -11 15 -28 -29 1 -41 -18 28 -25 -61"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="YD3N8GF23A1_776" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="225.099467725"/>
+    </vType>
+    <vehicle id="255" type="YD3N8GF23A1_776" depart="255.00">
+        <routeDistribution last="0">
+            <route cost="38.99" probability="1.00000000" edges="-32 -68 -69 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="GMB013_1155" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="247.0"/>
+    </vType>
+    <vehicle id="256" type="GMB013_1155" depart="256.00">
+        <routeDistribution last="0">
+            <route cost="31.03" probability="1.00000000" edges="43 42 -18 28 -25 -61"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="KJB441_1179" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="241.30769230769232"/>
+    </vType>
+    <vehicle id="257" type="KJB441_1179" depart="257.00">
+        <routeDistribution last="0">
+            <route cost="81.36" probability="1.00000000" edges="42 -18 28 -25 -38 -12 -13 -14 -10 46 8 7 6"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="258" type="EB16-CB7A_925" depart="258.00">
+        <routeDistribution last="0">
+            <route cost="8.32" probability="1.00000000" edges="-41 -18"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="D001500_128" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="245.9425"/>
+    </vType>
+    <vehicle id="259" type="D001500_128" depart="259.00">
+        <routeDistribution last="0">
+            <route cost="32.33" probability="1.00000000" edges="-10 46 8 7 6 -66 -47 -48 -50#0 -50#1 -51 -52 -81"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="UB3R6AU13A1_791" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="208.87429230454546"/>
+    </vType>
+    <vehicle id="260" type="UB3R6AU13A1_791" depart="260.00">
+        <routeDistribution last="0">
+            <route cost="21.96" probability="1.00000000" edges="80 79 78#1 78#0 77 -31 -58"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="V3MKT2306_764" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="255.8052275"/>
+    </vType>
+    <vehicle id="261" type="V3MKT2306_764" depart="261.00">
+        <routeDistribution last="0">
+            <route cost="54.91" probability="1.00000000" edges="23 22 21 62 -4 -24 -76 -78#0 -78#1 -79 -80 47"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="WH94501_1087" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="234.80249999999998"/>
+    </vType>
+    <vehicle id="262" type="WH94501_1087" depart="262.00">
+        <routeDistribution last="0">
+            <route cost="135.12" probability="1.00000000" edges="23 22 21 20 19 18 17 -74 -59 42"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="C218E30DETC-Z5010-3_972" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="279.08"/>
+    </vType>
+    <vehicle id="263" type="C218E30DETC-Z5010-3_972" depart="263.00">
+        <routeDistribution last="0">
+            <route cost="14.97" probability="1.00000000" edges="77 -31"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="LXEVP084_875" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="392.5390020590909"/>
+    </vType>
+    <vehicle id="264" type="LXEVP084_875" depart="264.00">
+        <routeDistribution last="0">
+            <route cost="90.96" probability="1.00000000" edges="-10 -11 15 -28 -29 1 -41 -18 28 -25"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="265" type="veh_351_00031_10_1403" depart="265.00">
+        <routeDistribution last="0">
+            <route cost="70.69" probability="1.00000000" edges="-22 -23 4 3 19 28"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="266" type="AM2N0GF11A1_796" depart="266.00">
+        <routeDistribution last="0">
+            <route cost="55.07" probability="1.00000000" edges="15 -28 18 -42 -43 -8 34 -36"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="T891600_1092" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="236.52765706666665"/>
+    </vType>
+    <vehicle id="267" type="T891600_1092" depart="267.00">
+        <routeDistribution last="0">
+            <route cost="11.20" probability="1.00000000" edges="30 -10 46"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="UB2R6AU11A1_788" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="208.5119025291667"/>
+    </vType>
+    <vehicle id="268" type="UB2R6AU11A1_788" depart="268.00">
+        <routeDistribution last="0">
+            <route cost="47.01" probability="1.00000000" edges="-28 -29 -2 19"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="X166E30DETC-Z5018-1_1015" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="470.3475"/>
+    </vType>
+    <vehicle id="269" type="X166E30DETC-Z5018-1_1015" depart="269.00">
+        <routeDistribution last="0">
+            <route cost="56.87" probability="1.00000000" edges="42 -18 28 -25 -61 -62 -21"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="L2FFF1237_431" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="221.21946285714284"/>
+    </vType>
+    <vehicle id="270" type="L2FFF1237_431" depart="270.00">
+        <routeDistribution last="0">
+            <route cost="4.20" probability="1.00000000" edges="51 50#1 50#0 49 80 79 78#1"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="271" type="HKE589_1183" depart="271.00">
+        <routeDistribution last="0">
+            <route cost="66.69" probability="1.00000000" edges="-20 62 61 -13 -14 -10"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="ECFE-981GTS-MT-15_1239" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="283.11375"/>
+    </vType>
+    <vehicle id="272" type="ECFE-981GTS-MT-15_1239" depart="272.00">
+        <routeDistribution last="0">
+            <route cost="64.14" probability="1.00000000" edges="-50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0 49 47 66 65 -0 -1 29"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="273" type="AWE318_1172" depart="273.00">
+        <routeDistribution last="0">
+            <route cost="131.02" probability="1.00000000" edges="78#0 77 30 -10 -11 15 -28 -29 1 0 -65"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EE9S1A_8" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="217.68601855"/>
+    </vType>
+    <vehicle id="274" type="EE9S1A_8" depart="274.00">
+        <routeDistribution last="0">
+            <route cost="114.03" probability="1.00000000" edges="33 31 30 -10 -11 15 -28 -29 1 -41 -18"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="ER317196_495" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="149.1976456"/>
+    </vType>
+    <vehicle id="275" type="ER317196_495" depart="275.00">
+        <routeDistribution last="0">
+            <route cost="41.67" probability="1.00000000" edges="3 -20 62 -44 21"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="276" type="HSB052_697" depart="276.00">
+        <routeDistribution last="0">
+            <route cost="68.17" probability="1.00000000" edges="-2 -3 61 -13 -14 -10 46"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="277" type="AM71-2.5-C-947_918" depart="277.00">
+        <routeDistribution last="0">
+            <route cost="109.64" probability="1.00000000" edges="61 -13 -14 -10 -11 15 -28 -29 -2 19"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="278" type="EFLA1C_573" depart="278.00">
+        <routeDistribution last="0">
+            <route cost="60.08" probability="1.00000000" edges="-21 -22 -23 -24 30 -10 46 8"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3949HN8000_220" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="320.76916666666665"/>
+    </vType>
+    <vehicle id="279" type="veh_3949HN8000_220" depart="279.00">
+        <routeDistribution last="0">
+            <route cost="74.13" probability="1.00000000" edges="47 -67 -68 -69 -24 -31 -58"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_1EYV2610_315" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="361.90801886986304"/>
+    </vType>
+    <vehicle id="280" type="veh_1EYV2610_315" depart="280.00">
+        <routeDistribution last="0">
+            <route cost="46.27" probability="1.00000000" edges="-68 -69 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="281" type="veh_351_00031_10_1403" depart="281.00">
+        <routeDistribution last="0">
+            <route cost="7.88" probability="1.00000000" edges="-79 -80 -48 -50#0 -50#1 -51 -52"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EFR71C_588" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="191.27833333333334"/>
+    </vType>
+    <vehicle id="282" type="EFR71C_588" depart="282.00">
+        <routeDistribution last="0">
+            <route cost="55.15" probability="1.00000000" edges="61 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3A91004_1094" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="230.91880180625"/>
+    </vType>
+    <vehicle id="283" type="veh_3A91004_1094" depart="283.00">
+        <routeDistribution last="0">
+            <route cost="98.39" probability="1.00000000" edges="-20 62 61 -13 -14 -10 46 8 7 6 -66 -47 80 79 78#1 78#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_53XECSE012_337" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="380.78000000000003"/>
+    </vType>
+    <vehicle id="284" type="veh_53XECSE012_337" depart="284.00">
+        <routeDistribution last="0">
+            <route cost="63.75" probability="1.00000000" edges="22 21 62 -4 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_3518W16997_280" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="290.4595"/>
+    </vType>
+    <vehicle id="285" type="veh_3518W16997_280" depart="285.00">
+        <routeDistribution last="0">
+            <route cost="124.50" probability="1.00000000" edges="31 30 -10 -11 -36 -38 -12 -13 16 -30 -31 -58 -69"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EM103803_483" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="189.65333333333334"/>
+    </vType>
+    <vehicle id="286" type="EM103803_483" depart="286.00">
+        <routeDistribution last="0">
+            <route cost="67.21" probability="1.00000000" edges="4 61 -13 -14 -10 46 8 7 6 -66 -47 80 79 78#1"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="287" type="veh_221941181_269" depart="287.00">
+        <routeDistribution last="0">
+            <route cost="85.88" probability="1.00000000" edges="-43 -8 34 -36 -38 -12 -13 16 -30 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_14X70057EX_317" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="211.33598569444445"/>
+    </vType>
+    <vehicle id="288" type="veh_14X70057EX_317" depart="288.00">
+        <routeDistribution last="0">
+            <route cost="63.30" probability="1.00000000" edges="-81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 -31 -58 -69 -24 -76"/>
+        </routeDistribution>
+    </vehicle>
+    <vehicle id="289" type="UB3R6AU15A1_792" depart="289.00">
+        <routeDistribution last="0">
+            <route cost="11.50" probability="1.00000000" edges="-69 4"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="AM71-3.0-L-996_452" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="306.20075"/>
+    </vType>
+    <vehicle id="290" type="AM71-3.0-L-996_452" depart="290.00">
+        <routeDistribution last="0">
+            <route cost="97.91" probability="1.00000000" edges="-43 -8 34 -36 -38 -12 -13 16 -30 24 23 22 21 62"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="EAL81A_13" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="309.28"/>
+    </vType>
+    <vehicle id="291" type="EAL81A_13" depart="291.00">
+        <routeDistribution last="0">
+            <route cost="79.48" probability="1.00000000" edges="52 51 50#1 50#0 49 80 79 78#1 78#0 77 30 -10 -11 15 -28 -19"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="VW416_8-0217_09_53" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="327.813493625"/>
+    </vType>
+    <vehicle id="292" type="VW416_8-0217_09_53" depart="292.00">
+        <routeDistribution last="0">
+            <route cost="131.66" probability="1.00000000" edges="67 -47 80 79 78#1 78#0 77 30 -10 -11 15 -28 -29 1 -41"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="D416003_116" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="232.96393646111108"/>
+    </vType>
+    <vehicle id="293" type="D416003_116" depart="293.00">
+        <routeDistribution last="0">
+            <route cost="60.31" probability="1.00000000" edges="-74 -59 42 -18 -19 2"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_146GRE2000_258" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="255.49720000000002"/>
+    </vType>
+    <vehicle id="294" type="veh_146GRE2000_258" depart="294.00">
+        <routeDistribution last="0">
+            <route cost="39.45" probability="1.00000000" edges="-61 -4 -24 30 -10 -11"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="HTF3FUP109A_782" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="170.8097"/>
+    </vType>
+    <vehicle id="295" type="HTF3FUP109A_782" depart="295.00">
+        <routeDistribution last="0">
+            <route cost="50.57" probability="1.00000000" edges="62 -44 21 20 -3"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_6ECPEG1-024_904" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="215.927673175"/>
+    </vType>
+    <vehicle id="296" type="veh_6ECPEG1-024_904" depart="296.00">
+        <routeDistribution last="0">
+            <route cost="53.75" probability="1.00000000" edges="-32 -68 -69 -24 -76 -78#0 -78#1 -79 -80 -48 -50#0 -50#1 -51 -52 -81 -60 52 51 50#1 50#0"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="DC91-2.0-J-268_500" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="175.482"/>
+    </vType>
+    <vehicle id="297" type="DC91-2.0-J-268_500" depart="297.00">
+        <routeDistribution last="0">
+            <route cost="74.06" probability="1.00000000" edges="-52 -81 -60 52 51 50#1 50#0 49 80 79 78#1 78#0 77 24 69 68 67"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="TD1F0GU13A1_773" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="241.19400000000002"/>
+    </vType>
+    <vehicle id="298" type="TD1F0GU13A1_773" depart="298.00">
+        <routeDistribution last="0">
+            <route cost="25.52" probability="1.00000000" edges="31 24 4 -44"/>
+        </routeDistribution>
+    </vehicle>
+    <vType id="veh_2B30701_1093" length="5.00" maxSpeed="33.00" vClass="passenger" emissionClass="HBEFA3/PC_G_EU4">
+        <param key="customCO2" value="224.7821052631579"/>
+    </vType>
+    <vehicle id="299" type="veh_2B30701_1093" depart="299.00">
+        <routeDistribution last="0">
+            <route cost="124.81" probability="1.00000000" edges="-1 29 28 -25 -38 -12 -13 -14 -10 46 8 7 6 -66 -47 80 79 78#1 78#0 77"/>
+        </routeDistribution>
+    </vehicle>
+</routes>
