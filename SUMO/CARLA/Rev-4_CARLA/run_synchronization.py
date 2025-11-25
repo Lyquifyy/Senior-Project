@@ -277,7 +277,7 @@ def synchronization_loop(args):
 def generate_trips_if_needed(args):
     
     # Generate trips using trip_generator before starting co-simulation.
-    #This is called automatically if the traffic control plugin is enabled.
+    # This is called automatically if the traffic control plugin is enabled.
     if not TRAFFIC_CONTROL_AVAILABLE or not args.enable_traffic_control:
         return
     
