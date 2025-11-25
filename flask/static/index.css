@@ -1,0 +1,237 @@
+/* ============================
+   Global Styles
+============================ */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #1e1e1e;
+    color: #f1f1f1;
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+/* ============================
+   Dashboard Container
+============================ */
+.dashboard-container {
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+
+.dashboard-header {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.dashboard-header h1 {
+    font-size: 26px;
+    letter-spacing: 1px;
+}
+
+.dashboard-header p {
+    color: #b3b3b3;
+}
+
+/* ============================
+   Grid Layout
+============================ */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+    margin-top: 25px;
+}
+
+.panel {
+    background: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #00000050;
+}
+
+.panel h2 {
+    margin-bottom: 15px;
+    color: #e6e6e6;
+}
+
+/* ============================
+   Metrics Panel
+============================ */
+.metrics-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.metric-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.metric-block i {
+    font-size: 30px;
+    color: #76c893;
+}
+
+.metric-block .value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.metric-item i {
+    font-size: 22px;
+    color: #f5c542;
+}
+
+.metric-item .value {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.metric-item .unit {
+    color: #ccc;
+}
+
+/* ============================
+   Intersection Visual Map
+============================ */
+.intersection-panel {
+    text-align: center;
+}
+
+.intersection-map {
+    width: 180px;
+    height: 180px;
+    background: #3a3a3a;
+    margin: auto;
+    border-radius: 10px;
+    position: relative;
+    border: 4px solid #222;
+}
+
+/* Lane positions */
+.approach {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.approach .car-count {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Positioning north */
+.approach.north {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column-reverse;
+}
+
+/* Positioning south */
+.approach.south {
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column;
+}
+
+/* Positioning east */
+.approach.east {
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Positioning west */
+.approach.west {
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: row-reverse;
+}
+
+/* ============================
+   Traffic Lights
+============================ */
+.traffic-light {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #444;
+    box-shadow: 0 0 5px #000 inset;
+    transition: 0.3s ease;
+}
+
+/* Light colors */
+.red {
+    background: #ff4a4a;
+    box-shadow: 0 0 10px #ff4a4a;
+}
+
+.green {
+    background: #4dff4d;
+    box-shadow: 0 0 10px #4dff4d;
+}
+
+.yellow {
+    background: #ffee58;
+    box-shadow: 0 0 10px #ffee58;
+}
+
+/* ============================
+   Trends / Charts Panel
+============================ */
+.trends-panel {
+    grid-column: span 3;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.refresh-icon {
+    font-size: 20px;
+    color: #bbb;
+    cursor: pointer;
+}
+
+.chart-container {
+    width: 100%;
+    height: 180px;
+    background: #333;
+    border-radius: 10px;
+    margin: 10px 0 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa;
+}
+
+/* ============================
+   Responsive (Mobile)
+============================ */
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .trends-panel {
+        grid-column: span 1;
+    }
+}

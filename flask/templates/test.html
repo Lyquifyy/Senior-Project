@@ -1,8 +1,96 @@
-<html>
-    <head>
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        <h1>Hello {{ username }}</h1>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Smart Intersection Monitor</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+   <div class="dashboard-container">
+       <header class="dashboard-header">
+           <h1>SMART INTERSECTION MONITOR</h1>
+           <p>Intersection: 143rd St. & Kellogg</p>
+       </header>
+
+
+       <main class="dashboard-grid">
+          
+           <!-- Real-time Metrics -->
+           <section class="panel metrics-panel">
+               <h2>Real-time Metrics</h2>
+
+
+               <div class="metric-block co2-emitted">
+                   <i class="fas fa-leaf"></i>
+                   <span class="value" id="co2Value">--</span>
+                   <span class="unit">kg</span>
+               </div>
+
+
+               <div class="metric-item">
+                   <i class="fas fa-clock"></i>
+                   <span>AVG. WAIT TIME:</span>
+                   <span class="value highlight" id="waitValue">--</span>
+                   <span class="unit">min</span>
+               </div>
+           </section>
+
+
+           <!-- Intersection Overview -->
+           <section class="panel intersection-panel">
+               <h2>Intersection Overview</h2>
+               <div class="intersection-map">
+                   <div class="approach north">
+                       <span class="car-count" id="countNorth">--</span>
+                       <div class="traffic-light" id="lightNorth"></div>
+                   </div>
+                   <div class="approach south">
+                       <span class="car-count" id="countSouth">--</span>
+                       <div class="traffic-light" id="lightSouth"></div>
+                   </div>
+                   <div class="approach east">
+                       <div class="traffic-light" id="lightEast"></div>
+                       <span class="car-count" id="countEast">--</span>
+                   </div>
+                   <div class="approach west">
+                       <div class="traffic-light" id="lightWest"></div>
+                       <span class="car-count" id="countWest">--</span>
+                   </div>
+               </div>
+           </section>
+
+
+           <!-- Trends Section -->
+           <section class="panel trends-panel">
+               <div class="panel-header">
+                   <h2>Trends & History</h2>
+                   <i class="fas fa-redo-alt refresh-icon"></i>
+               </div>
+
+
+               <h3>CO2 Emissions (Last 24h)</h3>
+               <div class="chart-container" id="co2Chart">
+                   <p>Line graph showing CO2 emissions trend.</p>
+               </div>
+
+
+               <h3>Avg. Wait Time (Last 24h)</h3>
+               <div class="chart-container" id="waitChart">
+                   <p>Line graph showing wait time trend.</p>
+               </div>
+           </section>
+
+
+       </main>
+   </div>
+  
+   <script src="{{ url_for('static', filename='index.js') }}"></script>
+   <!-- <script>
+       document.addEventListener("DOMContentLoaded", initializeStaticDashboard);
+   </script> -->
+</body>
 </html>
+
+
