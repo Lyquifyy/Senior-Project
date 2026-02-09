@@ -1,18 +1,43 @@
-This is a basic flask python script which can be expanded however it is needed.
+# Traffic Simulation Dashboard
 
-1. Download dependencies (Assuming you have python/pip installed).
+Flask-based web dashboard for visualizing traffic simulation data: emissions, lane occupancy, traffic light states, and vehicle counts.
 
-On Windows
+## Project Structure
+
+| File/Folder | Description |
+|-------------|-------------|
+| `test.py` | Flask app (routes, `SIMULATION_DATA`, `process_data`) |
+| `templates/test.html` | Main dashboard template |
+| `static/index.css` | Styles |
+| `static/index.js` | Frontend logic |
+
+## Data Flow
+
+The dashboard reads simulation data (currently from `SIMULATION_DATA` in `test.py`). In production, this can be wired to live SUMO emission output or the `emissionData/*.json` files from the SUMO simulation.
+
+## Setup
+
+### Dependencies
+
+**Windows:**
 ```bash
 pip install flask
 ```
 
-On Kali Linux (This most likely is only for me)
+**Linux (e.g., Kali):**
 ```bash
 pipx install flask
 ```
 
-2. Run the python script by using the following.
+### Run
+
 ```bash
 python test.py
 ```
+
+Then open `http://127.0.0.1:5000` in a browser.
+
+## Routes
+
+- `GET /` — Dashboard (HTML)
+- `GET /get` — JSON data (CO₂, cars per direction, light states)
