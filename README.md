@@ -27,6 +27,8 @@ This repository contains:
 2. **SUMO** — See [SUMO/README.md](SUMO/README.md) for running traffic simulations
 3. **Dashboard** — See [flask/README.md](flask/README.md) for running the web app
 
+**Dev container (SUMO + CARLA client):** Open the project in VS Code/Cursor and use **Reopen in Container**. See [.devcontainer/README.md](.devcontainer/README.md) for running SUMO and optional CARLA co-simulation in a local container environment.
+
 ## Prerequisites
 
 - Python 3.x
