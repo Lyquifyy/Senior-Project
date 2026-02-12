@@ -1,0 +1,130 @@
+:root {
+    --bg-dark: #0f111a;
+    --bg-side: #161925;
+    --border: #2a2e3f;
+    --text: #d1d5db;
+    --accent: #3b82f6;
+    --red: #ef4444;
+    --green: #10b981;
+    --yellow: #f59e0b;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg-dark);
+    font-family: 'Segoe UI', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+}
+
+.app-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: 100vh;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    background: var(--bg-side);
+    border-right: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.brand-header h2 {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin: 0;
+}
+
+.status-box {
+    background: #1f2335;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.status-row .label { color: #6b7280; font-size: 0.8rem; }
+.value.offline { color: var(--red); }
+.value.online { color: var(--green); }
+
+.metric-card {
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 0;
+}
+
+.metric-card label { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; }
+.val-group { font-size: 1.8rem; font-weight: bold; margin-top: 0.5rem; }
+.val-group small { font-size: 0.9rem; margin-left: 5px; color: #4b5563; }
+
+/* Main Content & Map */
+.main-content {
+    display: grid;
+    grid-template-rows: 1fr 180px;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.intersection-viewport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #111421;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.map-grid {
+    display: grid;
+    grid-template-columns: 140px 140px 140px;
+    grid-template-rows: 140px 140px 140px;
+    gap: 10px;
+}
+
+.junction-core {
+    grid-column: 2; grid-row: 2;
+    background: #2d334a;
+    border: 2px solid #3f4766;
+}
+
+.arm { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.north { grid-column: 2; grid-row: 1; flex-direction: column; }
+.south { grid-column: 2; grid-row: 3; flex-direction: column-reverse; }
+.east { grid-column: 3; grid-row: 2; flex-direction: row-reverse; }
+.west { grid-column: 1; grid-row: 2; }
+
+/* Traffic Lights */
+.signal-housing {
+    background: #000;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.signal-housing.horizontal { flex-direction: row; }
+
+.light { width: 12px; height: 12px; border-radius: 50%; background: #222; }
+.light.red.active { background: var(--red); box-shadow: 0 0 8px var(--red); }
+.light.yellow.active { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+.light.green.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+.counter { font-size: 1.5rem; font-weight: bold; }
+
+.chart-tray {
+    background: var(--bg-side);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+#co2Canvas { width: 100%; height: 100%; }

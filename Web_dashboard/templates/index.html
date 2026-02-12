@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUMO Web Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand-header">
+                <h2>SUMO MONITOR</h2>
+            </div>
+            
+            <div class="status-box">
+                <div class="status-row">
+                    <span class="label">Status</span>
+                    <span id="statusText" class="value offline">Disconnected</span>
+                </div>
+                <div class="status-row">
+                    <span class="label">Step</span>
+                    <span id="simStep" class="value">0</span>
+                </div>
+            </div>
+
+            <div class="metrics-list">
+                <div class="metric-card">
+                    <label>CO₂ Emissions</label>
+                    <div class="val-group">
+                        <span id="co2Value">0.00</span><small>kg</small>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <label>Avg Wait Time</label>
+                    <div class="val-group">
+                        <span id="waitValue">0.0</span><small>s</small>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <label>Total Vehicles</label>
+                    <div id="totalVehicles" class="val-group">0</div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="intersection-viewport">
+                <div class="map-grid">
+                    <div class="arm north">
+                        <div class="signal-housing" id="lightNorth">
+                            <div class="light red"></div>
+                            <div class="light yellow"></div>
+                            <div class="light green"></div>
+                        </div>
+                        <div class="counter" id="countNorth">0</div>
+                    </div>
+
+                    <div class="arm west">
+                        <div class="counter" id="countWest">0</div>
+                        <div class="signal-housing horizontal" id="lightWest">
+                            <div class="light red"></div>
+                            <div class="light yellow"></div>
+                            <div class="light green"></div>
+                        </div>
+                    </div>
+
+                    <div class="junction-core">
+                        <div class="road-markings"></div>
+                    </div>
+
+                    <div class="arm east">
+                        <div class="signal-housing horizontal" id="lightEast">
+                            <div class="light red"></div>
+                            <div class="light yellow"></div>
+                            <div class="light green"></div>
+                        </div>
+                        <div class="counter" id="countEast">0</div>
+                    </div>
+
+                    <div class="arm south">
+                        <div class="counter" id="countSouth">0</div>
+                        <div class="signal-housing" id="lightSouth">
+                            <div class="light red"></div>
+                            <div class="light yellow"></div>
+                            <div class="light green"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-tray">
+                <canvas id="co2Canvas"></canvas>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+</html>
