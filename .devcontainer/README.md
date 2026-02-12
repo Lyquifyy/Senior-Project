@@ -1,5 +1,15 @@
 # Dev Container – SUMO / CARLA
 
+## Prerequisites
+
+You must have **Docker** installed and running before using this dev container.
+
+- **Install Docker:** [Get Docker](https://www.docker.com/get-started/) (Docker Desktop on Windows/macOS, or Docker Engine on Linux).
+- **Verify:** In a terminal, run `docker --version` and `docker run hello-world` to confirm Docker is working.
+- **VS Code / Cursor:** Install the **Dev Containers** extension (`ms-vscode-remote.remote-containers`) so you can reopen the project in a container.
+
+---
+
 This dev container gives you a **local environment** to run:
 
 - **SUMO** traffic simulation (Rev-4, Rev-5, TraCI) with traffic control and emissions

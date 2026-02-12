@@ -27,10 +27,11 @@ This repository contains:
 2. **SUMO** — See [SUMO/README.md](SUMO/README.md) for running traffic simulations
 3. **Dashboard** — See [flask/README.md](flask/README.md) for running the web app
 
-**Dev container (SUMO + CARLA client):** Open the project in VS Code/Cursor and use **Reopen in Container**. See [.devcontainer/README.md](.devcontainer/README.md) for running SUMO and optional CARLA co-simulation in a local container environment.
+**Dev container (SUMO + CARLA client):** Requires **Docker** and the Dev Containers extension. Open the project in VS Code/Cursor and use **Reopen in Container**. See [.devcontainer/README.md](.devcontainer/README.md) for setup and running SUMO/CARLA in a local container.
 
 ## Prerequisites
 
+- **Docker** — Required for the dev container (SUMO/CARLA local environment). Install from [docker.com](https://www.docker.com/get-started/) and ensure Docker is running before reopening in container.
 - Python 3.x
 - SUMO (Simulation of Urban MObility)
 - MATLAB (for vehicle classification model)

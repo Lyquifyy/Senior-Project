@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-11-24 22:17:32.863455 by randomTrips.py v1_24_0+0000-b72eb3fabc8
+<!-- generated on 2025-11-25 18:04:09.292792 by randomTrips.py v1_24_0+0000-b72eb3fabc8
 <configuration>
     <net-file value="C:\Users\Zander Erwin\Documents\Projects\Senior-Project\SUMO\Rev-4\Town03.net.xml"/>
     <output-trip-file value="C:\Users\Zander Erwin\Documents\Projects\Senior-Project\SUMO\Rev-4\random.trips.xml"/>
