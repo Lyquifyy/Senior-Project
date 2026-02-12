@@ -4,15 +4,17 @@ import threading
 import json
 import os
 import time
+from dotenv import load_dotenv, dotenv_values 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '*********'
+load_dotenv()
+app.config['SECRET_KEY'] = os.getenv("SEC_KEY")
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Path to SUMO emission data (adjust based on your folder structure)
 EMISSION_DATA_PATH = os.path.join('..', 'sumo', 'emissionData')
 
-# Global variable to store latest simulation data
+#Variable to store latest simulation data
 latest_data = {
     "step": 0,
     "intersection": "238",
@@ -89,14 +91,14 @@ def watch_emission_files():
     """Monitor emissionData directory for new files"""
     last_step = -1
     # Path to emission Data may defer for Windows
-    EMISSION_DATA_PATH = "/SUMO/REV-4/emissionData" 
+    EMISSION_DATA_PATH = ".../Senior-Project/SUMO/Rev-5/emissionData" 
 
     print(f"Watching for emission files in: {os.path.abspath(EMISSION_DATA_PATH)}")
     
     while True:
         try:
             if not os.path.exists(EMISSION_DATA_PATH):
-                print(f"Waiting for {EMISSION_DATA_PATH} to be created...")
+                print(f"Waiting for {EMISSION_DATA_PATH} to be created")
                 time.sleep(2)
                 continue
             
@@ -130,7 +132,7 @@ def watch_emission_files():
                 socketio.emit('simulation_update', processed)
                 
                 last_step = step_num
-                print(f"✓ Broadcasted step {step_num} to dashboard")
+                print(f"Broadcasted step {step_num} to dashboard")
         
         except Exception as e:
             print(f"Error watching files: {e}")
@@ -153,14 +155,14 @@ def get_data():
 @socketio.on('connect')
 def handle_connect():
     """Send current data when client connects"""
-    print('✓ Client connected')
+    print('Client connected')
     with data_lock:
         emit('simulation_update', latest_data)
 
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    print('✗ Client disconnected')
+    print('Client disconnected')
 
 
 if __name__ == '__main__':
