@@ -1,0 +1,7 @@
+# Web dashboard
+flask>=2.0
+
+# CARLA Python client (for SUMO–CARLA co-simulation; CARLA server runs separately)
+carla>=0.9.14
+
+# traci/sumolib come from SUMO (set SUMO_HOME and add $SUMO_HOME/tools to PYTHONPATH)
