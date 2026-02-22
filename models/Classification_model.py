@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 # ============================================
 # CONFIGURATION - UPDATE THESE PATHS
 # ============================================
-IMAGE_FOLDER = "C:/Users/clair/Senior-Project/models/BITVehicle"  # Current folder, or path to your images
+IMAGE_FOLDER = "C:/Users/clair/Downloads/BITVehicle"  # Current folder, or path to your images
 LABEL_FILE = "VehicleInfo.xlsx"  # Or 'labels.csv', 'labels.xlsx'
 IMG_SIZE = 224  # Standard size for transfer learning
 BATCH_SIZE = 32

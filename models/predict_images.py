@@ -20,7 +20,7 @@ from tensorflow.keras.layers import Layer
 #     safe_mode=False
 # )
 #for keras saved model
-model = tf.keras.models.load_model('bitvehicle_best2.keras')
+model = tf.keras.models.load_model('bitvehicle_classifier2.keras')
 
 with open('class_names.json', 'r') as f:
     class_names = json.load(f)
@@ -47,7 +47,7 @@ def predict_image(image_path):
     return class_names[predicted_index], confidence
 
 if __name__ == "__main__":
-    image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0000467.jpg" # change to your image
+    image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0000011.jpg" # change to your image
     label, confidence = predict_image(image_path)
 
     print(f"Prediction: {label}")
