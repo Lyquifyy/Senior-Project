@@ -7,9 +7,17 @@ import time
 from dotenv import load_dotenv, dotenv_values 
 
 app = Flask(__name__)
+
 load_dotenv()
-app.config['SECRET_KEY'] = os.getenv("SEC_KEY")
-socketio = SocketIO(app, cors_allowed_origins="*")
+
+secret_key = os.getenv("SEC_KEY")
+if secret_key is None:
+    raise RuntimeError("SEC_KEY must be set in the environment or .env file.")
+
+app.config['SECRET_KEY'] = secret_key
+
+socketio = SocketIO(app, cors_allowed_origins=["http://127.0.0.1:5000", "http://192.168.1.110:5000"])
+
 
 # Path to SUMO emission data (adjust based on your folder structure)
 EMISSION_DATA_PATH = os.path.join('..', 'sumo', 'emissionData')
@@ -91,7 +99,7 @@ def watch_emission_files():
     """Monitor emissionData directory for new files"""
     last_step = -1
     # Path to emission Data may defer for Windows
-    EMISSION_DATA_PATH = ".../Senior-Project/SUMO/Rev-5/emissionData" 
+    EMISSION_DATA_PATH = "/Users/ramsesbalderas/Downloads/GitHub/Senior-Project/SUMO/Rev-5/emissionData" 
 
     print(f"Watching for emission files in: {os.path.abspath(EMISSION_DATA_PATH)}")
     
@@ -178,4 +186,4 @@ if __name__ == '__main__':
     watcher_thread.start()
     
     # Run Flask app with SocketIO
-    socketio.run(app, debug=True, use_reloader=False, host='0.0.0.0', port=5000)
+    socketio.run(app, debug=False, use_reloader=False, host='0.0.0.0', port=5000)
