@@ -35,6 +35,45 @@ class BridgeHelper(object):
     blueprint_library = []
     offset = (0, 0)
 
+    # -----------------------------------------------------------------------------------------
+    CO2_THRESHOLD = 250.0  # g/mi - matches trip_generator threshold - ASK WHY THIS VALUE WAS CHOSEN
+
+    # Heavy vehicle blueprints (larger vehicles, SUVs, performance cars, trucks)
+    HEAVY_VEHICLE_BLUEPRINTS = [
+        'vehicle.dodge.charger_2020',
+        'vehicle.dodge.charger_police_2020',
+        'vehicle.lincoln.mkz_2020',
+        'vehicle.jeep.wrangler_rubicon',
+        'vehicle.mercedes.coupe_2020',
+        'vehicle.ford.mustang',
+        'vehicle.chevrolet.impala',
+        'vehicle.nissan.patrol',
+        'vehicle.nissan.patrol_2021',
+        'vehicle.tesla.cybertruck',
+        'vehicle.carlamotors.carlacola',
+        'vehicle.mercedes.sprinter',
+        'vehicle.volkswagen.t2',
+        'vehicle.volkswagen.t2_2021',
+        'vehicle.mitsubishi.fusorosa',
+        'vehicle.carlamotors.european_hgv'
+    ]
+
+    # Light vehicle blueprints (sedans, compacts, "efficient" cars)
+    LIGHT_VEHICLE_BLUEPRINTS = [
+        'vehicle.tesla.model3',
+        'vehicle.audi.tt',
+        'vehicle.audi.a2',
+        'vehicle.audi.etron',
+        'vehicle.bmw.grandtourer',
+        'vehicle.mini.cooper_s',
+        'vehicle.mini.cooper_s_2021',
+        'vehicle.nissan.micra',
+        'vehicle.seat.leon',
+        'vehicle.toyota.prius',
+        'vehicle.citroen.c3',
+        'vehicle.micro.microlino',
+    ]
+    # ------------------------------------------------------------------------------------------
     _vtypes_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data",
                                 "vtypes.json")
     with open(_vtypes_path) as f:
@@ -99,9 +138,39 @@ class BridgeHelper(object):
     def _get_recommended_carla_blueprint(sumo_actor):
         """
         Returns an appropriate blueprint based on the given sumo actor.
-        """
-        vclass = sumo_actor.vclass.value
+        Uses customCO2 parameter if available to differentiate between heavy/light vehicles.
 
+        """
+        # Try to extract the customCO2 parameter from the sumo vtype. If it is not present, the recommended blueprint will be selected without considering CO2 emissions.
+        custom_co2 = None
+        vtype_id = sumo_actor.type_id
+        co2_str = traci.vehicletype.getParameter(vtype_id, 'customCO2')
+        if co2_str:
+            custom_co2 = float(co2_str)
+
+        else:
+            logging.warning('vtype %s does not have customCO2 parameter. Default method will be used.', vtype_id)
+
+        # If there's CO2 data, determine vehicle class based on the CO2 threshold.
+        if custom_co2 is not None:
+            if custom_co2 >= BridgeHelper.CO2_THRESHOLD:
+                # Above threshold, considered a heavy vehicle.
+                candidate_ids = BridgeHelper.HEAVY_VEHICLE_BLUEPRINTS
+            else:
+                # Below threshold, considered a light vehicle.
+                candidate_ids = BridgeHelper.LIGHT_VEHICLE_BLUEPRINTS
+
+            available_blueprints = [bp for bp in BridgeHelper.blueprint_library if bp.id in candidate_ids]
+
+            if available_blueprints:
+                return random.choice(available_blueprints)
+            else:
+                logging.warning(
+                    'No blueprints found in carla for the recommended category based on CO2 emissions. Default method will be used for vtype %s.',
+                    vtype_id)
+
+        # Fallback to original/default method.
+        vclass = sumo_actor.vclass.value
         blueprints = []
         for blueprint in BridgeHelper.blueprint_library:
             if blueprint.id in BridgeHelper._VTYPES and \
