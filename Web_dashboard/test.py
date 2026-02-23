@@ -11,8 +11,17 @@ load_dotenv()
 app.config['SECRET_KEY'] = os.getenv("SEC_KEY")
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Path to SUMO emission data (adjust based on your folder structure)
-EMISSION_DATA_PATH = os.path.join('..', 'sumo', 'emissionData')
+# Path to SUMO emission data: set SUMO_EMISSION_DATA_PATH to the scenario's emissionData dir
+# Example: SUMO_EMISSION_DATA_PATH=SUMO/Rev-4/emissionData or an absolute path
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.normpath(os.path.join(_script_dir, '..'))
+_raw_emission = os.getenv('SUMO_EMISSION_DATA_PATH')
+if _raw_emission and os.path.isabs(_raw_emission):
+    EMISSION_DATA_PATH = os.path.normpath(_raw_emission)
+elif _raw_emission:
+    EMISSION_DATA_PATH = os.path.normpath(os.path.join(_project_root, _raw_emission))
+else:
+    EMISSION_DATA_PATH = os.path.normpath(os.path.join(_project_root, 'SUMO', 'Rev-5', 'emissionData'))
 
 #Variable to store latest simulation data
 latest_data = {
@@ -88,11 +97,8 @@ def process_simulation_data(sim_data):
 
 
 def watch_emission_files():
-    """Monitor emissionData directory for new files"""
+    """Monitor emissionData directory for new files (path from SUMO_EMISSION_DATA_PATH or default)."""
     last_step = -1
-    # Path to emission Data may defer for Windows
-    EMISSION_DATA_PATH = ".../Senior-Project/SUMO/Rev-5/emissionData" 
-
     print(f"Watching for emission files in: {os.path.abspath(EMISSION_DATA_PATH)}")
     
     while True:

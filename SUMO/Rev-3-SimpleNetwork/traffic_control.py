@@ -68,4 +68,9 @@ def run():
     traci.close()
 
 if __name__ == "__main__":
-    run()
+    # Thin wrapper: use central runner. Run: python SUMO/run_simulation.py --scenario Rev-3-SimpleNetwork --mode standalone
+    import subprocess
+    import sys
+    from pathlib import Path
+    _run = Path(__file__).resolve().parent.parent / "run_simulation.py"
+    sys.exit(subprocess.run([sys.executable, str(_run), "--scenario", "Rev-3-SimpleNetwork", "--mode", "standalone"] + sys.argv[1:]).returncode)

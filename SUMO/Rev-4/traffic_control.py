@@ -192,20 +192,8 @@ def run(sumo_cmd: Optional[List[str]] = None, tls_id: str = "238") -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run SUMO traffic control simulation")
-    parser.add_argument("--sim-end", type=int, default=500, help="simulation end time for trip generation")
-    parser.add_argument("--heavy-co2", type=float, default=0.3, help="percent heavy CO2 vehicles")
-    parser.add_argument("--threshold", type=int, default=250, help="threshold used by trip generator")
-    args = parser.parse_args()
-
-    # Run trip generator beforehand (paths are relative to this module)
-    rou_file, vtypes_file = trip_generator.generate_trips(
-        csv_file=str(BASE_DIR / "cars.csv"),
-        net_file=str(BASE_DIR / "Town03.net.xml"),
-        sim_end=args.sim_end,
-        heavyCO2Percent=args.heavy_co2,
-        threshold=args.threshold,
-    )
-
-    # Run the actual simulation
-    run()
+    # Thin wrapper: use central runner. Run: python SUMO/run_simulation.py --scenario Rev-4 --mode standalone
+    import subprocess
+    import sys
+    _run = Path(__file__).resolve().parent.parent / "run_simulation.py"
+    sys.exit(subprocess.run([sys.executable, str(_run), "--scenario", "Rev-4", "--mode", "standalone"] + sys.argv[1:]).returncode)
