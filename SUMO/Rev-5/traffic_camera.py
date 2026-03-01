@@ -16,7 +16,7 @@ class TrafficLightCamera:
     Captures images of the intersection for monitoring and analysis.
     """
     
-    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=10):
+    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=20):
         """
         Initialize camera at traffic light location.
         
@@ -103,8 +103,8 @@ class TrafficLightCamera:
         camera_bp = blueprint_library.find('sensor.camera.rgb')
         
         # Configure camera
-        camera_bp.set_attribute('image_size_x', '1920')
-        camera_bp.set_attribute('image_size_y', '1080')
+        camera_bp.set_attribute('image_size_x', '640')
+        camera_bp.set_attribute('image_size_y', '480')
         camera_bp.set_attribute('fov', '90')  # Field of view
         
 
@@ -179,7 +179,7 @@ class TrafficLightCamera:
         
         try:
             # Save image to disk
-            filename = os.path.join(self.output_dir, f'frame_{image.frame:06d}.png')
+            filename = os.path.join(self.output_dir, f'frame_{image.frame:06d}.jpg')
             image.save_to_disk(filename)
             
             # Print confirmation
