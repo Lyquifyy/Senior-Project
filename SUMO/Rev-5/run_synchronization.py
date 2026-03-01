@@ -366,96 +366,11 @@ def generate_trips_if_needed(args):
 
 
 if __name__ == '__main__':
-    argparser = argparse.ArgumentParser(description=__doc__)
-    argparser.add_argument('sumo_cfg_file', type=str, help='sumo configuration file')
-    argparser.add_argument('--carla-host',
-                           metavar='H',
-                           default='127.0.0.1',
-                           help='IP of the carla host server (default: 127.0.0.1)')
-    argparser.add_argument('--carla-port',
-                           metavar='P',
-                           default=2000,
-                           type=int,
-                           help='TCP port to listen to (default: 2000)')
-    argparser.add_argument('--sumo-host',
-                           metavar='H',
-                           default=None,
-                           help='IP of the sumo host server (default: 127.0.0.1)')
-    argparser.add_argument('--sumo-port',
-                           metavar='P',
-                           default=None,
-                           type=int,
-                           help='TCP port to listen to (default: 8813)')
-    argparser.add_argument('--sumo-gui', action='store_true', help='run the gui version of sumo')
-    argparser.add_argument('--step-length',
-                           default=0.05,
-                           type=float,
-                           help='set fixed delta seconds (default: 0.05s)')
-    argparser.add_argument('--client-order',
-                           metavar='TRACI_CLIENT_ORDER',
-                           default=1,
-                           type=int,
-                           help='client order number for the co-simulation TraCI connection (default: 1)')
-    argparser.add_argument('--sync-vehicle-lights',
-                           action='store_true',
-                           help='synchronize vehicle lights state (default: False)')
-    argparser.add_argument('--sync-vehicle-color',
-                           action='store_true',
-                           help='synchronize vehicle color (default: False)')
-    argparser.add_argument('--sync-vehicle-all',
-                           action='store_true',
-                           help='synchronize all vehicle properties (default: False)')
-    argparser.add_argument('--tls-manager',
-                           type=str,
-                           choices=['none', 'sumo', 'carla'],
-                           help="select traffic light manager (default: none)",
-                           default='none')
-    
-    # ==================================================================================================
-    # -- TRAFFIC CONTROL PLUGIN ARGUMENTS ----------------------------------------------------------
-    # ==================================================================================================
-    argparser.add_argument('--enable-traffic-control',
-                           action='store_true',
-                           help='enable traffic control plugin (default: False)')
-    argparser.add_argument('--tls-id',
-                           type=str,
-                           default='238',
-                           help='traffic light ID to control (default: 238)')
-    # ==================================================================================================
-    # -- TRAFFIC CAMERA ARGUMENTS ----------------------------------------------------------
-    # ==================================================================================================
-    argparser.add_argument('--enable-camera',
-                            action='store_true',
-                            help='enable traffic light camera (default: False)')
-    argparser.add_argument('--camera-tls-id',
-                       type=str,
-                       default='70',
-                       help='Single CARLA traffic light ID for camera (e.g., 70)')
-    
-    argparser.add_argument('--camera-tls-ids',
-                            type=str,
-                            default='70',
-                            help='CARLA traffic light ID for camera position (e.g., 70, 71, 72, 73). If not specified, uses --tls-id')
-    argparser.add_argument('--camera-output-dir',
-                            type=str,
-                            default='camera_output',
-                            help='directory to save camera images (default: camera_output)')
-
-
-    # ==================================================================================================
-    argparser.add_argument('--debug', action='store_true', help='enable debug messages')
-    arguments = argparser.parse_args()
-
-    if arguments.sync_vehicle_all is True:
-        arguments.sync_vehicle_lights = True
-        arguments.sync_vehicle_color = True
-
-    if arguments.debug:
-        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-    else:
-        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
-
-    # Generate trips before starting co-simulation (if traffic control enabled)
-    generate_trips_if_needed(arguments)
-
-    synchronization_loop(arguments)
+    # Thin wrapper: use central runner. Run: python SUMO/run_simulation.py --scenario Rev-5 --mode carla [options]
+    import subprocess
+    _argv = sys.argv[1:]
+    if _argv and (_argv[0].endswith('.sumocfg') or 'Town03' in _argv[0]):
+        _argv = _argv[1:]  # drop positional sumo_cfg_file
+    _run = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'run_simulation.py')
+    _run = os.path.normpath(_run)
+    sys.exit(subprocess.run([sys.executable, _run, '--scenario', 'Rev-5', '--mode', 'carla'] + _argv).returncode)

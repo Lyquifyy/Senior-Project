@@ -1,0 +1,8 @@
+{
+  "sumocfg": "Town03.sumocfg",
+  "tls_id": "238",
+  "emission_dir": "emissionData",
+  "net_file": "Town03.net.xml",
+  "route_file": "custom.rou.xml",
+  "csv_file": "cars.csv"
+}

@@ -2,41 +2,42 @@
 
 Traffic simulation using [SUMO](https://eclipse.dev/sumo/) (Simulation of Urban MObility) with traffic light control, emission data collection, and optional CARLA co-simulation.
 
+## Central runner (recommended)
+
+All scenarios are run from one entry point. Set `SUMO_HOME` to your SUMO install, then from the project root:
+
+**Standalone SUMO:**
+```bash
+python SUMO/run_simulation.py --scenario Rev-4 --mode standalone
+python SUMO/run_simulation.py --scenario Rev-5 --mode standalone --sumo-gui
+python SUMO/run_simulation.py --scenario TraCI-Testing --mode standalone
+python SUMO/run_simulation.py --scenario Rev-3-SimpleNetwork --mode standalone
+```
+
+**CARLA co-simulation:**
+```bash
+python SUMO/run_simulation.py --scenario Rev-5 --mode carla --sumo-gui --enable-traffic-control
+python SUMO/run_simulation.py --scenario Rev-4_CARLA --mode carla --sumo-gui
+```
+
+Optional: `--sim-end`, `--heavy-co2`, `--threshold`, `--tls-id` for standalone; `--carla-host`, `--carla-port`, `--enable-camera`, etc. for carla.
+
 ## Structure
 
 | Folder | Description |
 |--------|-------------|
+| `core/` | Shared traffic control, trip generator, sumo_integration (single copy) |
 | `Rev-1/` | Initial map, routes, trips |
 | `Rev-2/` | Map with traffic lights (`tls.add.xml`) |
 | `Rev-3-SimpleNetwork/` | Simplified network for testing |
 | `Rev-4/` | Town03 map, traffic control, emission collection |
-| `Rev-5/` | Advanced: CARLA integration, traffic plugins, synchronization |
-| `CARLA/` | CARLA co-simulation (Rev-4_CARLA, Town03) |
+| `Rev-5/` | CARLA integration, traffic plugins, synchronization |
+| `CARLA/Rev-4_CARLA/` | CARLA co-simulation scenario (Town03) |
 | `TraCI-Testing/` | TraCI API testing and emission data |
+| `scenarios.json` | Maps scenario names to paths; each scenario has `scenario.json` (sumocfg, tls_id, emission_dir, etc.) |
 
-## Running Rev-4
+Per-revision `traffic_control.py` and `run_synchronization.py` are thin wrappers that invoke the central runner.
 
-1. Run the trip generator to create routes:
-   ```bash
-   python trip_generator.py
-   ```
+## Emission outputs and dashboard
 
-2. Run traffic control:
-   ```bash
-   python traffic_control.py
-   ```
-
-### What `traffic_control.py` does
-
-1. Loads and runs the `.sumocfg` file
-2. Controls a specific traffic light via `change_light_phase`
-3. Collects lane emissions via `collect_lane_emissions`
-4. Uses `trip_generator.py` for custom route generation
-
-## Rev-5
-
-Includes CARLA co-simulation, `sumo_integration/`, traffic plugins, and `run_synchronization.py`. See `Rev-5/` and `CARLA/` for details.
-
-## Emission Outputs
-
-Emission data is written to `emissionData/` as JSON files (e.g., `lane_emissions_step_*.json`). These can be consumed by the Flask dashboard for visualization.
+Emission data is written to each scenario’s `emissionData/` (e.g. `lane_emissions_step_*.json`). The Flask dashboard reads from one emission directory: set `SUMO_EMISSION_DATA_PATH` to the path to use (e.g. `SUMO/Rev-5/emissionData` or `SUMO/Rev-4/emissionData`), or leave unset to default to `SUMO/Rev-5/emissionData`.
