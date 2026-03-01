@@ -39,3 +39,15 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+# Image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.webp
+
+# Simulation outputs
+camera_output/
+emissionData/
