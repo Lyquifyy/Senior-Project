@@ -4,7 +4,8 @@ import threading
 import json
 import os
 import time
-from dotenv import load_dotenv, dotenv_values 
+from dotenv import load_dotenv, dotenv_values
+from pathlib import Path
 
 app = Flask(__name__)
 
@@ -95,13 +96,19 @@ def process_simulation_data(sim_data):
     }
 
 
+def find_root(marker="Senior-Project"):
+    for parent in Path(__file__).resolve().parents:
+        if parent.name == marker:
+            return parent
+    raise FileNotFoundError(f"Could not find root folder: {marker}")
+
+ROOT = find_root()
+EMISSION_DATA_PATH = ROOT / "SUMO" / "Rev-5" / "emissionData"
+
 def watch_emission_files():
     """Monitor emissionData directory for new files"""
     last_step = -1
-    # Path to emission Data may defer for Windows
-    EMISSION_DATA_PATH = "/Users/ramsesbalderas/Downloads/GitHub/Senior-Project/SUMO/Rev-5/emissionData" 
-
-    print(f"Watching for emission files in: {os.path.abspath(EMISSION_DATA_PATH)}")
+    print(f"Watching for emission files in: {EMISSION_DATA_PATH}")
     
     while True:
         try:
