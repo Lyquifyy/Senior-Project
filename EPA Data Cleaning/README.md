@@ -13,7 +13,7 @@ EPA vehicle test data used for vehicle classifications and emission modeling in 
 ## Raw Data
 
 - **CSV** (`Raw Data/CSV/`) — Years 2008–2016 (`08tstcar.csv` through `16tstcar.csv`)
-- **Excel** (`Raw Data/Excel/`) — Years 2017–2025 (e.g., `17tstcar-2018-05-30.xlsx`, `25-testcar-2025-05.xlsx`)
+- **Excel** (`Raw Data/Excel/`) — Years 2017–2025 (e.g., `17tstcar-2018-05-30.xlsx`, `25-testcar-2025-05.xlsx`, `ExtraEPAData_diesel.xlsx`)
 
 ## Clean Data Outputs
 
@@ -24,6 +24,8 @@ EPA vehicle test data used for vehicle classifications and emission modeling in 
 | `09to16_type_only.csv` | Vehicle type only (2009–2016) |
 | `17to25_type_only.csv` | Vehicle type only (2017–2025) |
 | `type_only_allyears.csv` | Vehicle type aggregated across all years |
+| `clean_gasoline.csv` | Vehicle type aggregated across all years for gasoline vehicles|
+| `clean_gasoline.csv` | Vehicle type aggregated across all years for diesel vehicles|
 
 ## Running the Cleaning Pipeline
 
