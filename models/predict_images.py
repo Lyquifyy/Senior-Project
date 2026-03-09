@@ -47,7 +47,7 @@ def predict_image(image_path):
     return class_names[predicted_index], confidence
 
 if __name__ == "__main__":
-    image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0000011.jpg" # change to your image
+    image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0000011.jpg" 
     label, confidence = predict_image(image_path)
 
     print(f"Prediction: {label}")

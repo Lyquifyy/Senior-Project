@@ -11,28 +11,21 @@ import warnings
 from sklearn.utils.class_weight import compute_class_weight
 warnings.filterwarnings('ignore')
 
-# ============================================
-# CONFIGURATION - UPDATE THESE PATHS
-# ============================================
-IMAGE_FOLDER = "C:/Users/clair/Downloads/BITVehicle"  # Current folder, or path to your images
-LABEL_FILE = "VehicleInfo.xlsx"  # Or 'labels.csv', 'labels.xlsx'
-IMG_SIZE = 224  # Standard size for transfer learning
+
+IMAGE_FOLDER = "C:/Users/clair/Downloads/BITVehicle" 
+LABEL_FILE = "VehicleInfo.xlsx"  
+IMG_SIZE = 224  
 BATCH_SIZE = 32
 EPOCHS = 30
 
-# ============================================
-# METHOD 1: LOAD FROM EXCEL/CSV (MOST COMMON)
-# ============================================
 
 
 
+# Load labels
 def load_from_excel():
-    #"""Use this if you have an Excel/CSV file with image names and labels"""
-    # Try different possible file names
     possible_files = ['labels.csv', 'labels.xlsx', 'VehicleInfo.csv', 'BITVehicle_labels.csv', 'VehicleInfo.csv','VehicleInfo.xlsx']
     
     for file in possible_files:
-        # ✅ FIX: Use the FULL PATH by joining with IMAGE_FOLDER
         file_path = os.path.join(IMAGE_FOLDER, file)
         
         if os.path.exists(file_path):
@@ -40,12 +33,10 @@ def load_from_excel():
             
             if file.endswith('.csv'):
                 df = pd.read_csv(file_path)
-            else:  # Excel file
+            else:  
                 df = pd.read_excel(file_path)
             
-            print(f"📊 Excel columns: {df.columns.tolist()}")
-            print(f"📊 First 2 rows:")
-            print(df.head(2))
+            print(df.head())
             
             return df
 
@@ -68,11 +59,8 @@ def load_from_excel():
     
     # return df
 
-# ============================================
-# METHOD 2: EXTRACT IMAGE NAMES FROM FOLDER
-# ============================================
+# Load images
 def load_images_from_folder(df):
-    """Load images based on filenames in dataframe"""
     images = []
     labels = []
     valid_indices = []
@@ -101,12 +89,9 @@ def load_images_from_folder(df):
     print(f"Successfully loaded {len(images)} images")
     return np.array(images), np.array(labels)
 
-# ============================================
-# BUILD THE MODEL (TRANSFER LEARNING)
-# ============================================
+# Create model based on MobileNetV2
 def create_model(num_classes):
-    """Create a model using transfer learning (MobileNetV2)"""
-    # Load pretrained MobileNetV2
+    # Load MobileNetV2
     base_model = tf.keras.applications.MobileNetV2(
         input_shape=(IMG_SIZE, IMG_SIZE, 3),
         include_top=False,
@@ -116,7 +101,7 @@ def create_model(num_classes):
     # Freeze the base model
     base_model.trainable = False
     
-    # Create new model on top
+    # Create new model
     inputs = keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     
     # Data augmentation
@@ -132,11 +117,11 @@ def create_model(num_classes):
     
     # Classification head
     x = layers.GlobalAveragePooling2D()(x)
-    x = layers.Dense(256, activation='relu')(x)      # ADD this layer!
-    x = layers.BatchNormalization()(x)               # ADD this!
+    x = layers.Dense(256, activation='relu')(x)    
+    x = layers.BatchNormalization()(x)             
     x = layers.Dropout(0.5)(x)
-    x = layers.Dense(128, activation='relu')(x)      # ADD this layer!
-    x = layers.BatchNormalization()(x)               # ADD this!
+    x = layers.Dense(128, activation='relu')(x)    
+    x = layers.BatchNormalization()(x)               
     x = layers.Dropout(0.3)(x)
     outputs = layers.Dense(num_classes, activation='softmax')(x)
     
@@ -144,15 +129,13 @@ def create_model(num_classes):
     
     return model
 
-# ============================================
-# MAIN TRAINING PIPELINE
-# ============================================
+
 def main():
     print("="*50)
     print("BIT Vehicle Dataset Training")
     print("="*50)
     
-    # 1. Load labels
+    # Load labels
     df = load_from_excel()
     print(f"\nDataset info:")
     print(f"  Total images in index: {len(df)}")
@@ -161,10 +144,10 @@ def main():
         print(f"  Classes: {df['category'].nunique()}")
         print(f"  Class distribution:\n{df['category'].value_counts()}")
     
-    # 2. Load images
+    # Load images
     X, y = load_images_from_folder(df)
     
-    # 3. Encode labels
+    # Encode labels
     le = LabelEncoder()
     y_encoded = le.fit_transform(y)
     y_categorical = tf.keras.utils.to_categorical(y_encoded)
@@ -173,7 +156,7 @@ def main():
     for i, class_name in enumerate(le.classes_):
         print(f"  {i}: {class_name}")
     
-    # 4. Split data
+    # Split data for training and testing
     X_train, X_test, y_train, y_test = train_test_split(
         X, y_categorical, 
         test_size=0.2, 
@@ -190,24 +173,19 @@ def main():
 
 
 
-
-
-    
     print(f"\nTraining set: {X_train.shape[0]} images")
     print(f"Test set: {X_test.shape[0]} images")
     
-    # 5. Create and train model
+    # Create and train model
     num_classes = len(le.classes_)
     model = create_model(num_classes)
     
-# ============================================
-# REPLACE YOUR ENTIRE model.compile() WITH THIS
-# ============================================
 
-# Create optimizer with STABLE settings
+
+# Model training optimizer
     optimizer = keras.optimizers.Adam(
-        learning_rate=0.0001,  # Fixed learning rate (not too high, not too low)
-        clipnorm=1.0           # CRITICAL: Prevents the 40% crashes!
+        learning_rate=0.0001,  
+        clipnorm=1.0           
     )
 
     # Compile model
@@ -223,14 +201,8 @@ def main():
     print("\nModel summary:")
     model.summary()
     
-    # 6. Train
+    # Train
     print("\nStarting training...")
-
-# ============================================
-# ADD THIS ENTIRE BLOCK - CALCULATE CLASS WEIGHTS
-# ============================================
-
-
 
 
 # GENTLER CLASS WEIGHTS - REPLACE your current calculation
@@ -242,7 +214,7 @@ def main():
 #     class_weights = compute_class_weight('balanced', 
 #                                          classes=np.unique(y_train_labels), y=y_train_labels)
 
-# # APPLY SQUARE ROOT - This is the key fix!
+
 #     class_weights = np.sqrt(class_weights)
 #     class_weights = class_weights / np.mean(class_weights)  # Normalize to average 1.0
 
@@ -267,10 +239,8 @@ def main():
     # class_names = ['Bus', 'Microbus', 'Minivan', 'Sedan', 'SUV', 'Truck']  # Your 6 classes
     # for i, weight in enumerate(class_weights):
     #     print(f"   {class_names[i]}: {weight:.2f}")
-# ============================================
-# CORRECT CLASS WEIGHTS DICTIONARY - USE THIS!
-# ============================================
 
+    # Define class weights
     class_weight_dict = {
         0: 2.0,  # Bus      (558 images) - RARE
         1: 1.3,  # Microbus (883 images) - MEDIUM
@@ -280,8 +250,7 @@ def main():
         5: 1.5   # Truck    (822 images) - RARE
     }
 
-# Print the weights so you can see them
-    print("\n📊 Class weights applied:")
+    print("\nClass weights applied:")
     class_names = ['Bus', 'Microbus', 'Minivan', 'Sedan', 'SUV', 'Truck']
     for i in range(6):
         print(f"   {class_names[i]}: {class_weight_dict[i]:.2f}")
@@ -290,14 +259,14 @@ def main():
 
 # Create callbacks list
     callbacks = [
-        # ✅ THIS SAVES YOUR BEST MODEL AUTOMATICALLY
+        # Save best model automatically
         ModelCheckpoint(
             'bitvehicle_best2.keras',
-            #'bitvehicle_best.h5',        # Filename to save
-            monitor='val_accuracy',      # What to monitor
-            mode='max',                 # Save when val_accuracy is highest
-            save_best_only=True,        # Only save the best epoch
-            verbose=1                  # Show when it saves
+            #'bitvehicle_best.h5',        
+            monitor='val_accuracy',      
+            mode='max',                 
+            save_best_only=True,        
+            verbose=1                  
         ),
         # EarlyStopping(
         #     monitor='val_accuracy',
@@ -306,26 +275,24 @@ def main():
         #     verbose=1
         # )
     
-    # Your other callbacks (EarlyStopping, ReduceLROnPlateau, etc.)
+
 ]
-# ============================================
-# REPLACE YOUR OLD model.fit() WITH THIS
-# ============================================
+
     history = model.fit(
         X_train, y_train,
         batch_size=BATCH_SIZE,
         epochs=EPOCHS,
         validation_data=(X_test, y_test),
-        class_weight=class_weight_dict,  # ← THIS IS THE KEY ADDITION
+        class_weight=class_weight_dict,  
         callbacks=callbacks,
         verbose=1
     )
     
-    # 7. Evaluate
+    # Evaluate accuracy
     test_loss, test_acc = model.evaluate(X_test, y_test, verbose=0)
     print(f"\nTest accuracy: {test_acc:.4f}")
     
-    # 8. Save model
+    # Save model
     model.save('bitvehicle_classifier2.keras')
     #print("\nModel saved as 'bitvehicle_classifier.h5'")
     
@@ -337,32 +304,25 @@ def main():
     
     return model, history, le
 
-# ============================================
-# PREDICT ON NEW IMAGES
-# ============================================
-def predict_image(model, class_names, image_path):
-    """Predict a single new image"""
-    img = Image.open(image_path).convert('RGB')
-    img = img.resize((IMG_SIZE, IMG_SIZE))
-    img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    
-    predictions = model.predict(img_array, verbose=0)
-    predicted_class_idx = np.argmax(predictions[0])
-    confidence = predictions[0][predicted_class_idx]
-    
-    return class_names[predicted_class_idx], confidence
 
-# ============================================
-# RUN EVERYTHING
-# ============================================
+# def predict_image(model, class_names, image_path):
+#     """Predict a single new image"""
+#     img = Image.open(image_path).convert('RGB')
+#     img = img.resize((IMG_SIZE, IMG_SIZE))
+#     img_array = np.array(img) / 255.0
+#     img_array = np.expand_dims(img_array, axis=0)
+    
+#     predictions = model.predict(img_array, verbose=0)
+#     predicted_class_idx = np.argmax(predictions[0])
+#     confidence = predictions[0][predicted_class_idx]
+    
+#     return class_names[predicted_class_idx], confidence
+
+
 if __name__ == "__main__":
     model, history, label_encoder = main()
     
-    # Example prediction (uncomment to test)
-    # class_names = label_encoder.classes_
-    # pred_class, conf = predict_image(model, class_names, 'test_image.jpg')
-    # print(f"Prediction: {pred_class} ({conf:.2%} confidence)")
+
 
 
 
