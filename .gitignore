@@ -51,3 +51,4 @@ Thumbs.db
 # Simulation outputs
 camera_output/
 emissionData/
+lane_emissions_step_*.json
