@@ -1,196 +1,170 @@
 from flask import Flask, jsonify, render_template
 from flask_socketio import SocketIO, emit
 import threading
-import json
+import queue
 import os
-import time
-from dotenv import load_dotenv, dotenv_values
-from pathlib import Path
+import traci
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
-
 load_dotenv()
 
 secret_key = os.getenv("SEC_KEY")
 if secret_key is None:
     raise RuntimeError("SEC_KEY must be set in the environment or .env file.")
 
-app.config['SECRET_KEY'] = secret_key
+app.config["SECRET_KEY"] = secret_key
 
-socketio = SocketIO(app, cors_allowed_origins=["http://127.0.0.1:5000", "http://192.168.1.110:5000"])
+socketio = SocketIO(
+    app,
+    cors_allowed_origins=["http://127.0.0.1:5000", "http://192.168.1.110:5000"],
+)
 
+TARGET_TLS = os.getenv("TARGET_TLS", "238")
 
-# Path to SUMO emission data (adjust based on your folder structure)
-EMISSION_DATA_PATH = os.path.join('..', 'sumo', 'emissionData')
-
-#Variable to store latest simulation data
-latest_data = {
-    "step": 0,
-    "intersection": "238",
-    "lanes": {},
-    "co2": 0,
-    "avg_wait_time": 0,
-    "cars": {"north": 0, "south": 0, "east": 0, "west": 0},
-    "lights": {"north": "red", "south": "red", "east": "red", "west": "red"}
+LANE_DIRECTION = {
+    "-4_3":  "north", "-4_4":  "north",
+    "-69_4": "south", "-69_3": "south",
+    "-24_3": "east",  "24_4":  "east",
+    "-23_4": "west",  "23_3":  "west",
 }
+PHASE_MAP = {
+    "G": "green", "g": "green",
+    "Y": "yellow", "y": "yellow",
+    "R": "red",    "r": "red",
+}
+sim_queue: queue.Queue = queue.Queue(maxsize=60)
 
-# Thread-safe lock
+latest_data: dict = {
+    "step":           0,
+    "intersection":   TARGET_TLS,
+    "co2":            0.0,
+    "avg_wait_time":  0.0,
+    "cars":           {"north": 0, "south": 0, "east": 0, "west": 0},
+    "lights":         {"north": "red", "south": "red", "east": "red", "west": "red"},
+    "total_vehicles": 0,
+}
 data_lock = threading.Lock()
 
-
-def process_simulation_data(sim_data):
-    """Convert raw simulation data to dashboard format"""
-    lanes = sim_data.get("lanes", {})
-    
-    # Calculate total fuel consumption
-    total_fuel = sum(
-        car.get("fuel", 0) for lane in lanes.values() for car in lane
-    )
-    
-    # Calculate total CO2 from custom values
-    total_custom_co2 = 0
+# Snapshot builder (reads live TraCI state — no file I/O)
+def _build_snapshot() -> dict:
+    cars          = {"north": 0, "south": 0, "east": 0, "west": 0}
+    total_co2     = 0.0
+    total_wait    = 0.0
     vehicle_count = 0
-    total_speed = 0
-    
-    for lane in lanes.values():
-        for car in lane:
-            vehicle_count += 1
-            if car.get("co2"):
-                try:
-                    total_custom_co2 += float(car["co2"])
-                except (ValueError, TypeError):
-                    pass
-            total_speed += car.get("speed", 0)
-    
-    # Calculate average wait time
-    stopped_vehicles = sum(
-        1 for lane in lanes.values() 
-        for car in lane 
-        if car.get("speed", 0) < 0.5
-    )
-    
-    avg_wait_time = (stopped_vehicles / max(vehicle_count, 1)) * 2.5
-    
-    # Map lanes to directions
-    lane_mapping = {
-        "north": ["-4_3", "-4_4"],
-        "south": ["-69_4", "-69_3"],
-        "east": ["-24_3", "24_4"],
-        "west": ["-23_4", "23_3"]
-    }
-    
-    cars = {
-        "north": sum(len(lanes.get(lane, [])) for lane in lane_mapping["north"]),
-        "south": sum(len(lanes.get(lane, [])) for lane in lane_mapping["south"]),
-        "east": sum(len(lanes.get(lane, [])) for lane in lane_mapping["east"]),
-        "west": sum(len(lanes.get(lane, [])) for lane in lane_mapping["west"])
-    }
-    
-    return {
-        "step": sim_data.get("step", 0),
-        "co2": round(total_custom_co2 / 1000, 2),  # Convert to kg
-        "avg_wait_time": round(avg_wait_time, 2),
-        "cars": cars,
-        "lights": sim_data.get("lights", latest_data["lights"]),
-        "total_vehicles": vehicle_count
-    }
 
-
-def find_root(marker="Senior-Project"):
-    for parent in Path(__file__).resolve().parents:
-        if parent.name == marker:
-            return parent
-    raise FileNotFoundError(f"Could not find root folder: {marker}")
-
-ROOT = find_root()
-EMISSION_DATA_PATH = ROOT / "SUMO" / "Rev-5" / "emissionData"
-
-def watch_emission_files():
-    """Monitor emissionData directory for new files"""
-    last_step = -1
-    print(f"Watching for emission files in: {EMISSION_DATA_PATH}")
-    
-    while True:
+    for lane_id, direction in LANE_DIRECTION.items():
         try:
-            if not os.path.exists(EMISSION_DATA_PATH):
-                print(f"Waiting for {EMISSION_DATA_PATH} to be created")
-                time.sleep(2)
-                continue
-            
-            # Find all emission files
-            files = [f for f in os.listdir(EMISSION_DATA_PATH) 
-                    if f.startswith("lane_emissions_step_") and f.endswith(".json")]
-            
-            if not files:
-                time.sleep(1)
-                continue
-            
-            # Get the latest file
-            files.sort(key=lambda x: int(x.split("_")[-1].replace(".json", "")))
-            latest_file = files[-1]
-            step_num = int(latest_file.split("_")[-1].replace(".json", ""))
-            
-            # Only process if it's a new step
-            if step_num > last_step:
-                file_path = os.path.join(EMISSION_DATA_PATH, latest_file)
-                with open(file_path, "r") as f:
-                    raw_data = json.load(f)
-                
-                # Process the data
-                processed = process_simulation_data(raw_data)
-                
-                # Update global data
-                with data_lock:
-                    latest_data.update(processed)
-                
-                # Emit to all connected clients
-                socketio.emit('simulation_update', processed)
-                
-                last_step = step_num
-                print(f"Broadcasted step {step_num} to dashboard")
-        
-        except Exception as e:
-            print(f"Error watching files: {e}")
-        
-        time.sleep(0.5)  # Check every 500ms
+            veh_ids = traci.lane.getLastStepVehicleIDs(lane_id)
+        except traci.exceptions.TraCIException:
+            continue
+        cars[direction] += len(veh_ids)
+        for vid in veh_ids:
+            vehicle_count += 1
+            try:
+                total_co2  += traci.vehicle.getCO2Emission(vid)
+                total_wait += traci.vehicle.getWaitingTime(vid)
+            except traci.exceptions.TraCIException:
+                pass
+
+    lights = {d: "red" for d in ("north", "south", "east", "west")}
+    try:
+        state = traci.trafficlight.getRedYellowGreenState(TARGET_TLS)
+        links = traci.trafficlight.getControlledLinks(TARGET_TLS)
+        for i, link_group in enumerate(links):
+            if i >= len(state):
+                break
+            colour = PHASE_MAP.get(state[i], "red")
+            for (from_lane, _to, _via) in link_group:
+                direction = LANE_DIRECTION.get(from_lane)
+                if direction and lights.get(direction) == "red":
+                    lights[direction] = colour
+    except traci.exceptions.TraCIException:
+        pass
+
+    return {
+        "step":           int(traci.simulation.getTime()),
+        "intersection":   TARGET_TLS,
+        "co2":            round(total_co2 / 1_000_000, 4),
+        "avg_wait_time":  round((total_wait / vehicle_count) if vehicle_count else 0.0, 2),
+        "cars":           cars,
+        "lights":         lights,
+        "total_vehicles": vehicle_count,
+    }
 
 
-@app.route('/')
+# Monkey-patch traci.simulationStep
+_original_step = traci.simulationStep
+
+def _patched_step(*args, **kwargs):
+    """Call the real simulationStep, then silently capture a snapshot."""
+    result = _original_step(*args, **kwargs)
+    try:
+        snapshot = _build_snapshot()
+        sim_queue.put_nowait(snapshot)
+    except Exception:
+        pass   # never let dashboard code crash the simulation
+    return result
+
+traci.simulationStep = _patched_step   # patch before traffic_control is imported
+
+
+import sys
+from pathlib import Path
+
+# Resolve path relative to this file: Web_dashboard/../SUMO/Rev-5
+_TC_PATH = Path(__file__).resolve().parent.parent / "SUMO" / "Rev-5"
+sys.path.insert(0, str(_TC_PATH))
+
+import traffic_control
+
+
+# Broadcaster — reads queue and pushes to all WebSocket clients
+def broadcast_loop() -> None:
+    while True:
+        data = sim_queue.get()
+        with data_lock:
+            latest_data.update(data)
+        socketio.emit("simulation_update", data)
+
+
+
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@app.route('/get', methods=['GET'])
+@app.route("/get", methods=["GET"])
 def get_data():
-    """REST endpoint for current data"""
     with data_lock:
         return jsonify(latest_data)
 
 
-@socketio.on('connect')
+@socketio.on("connect")
 def handle_connect():
-    """Send current data when client connects"""
-    print('Client connected')
+    print("Client connected")
     with data_lock:
-        emit('simulation_update', latest_data)
+        emit("simulation_update", latest_data)
 
 
-@socketio.on('disconnect')
+@socketio.on("disconnect")
 def handle_disconnect():
-    print('Client disconnected')
+    print("Client disconnected")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("=" * 60)
-    print("SMART INTERSECTION DASHBOARD SERVER")
+    print("SMART INTERSECTION DASHBOARD")
     print("=" * 60)
-    print(f"Emission data path: {os.path.abspath(EMISSION_DATA_PATH)}")
-    print(f"Server starting at: http://localhost:5000")
+    print(f"Dashboard : http://localhost:5000")
     print("=" * 60)
-    
-    # Start file watcher in background thread
-    watcher_thread = threading.Thread(target=watch_emission_files, daemon=True)
-    watcher_thread.start()
-    
-    # Run Flask app with SocketIO
-    socketio.run(app, debug=False, use_reloader=False, host='0.0.0.0', port=5000)
+
+    threading.Thread(target=broadcast_loop, daemon=True).start()
+
+    threading.Thread(
+        target=traffic_control.run_standalone,
+        daemon=True,
+    ).start()
+
+    socketio.run(app, debug=False, use_reloader=False, host="0.0.0.0", port=5000)
