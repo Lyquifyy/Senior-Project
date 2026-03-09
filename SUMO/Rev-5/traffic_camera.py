@@ -8,6 +8,8 @@ the intersection for the traffic control system.
 import carla
 import os
 import weakref
+import threading
+import queue
 
 
 class TrafficLightCamera:
@@ -16,7 +18,7 @@ class TrafficLightCamera:
     Captures images of the intersection for monitoring and analysis.
     """
     
-    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=20):
+    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=10):
         """
         Initialize camera at traffic light location.
         
@@ -32,14 +34,36 @@ class TrafficLightCamera:
         self.save_interval = save_interval
         self.camera = None
         self.target_light = None
+
+        self.save_queue = queue.Queue(maxsize=10)
+        self.save_thread = threading.Thread(target=self.save_worker, daemon=True)
+        self.save_thread.start()
         
         # Create output directory
         os.makedirs(output_dir, exist_ok=True)
         
         # Setup camera
-        self._setup_camera()
+        self.setup_camera()
+
+    def save_worker(self):
+        """Background thread to save images from the queue."""
+        while True:
+
+            item = self.save_queue.get()
+
+            if item is None:  #stops the thread
+                break
+            filename, image = item
+
+            try:
+                image.save_to_disk(filename)
+                print(f"[Camera] Saved {filename}")  # ← moved here
+
+            except Exception as e:
+                print(f"[Camera] Error saving frame to {filename}: {e}")
+            self.save_queue.task_done()
     
-    def _find_traffic_light(self):
+    def find_traffic_light(self):
         """
         Find the target traffic light in CARLA.
         Returns the first traffic light as fallback if specific ID not found.
@@ -83,10 +107,10 @@ class TrafficLightCamera:
         
         return target
     
-    def _setup_camera(self):
+    def setup_camera(self):
         """Create and attach the camera sensor."""
         # Find traffic light
-        self.target_light = self._find_traffic_light()
+        self.target_light = self.find_traffic_light()
         
         if not self.target_light:
             print("[Camera] Cannot setup camera without traffic light")
@@ -103,8 +127,8 @@ class TrafficLightCamera:
         camera_bp = blueprint_library.find('sensor.camera.rgb')
         
         # Configure camera
-        camera_bp.set_attribute('image_size_x', '640')
-        camera_bp.set_attribute('image_size_y', '480')
+        camera_bp.set_attribute('image_size_x', '1920')
+        camera_bp.set_attribute('image_size_y', '1080')
         camera_bp.set_attribute('fov', '90')  # Field of view
         
 
@@ -154,14 +178,14 @@ class TrafficLightCamera:
         weak_self = weakref.ref(self)
         
         # Attach callback to process images
-        self.camera.listen(lambda image: TrafficLightCamera._on_image(weak_self, image))
+        self.camera.listen(lambda image: TrafficLightCamera.on_image(weak_self, image))
         
         print(f"[Camera] Camera spawned at x={camera_transform.location.x:.2f}, "
               f"y={camera_transform.location.y:.2f}, z={camera_transform.location.z:.2f}")
         print(f"[Camera] Images will be saved to: {self.output_dir}/")
     
     @staticmethod
-    def _on_image(weak_self, image):
+    def on_image(weak_self, image):
         """
         Callback when camera captures an image.
         
@@ -179,20 +203,22 @@ class TrafficLightCamera:
         
         try:
             # Save image to disk
-            filename = os.path.join(self.output_dir, f'frame_{image.frame:06d}.jpg')
-            image.save_to_disk(filename)
-            
-            # Print confirmation
-            print(f"[Camera] Saved frame {image.frame}")
-        except Exception as e:
-            print(f"[Camera] Error saving frame {image.frame}: {e}")
-    
+            filename = os.path.join(self.output_dir, f'frame_{image.frame:06d}.png')
+            self.save_queue.put_nowait((filename, image)) # drops frame if queue is full
+           
+        except queue.Full:
+            print(f"[Camera] Warning: Save queue is full. Dropping frame {image.frame}")
+            pass # skip frame if queue is full to avoid sim stall
+
     def destroy(self):
         """Clean up camera sensor."""
         if self.camera is not None:
             self.camera.stop()
             self.camera.destroy()
             print("[Camera] Camera destroyed")
+        
+        self.save_queue.put(None)  # Signal thread to exit
+        self.save_thread.join(timeout=5)
     
     def get_location(self):
         """Get the camera's current location."""
