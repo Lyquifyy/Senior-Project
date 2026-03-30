@@ -3,8 +3,15 @@ from flask_socketio import SocketIO, emit
 import threading
 import queue
 import os
+import logging
 import traci
 from dotenv import load_dotenv
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 
 app = Flask(__name__)
@@ -16,10 +23,10 @@ if secret_key is None:
 
 app.config["SECRET_KEY"] = secret_key
 
-socketio = SocketIO(
-    app,
-    cors_allowed_origins=["http://127.0.0.1:5000", "http://192.168.1.110:5000"],
-)
+_cors_env = os.getenv("CORS_ORIGINS", "http://127.0.0.1:5000")
+CORS_ORIGINS: list[str] = [o.strip() for o in _cors_env.split(",") if o.strip()]
+
+socketio = SocketIO(app, cors_allowed_origins=CORS_ORIGINS)
 
 TARGET_TLS = os.getenv("TARGET_TLS", "238")
 
@@ -34,6 +41,7 @@ PHASE_MAP = {
     "Y": "yellow", "y": "yellow",
     "R": "red",    "r": "red",
 }
+COLOUR_PRIORITY = {"green": 2, "yellow": 1, "red": 0}
 sim_queue: queue.Queue = queue.Queue(maxsize=60)
 
 latest_data: dict = {
@@ -78,15 +86,16 @@ def _build_snapshot() -> dict:
             colour = PHASE_MAP.get(state[i], "red")
             for (from_lane, _to, _via) in link_group:
                 direction = LANE_DIRECTION.get(from_lane)
-                if direction and lights.get(direction) == "red":
-                    lights[direction] = colour
+                if direction:
+                    if COLOUR_PRIORITY.get(colour, 0) > COLOUR_PRIORITY.get(lights[direction], 0):
+                        lights[direction] = colour
     except traci.exceptions.TraCIException:
         pass
 
     return {
         "step":           int(traci.simulation.getTime()),
         "intersection":   TARGET_TLS,
-        "co2":            round(total_co2 / 1_000_000, 4),
+        "co2":            round(total_co2 / 1_000_000, 4),   # TraCI returns mg/s; convert to kg/s
         "avg_wait_time":  round((total_wait / vehicle_count) if vehicle_count else 0.0, 2),
         "cars":           cars,
         "lights":         lights,
@@ -104,7 +113,7 @@ def _patched_step(*args, **kwargs):
         snapshot = _build_snapshot()
         sim_queue.put_nowait(snapshot)
     except Exception:
-        pass   # never let dashboard code crash the simulation
+        logger.warning("_build_snapshot failed — snapshot dropped", exc_info=True)
     return result
 
 traci.simulationStep = _patched_step   # patch before traffic_control is imported
@@ -113,20 +122,32 @@ traci.simulationStep = _patched_step   # patch before traffic_control is importe
 import sys
 from pathlib import Path
 
-# Resolve path relative to this file: Web_dashboard/../SUMO/Rev-5
+# Resolve path relative to this file: Web_dashboard/../SUMO/Rev_5
 _TC_PATH = Path(__file__).resolve().parent.parent / "SUMO" / "Rev-5"
+if not _TC_PATH.is_dir():
+    raise RuntimeError(
+        f"traffic_control directory not found: {_TC_PATH}\n"
+        "Ensure SUMO/Rev-5/ exists relative to Web_dashboard/app.py"
+    )
 sys.path.insert(0, str(_TC_PATH))
 
 import traffic_control
 
-
 # Broadcaster — reads queue and pushes to all WebSocket clients
 def broadcast_loop() -> None:
     while True:
-        data = sim_queue.get()
-        with data_lock:
-            latest_data.update(data)
-        socketio.emit("simulation_update", data)
+        data = sim_queue.get()          # block until at least one snapshot is available
+        try:
+            while True:                 # drain any queued-up snapshots; keep only the latest
+                data = sim_queue.get_nowait()
+        except queue.Empty:
+            pass
+        try:
+            with data_lock:
+                latest_data.update(data)
+            socketio.emit("simulation_update", data)
+        except Exception:
+            logger.exception("broadcast_loop emit error — continuing")
 
 
 
@@ -143,22 +164,21 @@ def get_data():
 
 @socketio.on("connect")
 def handle_connect():
-    print("Client connected")
+    logger.info("Client connected")
     with data_lock:
         emit("simulation_update", latest_data)
 
 
 @socketio.on("disconnect")
 def handle_disconnect():
-    print("Client disconnected")
+    logger.info("Client disconnected")
 
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("SMART INTERSECTION DASHBOARD")
-    print("=" * 60)
-    print(f"Dashboard : http://localhost:5000")
-    print("=" * 60)
+    logger.info("=" * 60)
+    logger.info("SMART INTERSECTION DASHBOARD")
+    logger.info("Dashboard : http://localhost:5000")
+    logger.info("=" * 60)
 
     threading.Thread(target=broadcast_loop, daemon=True).start()
 
