@@ -238,7 +238,8 @@ def main():
         svm, scaler, label_encoder = load_models()
         
         # Predict single image
-        single_image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0000018.jpg"
+        single_image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0005009.jpg"
+        #single_image_path = "C:/Users/clair/Downloads/test_car2.jpg"
         
         if os.path.exists(single_image_path):
             predicted_class, confidence, probabilities = predict_single_image(
