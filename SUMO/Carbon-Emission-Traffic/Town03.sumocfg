@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+    <input>
+        <net-file value="../Rev-5/Town03.net.xml"/>
+        <route-files value="custom.rou.xml"/>
+    </input>
+    <output>
+        <emission-output value="emissionData/sumo_emissions.xml"/>
+        <tripinfo-output value="logs/sumo_tripinfo.xml"/>
+        <summary-output value="logs/sumo_summary.xml"/>
+    </output>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <processing>
+        <collision.action value="warn"/>
+    </processing>
+</configuration>

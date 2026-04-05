@@ -3,5 +3,7 @@
   "Rev-5": "Rev-5",
   "TraCI-Testing": "TraCI-Testing",
   "Rev-3-SimpleNetwork": "Rev-3-SimpleNetwork",
-  "Rev-4_CARLA": "CARLA/Rev-4_CARLA"
+  "Rev-4_CARLA": "CARLA/Rev-4_CARLA",
+  "Carbon-Emission-Traffic": "Carbon-Emission-Traffic",
+  "Default-Traffic": "Default-Traffic"
 }

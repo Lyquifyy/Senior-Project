@@ -1,0 +1,22 @@
+{
+  "sumocfg": "Town03.sumocfg",
+  "control_scope": "all",
+  "tls_ids": ["103", "1221", "1352", "1696", "1820", "238", "356", "498", "576", "655", "861"],
+  "emission_dir": "emissionData",
+  "telemetry_dir": "emissionData",
+  "log_dir": "logs",
+  "net_file": "../Rev-5/Town03.net.xml",
+  "csv_file": "../Rev-5/cars.csv",
+  "controller": {
+    "phase_interval": 10,
+    "emission_interval": 50,
+    "cooldown": 30,
+    "min_green": 10,
+    "weights": {
+      "queue": 0.4,
+      "wait": 0.3,
+      "co2": 0.2,
+      "fuel": 0.1
+    }
+  }
+}
