@@ -6,6 +6,7 @@
     <title>SUMO Web Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -41,6 +42,27 @@
                 <div class="metric-card">
                     <label>Total Vehicles</label>
                     <div id="totalVehicles" class="val-group">0</div>
+                </div>
+                <div class="metric-card">
+                    <label>Current Phase</label>
+                    <div class="val-group">
+                        <span id="currentPhase">-</span>
+                    </div>
+                </div>
+                <div class="metric-card class-card">
+                    <label>Vehicle Class (CO₂)</label>
+                    <div class="class-row">
+                        <div class="class-pill heavy">
+                            <span class="class-label">Heavy</span>
+                            <span id="heavyCo2">0.00</span><small>kg</small>
+                            <span class="class-count">(<span id="heavyCount">0</span>)</span>
+                        </div>
+                        <div class="class-pill light">
+                            <span class="class-label">Light</span>
+                            <span id="lightCo2">0.00</span><small>kg</small>
+                            <span class="class-count">(<span id="lightCount">0</span>)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -90,8 +112,34 @@
                 </div>
             </div>
             
+            <div class="direction-table-wrap">
+                <h3 class="section-title">Per-Direction Breakdown</h3>
+                <table class="direction-table">
+                    <thead>
+                        <tr>
+                            <th>Direction</th>
+                            <th>CO₂ (kg)</th>
+                            <th>NOx (g/s)</th>
+                            <th>Fuel (ml/s)</th>
+                            <th>Queue</th>
+                            <th>Vehicles</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="directionTableBody">
+                        <tr data-dir="north"><td>North</td><td class="c-co2">0</td><td class="c-nox">0</td><td class="c-fuel">0</td><td class="c-queue">0</td><td class="c-vehicles">0</td><td class="c-score">0</td></tr>
+                        <tr data-dir="south"><td>South</td><td class="c-co2">0</td><td class="c-nox">0</td><td class="c-fuel">0</td><td class="c-queue">0</td><td class="c-vehicles">0</td><td class="c-score">0</td></tr>
+                        <tr data-dir="east"><td>East</td><td class="c-co2">0</td><td class="c-nox">0</td><td class="c-fuel">0</td><td class="c-queue">0</td><td class="c-vehicles">0</td><td class="c-score">0</td></tr>
+                        <tr data-dir="west"><td>West</td><td class="c-co2">0</td><td class="c-nox">0</td><td class="c-fuel">0</td><td class="c-queue">0</td><td class="c-vehicles">0</td><td class="c-score">0</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="chart-tray">
-                <canvas id="co2Canvas"></canvas>
+                <div class="chart-cell"><h4>CO₂ (kg)</h4><canvas id="co2Canvas"></canvas></div>
+                <div class="chart-cell"><h4>NOx (g/s)</h4><canvas id="noxCanvas"></canvas></div>
+                <div class="chart-cell"><h4>Fuel (ml/s)</h4><canvas id="fuelCanvas"></canvas></div>
+                <div class="chart-cell"><h4>Phase timeline</h4><canvas id="phaseCanvas"></canvas></div>
             </div>
         </main>
     </div>

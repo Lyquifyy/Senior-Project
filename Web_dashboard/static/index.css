@@ -12,18 +12,19 @@
 body, html {
     margin: 0;
     padding: 0;
-    height: 100%;
+    min-height: 100%;
     background: var(--bg-dark);
     font-family: 'Segoe UI', sans-serif;
     color: var(--text);
-    overflow: hidden;
 }
 
 .app-container {
     display: grid;
     grid-template-columns: 280px 1fr;
-    height: 100vh;
+    min-height: 100vh;
 }
+
+.sidebar { overflow-y: auto; }
 
 /* Sidebar Styling */
 .sidebar {
@@ -69,11 +70,13 @@ body, html {
 
 /* Main Content & Map */
 .main-content {
-    display: grid;
-    grid-template-rows: 1fr 180px;
+    display: flex;
+    flex-direction: column;
     padding: 2rem;
-    gap: 1rem;
+    gap: 1.25rem;
 }
+
+.intersection-viewport { min-height: 460px; }
 
 .intersection-viewport {
     display: flex;
@@ -121,10 +124,96 @@ body, html {
 
 .counter { font-size: 1.5rem; font-weight: bold; }
 
-.chart-tray {
-    background: var(--bg-side);
-    border-radius: 8px;
-    padding: 1rem;
+/* Vehicle class card */
+.class-card .class-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
 }
+.class-pill {
+    flex: 1;
+    background: #1f2335;
+    border-radius: 6px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    border-left: 3px solid var(--border);
+}
+.class-pill.heavy { border-left-color: var(--red); }
+.class-pill.light { border-left-color: var(--green); }
+.class-pill .class-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: #9ca3af;
+    letter-spacing: 1px;
+}
+.class-pill span:nth-child(2) { font-size: 1.1rem; font-weight: bold; color: var(--text); }
+.class-pill small { color: #4b5563; margin-left: 3px; font-size: 0.7rem; }
+.class-pill .class-count { font-size: 0.7rem; color: #6b7280; margin-top: 2px; }
 
-#co2Canvas { width: 100%; height: 100%; }
+/* Per-direction breakdown table */
+.section-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+}
+.direction-table-wrap {
+    background: var(--bg-side);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+}
+.direction-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+.direction-table th, .direction-table td {
+    text-align: right;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+.direction-table th:first-child, .direction-table td:first-child { text-align: left; }
+.direction-table th {
+    color: #9ca3af;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+}
+.direction-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+.direction-table tbody tr:last-child td { border-bottom: none; }
+.direction-table td { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* Chart tray — 2x2 grid */
+.chart-tray {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 200px 200px;
+    gap: 1rem;
+}
+.chart-cell {
+    background: var(--bg-side);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+.chart-cell h4 {
+    margin: 0 0 0.4rem 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9ca3af;
+    font-weight: 500;
+}
+.chart-cell canvas {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100% !important;
+}

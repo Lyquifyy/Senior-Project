@@ -38,61 +38,118 @@ latest_data = {
 data_lock = threading.Lock()
 
 
+# Map SUMO lane IDs -> compass direction. Single source of truth for all
+# per-direction aggregations below.
+LANE_MAPPING = {
+    "north": ["-4_3", "-4_4"],
+    "south": ["-69_4", "-69_3"],
+    "east":  ["-24_3", "24_4"],
+    "west":  ["-23_4", "23_3"],
+}
+
+# Heavy/light classification threshold (g/mi), matches trip_generator.assign_vtypes.
+HEAVY_CO2_THRESHOLD = 250.0
+
+
+def _direction_for_lane(lane_id):
+    for direction, lanes in LANE_MAPPING.items():
+        if lane_id in lanes:
+            return direction
+    return None
+
+
 def process_simulation_data(sim_data):
-    """Convert raw simulation data to dashboard format"""
-    lanes = sim_data.get("lanes", {})
-    
-    # Calculate total fuel consumption
-    total_fuel = sum(
-        car.get("fuel", 0) for lane in lanes.values() for car in lane
-    )
-    
-    # Calculate total CO2 from custom values
-    total_custom_co2 = 0
+    """Convert raw emission snapshot into the dashboard payload.
+
+    Keeps every legacy key (step, co2, avg_wait_time, cars, lights, total_vehicles)
+    so the existing UI continues to work, and adds emissions_by_direction,
+    emissions_by_class, and algorithm blocks for the new widgets.
+    """
+    lanes = sim_data.get("lanes", {}) or {}
+
+    # Per-direction accumulators
+    by_dir = {
+        d: {"co2": 0.0, "nox": 0.0, "fuel": 0.0, "queue": 0, "vehicles": 0}
+        for d in LANE_MAPPING
+    }
+    # Per-class accumulators (heavy vs light)
+    by_class = {
+        "heavy": {"co2": 0.0, "vehicles": 0},
+        "light": {"co2": 0.0, "vehicles": 0},
+    }
+
+    total_co2 = 0.0
     vehicle_count = 0
-    total_speed = 0
-    
-    for lane in lanes.values():
-        for car in lane:
+    stopped_vehicles = 0
+
+    for lane_id, vehicles in lanes.items():
+        direction = _direction_for_lane(lane_id)
+        for car in vehicles:
             vehicle_count += 1
-            if car.get("co2"):
+            co2 = float(car.get("co2") or 0.0)
+            nox = float(car.get("nox") or 0.0)
+            fuel = float(car.get("fuel") or 0.0)
+            speed = float(car.get("speed") or 0.0)
+            total_co2 += co2
+            if speed < 0.5:
+                stopped_vehicles += 1
+            if direction is not None:
+                bucket = by_dir[direction]
+                bucket["co2"] += co2
+                bucket["nox"] += nox
+                bucket["fuel"] += fuel
+                bucket["vehicles"] += 1
+                if speed < 0.1:
+                    bucket["queue"] += 1
+
+            # Heavy vs light classification via customCO2
+            custom_co2 = car.get("customCO2")
+            if custom_co2 is not None:
                 try:
-                    total_custom_co2 += float(car["co2"])
-                except (ValueError, TypeError):
+                    cls = "heavy" if float(custom_co2) >= HEAVY_CO2_THRESHOLD else "light"
+                    by_class[cls]["co2"] += co2
+                    by_class[cls]["vehicles"] += 1
+                except (TypeError, ValueError):
                     pass
-            total_speed += car.get("speed", 0)
-    
-    # Calculate average wait time
-    stopped_vehicles = sum(
-        1 for lane in lanes.values() 
-        for car in lane 
-        if car.get("speed", 0) < 0.5
-    )
-    
+
     avg_wait_time = (stopped_vehicles / max(vehicle_count, 1)) * 2.5
-    
-    # Map lanes to directions
-    lane_mapping = {
-        "north": ["-4_3", "-4_4"],
-        "south": ["-69_4", "-69_3"],
-        "east": ["-24_3", "24_4"],
-        "west": ["-23_4", "23_3"]
+
+    # Legacy per-direction vehicle counts (used by the N/S/E/W counters on the map)
+    cars = {d: by_dir[d]["vehicles"] for d in LANE_MAPPING}
+
+    # Round floats for display
+    for bucket in by_dir.values():
+        bucket["co2"] = round(bucket["co2"] / 1000, 3)   # kg
+        bucket["nox"] = round(bucket["nox"], 3)           # g/s (per-vehicle stream)
+        bucket["fuel"] = round(bucket["fuel"], 3)         # ml/s
+    for bucket in by_class.values():
+        bucket["co2"] = round(bucket["co2"] / 1000, 3)    # kg
+
+    # Algorithm block — average per-lane scores into per-direction scores
+    algo_block = sim_data.get("algorithm") or {}
+    raw_scores = algo_block.get("scores") or {}
+    scores_by_direction = {}
+    for direction, lane_ids in LANE_MAPPING.items():
+        vals = [float(raw_scores[l]) for l in lane_ids if l in raw_scores]
+        scores_by_direction[direction] = round(sum(vals) / len(vals), 2) if vals else 0.0
+
+    algorithm = {
+        "current_phase": sim_data.get("current_phase"),
+        "chosen_phase": algo_block.get("chosen_phase"),
+        "last_decision_step": algo_block.get("last_decision_step"),
+        "scores_by_direction": scores_by_direction,
     }
-    
-    cars = {
-        "north": sum(len(lanes.get(lane, [])) for lane in lane_mapping["north"]),
-        "south": sum(len(lanes.get(lane, [])) for lane in lane_mapping["south"]),
-        "east": sum(len(lanes.get(lane, [])) for lane in lane_mapping["east"]),
-        "west": sum(len(lanes.get(lane, [])) for lane in lane_mapping["west"])
-    }
-    
+
     return {
         "step": sim_data.get("step", 0),
-        "co2": round(total_custom_co2 / 1000, 2),  # Convert to kg
+        "co2": round(total_co2 / 1000, 2),  # kg, legacy aggregate
         "avg_wait_time": round(avg_wait_time, 2),
         "cars": cars,
         "lights": sim_data.get("lights", latest_data["lights"]),
-        "total_vehicles": vehicle_count
+        "total_vehicles": vehicle_count,
+        "emissions_by_direction": by_dir,
+        "emissions_by_class": by_class,
+        "algorithm": algorithm,
     }
 
 

@@ -11,6 +11,16 @@ from typing import Dict, Optional, List, Union
 
 logger = logging.getLogger(__name__)
 
+# Cache of the most recent decide_next_phase() computation, consumed by
+# collect_lane_emissions() so the dashboard can visualize the algorithm.
+_last_decision: Dict[str, object] = {
+    "step": None,
+    "chosen_phase": None,
+    "scores": {},
+    "metrics": {},
+}
+
+
 # Phase Mapping - defines which lanes are controlled by which phase (Town03-style)
 PHASE_LANE_MAP = {
     1: {
@@ -72,28 +82,44 @@ def compute_lane_metrics(tls_id: str) -> Dict[str, Dict[str, float]]:
 
 
 def decide_next_phase(tls_id: str) -> int:
-    """Decide next phase from lane metrics (0.6*queue + 0.4*co2). Falls back to next phase."""
+    """Decide next phase from lane metrics (0.6*queue + 0.4*co2). Falls back to next phase.
+
+    Side effect: populates module-level `_last_decision` so the emission collector
+    can include the per-lane scores in its JSON snapshots.
+    """
     import traci
     current_phase = traci.trafficlight.getPhase(tls_id)
     programs = traci.trafficlight.getCompleteRedYellowGreenDefinition(tls_id)
     num_phases = len(programs[0].phases)
     default_next = (current_phase + 1) % num_phases
+    chosen = default_next
+    metrics: Dict[str, Dict[str, float]] = {}
+    scores: Dict[str, float] = {}
     if current_phase in [1, 5]:
         metrics = compute_lane_metrics(tls_id)
-        if not metrics:
-            return default_next
-        scores = {lane: 0.6 * data["queue"] + 0.4 * data["co2"] for lane, data in metrics.items()}
-        best_lane = max(scores, key=scores.get)
-        mapped_phase = map_lane_to_phase(best_lane)
-        if mapped_phase is not None:
-            return mapped_phase
-    return default_next
+        if metrics:
+            scores = {lane: 0.6 * data["queue"] + 0.4 * data["co2"] for lane, data in metrics.items()}
+            best_lane = max(scores, key=scores.get)
+            mapped_phase = map_lane_to_phase(best_lane)
+            if mapped_phase is not None:
+                chosen = mapped_phase
+    _last_decision["step"] = int(traci.simulation.getTime())
+    _last_decision["chosen_phase"] = int(chosen)
+    _last_decision["scores"] = scores
+    _last_decision["metrics"] = metrics
+    return chosen
 
 
 def collect_lane_emissions(
     tls_id: str, step: int, emission_dir: Union[str, Path]
 ) -> None:
-    """Collect emission data per lane and write JSON. emission_dir created if needed."""
+    """Collect emission data per lane and write JSON. emission_dir created if needed.
+
+    Snapshot schema (consumed by Web_dashboard/test.py):
+      - step, intersection, current_phase
+      - algorithm: last decision cached by decide_next_phase()
+      - lanes: { lane_id: [ {vehicle_id, vtype_id, customCO2, co2, nox, fuel, speed}, ... ] }
+    """
     import traci
     emission_path = Path(emission_dir)
     emission_path.mkdir(parents=True, exist_ok=True)
@@ -104,8 +130,16 @@ def collect_lane_emissions(
         lane_emissions[lane_id] = []
         for vid in veh_ids:
             try:
+                vtype_id = traci.vehicle.getTypeID(vid)
+                try:
+                    custom_co2_raw = traci.vehicletype.getParameter(vtype_id, "customCO2")
+                    custom_co2 = float(custom_co2_raw) if custom_co2_raw else None
+                except Exception:
+                    custom_co2 = None
                 data = {
                     "vehicle_id": vid,
+                    "vtype_id": vtype_id,
+                    "customCO2": custom_co2,
                     "co2": traci.vehicle.getCO2Emission(vid),
                     "nox": traci.vehicle.getNOxEmission(vid),
                     "fuel": traci.vehicle.getFuelConsumption(vid),
@@ -114,7 +148,22 @@ def collect_lane_emissions(
             except Exception:
                 data = {"vehicle_id": vid}
             lane_emissions[lane_id].append(data)
-    snapshot = {"step": step, "intersection": tls_id, "lanes": lane_emissions}
+    try:
+        current_phase = int(traci.trafficlight.getPhase(tls_id))
+    except Exception:
+        current_phase = None
+    snapshot = {
+        "step": step,
+        "intersection": tls_id,
+        "current_phase": current_phase,
+        "algorithm": {
+            "last_decision_step": _last_decision["step"],
+            "chosen_phase": _last_decision["chosen_phase"],
+            "scores": _last_decision["scores"],
+            "metrics": _last_decision["metrics"],
+        },
+        "lanes": lane_emissions,
+    }
     file_path = emission_path / f"lane_emissions_step_{step}.json"
     with file_path.open("w", encoding="utf-8") as f:
         json.dump(snapshot, f, indent=2)

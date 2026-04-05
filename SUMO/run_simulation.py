@@ -80,7 +80,7 @@ def run_standalone_mode(scenario_dir: Path, config: dict, args) -> None:
         tls_id=tls_id,
         emission_dir=str(emission_dir),
         step_interval_phase=10,
-        step_interval_emissions=50,
+        step_interval_emissions=1,
         gui_sleep=0.5,
     )
 
