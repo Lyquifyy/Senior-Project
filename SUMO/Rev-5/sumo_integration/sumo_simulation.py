@@ -243,7 +243,7 @@ class SumoTLManager(object):
         if len(states) == 1:
             return states.pop()
         elif len(states) > 1:
-            logging.warning('Landmark %s is associated with signals with different states', landmark_id)
+            # logging.warning('Landmark %s is associated with signals with different states', landmark_id)
             return SumoSignalState.RED
         else:
             return None

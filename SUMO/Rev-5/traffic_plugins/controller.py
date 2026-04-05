@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 # Add SUMO dir to path so we can import core (controller is in Rev-5/traffic_plugins/)
-_SUMO_DIR = Path(__file__).resolve().parent.parent
+_SUMO_DIR = Path(__file__).resolve().parent.parent.parent
 if str(_SUMO_DIR) not in sys.path:
     sys.path.insert(0, str(_SUMO_DIR))
 

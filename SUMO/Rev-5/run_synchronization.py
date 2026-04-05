@@ -61,6 +61,9 @@ except ImportError as e:
     CAMERA_AVAILABLE = False
     logging.warning(f"Traffic camera not available: {e}")
 
+from frame_feeder import MultiCameraFeeder
+feeder = MultiCameraFeeder() 
+
 
 
 # ==================================================================================================
@@ -277,7 +280,8 @@ def synchronization_loop(args):
             camera_ids = [int(args.camera_tls_id)]
         else:
             camera_ids = [int(args.tls_id)]
-    
+
+
         # Loop through each ID and create a camera
         for camera_id in camera_ids:
             if len(camera_ids) > 1:
@@ -290,7 +294,8 @@ def synchronization_loop(args):
                 carla_simulation.world,
                 tls_id=str(camera_id),
                 output_dir=output_dir,
-                save_interval=20
+                save_interval=20,
+                frame_callback=feeder.on_frame
             )
             traffic_cameras.append(camera)  # Add to list
         logging.info(f"Traffic camera enabled, saving to: {args.camera_output_dir}/")
@@ -304,7 +309,7 @@ def synchronization_loop(args):
             start = time.time()
 
             synchronization.tick()
-            
+
             # ==================================================================================================
             # -- TRAFFIC CONTROL PLUGIN UPDATE ---------------------------------------------------------
             # ==================================================================================================
@@ -365,12 +370,46 @@ def generate_trips_if_needed(args):
         logging.info(f"Trip generation complete. Routes: {rou_file}, VTypes: {vtypes_file}")
 
 
+# if __name__ == '__main__':
+#     # Thin wrapper: use central runner. Run: python SUMO/run_simulation.py --scenario Rev-5 --mode carla [options]
+#     import subprocess
+#     _argv = sys.argv[1:]
+#     if _argv and (_argv[0].endswith('.sumocfg') or 'Town03' in _argv[0]):
+#         _argv = _argv[1:]  # drop positional sumo_cfg_file
+#     _run = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'run_simulation.py')
+#     _run = os.path.normpath(_run)
+#     sys.exit(subprocess.run([sys.executable, _run, '--scenario', 'Rev-5', '--mode', 'carla'] + _argv).returncode)
+
 if __name__ == '__main__':
-    # Thin wrapper: use central runner. Run: python SUMO/run_simulation.py --scenario Rev-5 --mode carla [options]
-    import subprocess
-    _argv = sys.argv[1:]
-    if _argv and (_argv[0].endswith('.sumocfg') or 'Town03' in _argv[0]):
-        _argv = _argv[1:]  # drop positional sumo_cfg_file
-    _run = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'run_simulation.py')
-    _run = os.path.normpath(_run)
-    sys.exit(subprocess.run([sys.executable, _run, '--scenario', 'Rev-5', '--mode', 'carla'] + _argv).returncode)
+    argparser = argparse.ArgumentParser(description=__doc__)
+    argparser.add_argument('sumo_cfg_file', type=str, help='sumo configuration file')
+    argparser.add_argument('--carla-host', default='127.0.0.1')
+    argparser.add_argument('--carla-port', type=int, default=2000)
+    argparser.add_argument('--sumo-host', default=None)
+    argparser.add_argument('--sumo-port', type=int, default=None)
+    argparser.add_argument('--sumo-gui', action='store_true')
+    argparser.add_argument('--step-length', type=float, default=0.05)
+    argparser.add_argument('--client-order', type=int, default=1)
+    argparser.add_argument('--sync-vehicle-lights', action='store_true')
+    argparser.add_argument('--sync-vehicle-color', action='store_true')
+    argparser.add_argument('--sync-vehicle-all', action='store_true')
+    argparser.add_argument('--tls-manager', choices=['none', 'sumo', 'carla'], default='none')
+    argparser.add_argument('--enable-traffic-control', action='store_true')
+    argparser.add_argument('--tls-id', type=str, default='238')
+    argparser.add_argument('--enable-camera', action='store_true')
+    argparser.add_argument('--camera-tls-id', type=str, default='70')
+    argparser.add_argument('--camera-tls-ids', type=str, default=None)
+    argparser.add_argument('--camera-output-dir', type=str, default='camera_output')
+    argparser.add_argument('--debug', action='store_true')
+    arguments = argparser.parse_args()
+
+    if arguments.sync_vehicle_all:
+        arguments.sync_vehicle_lights = True
+        arguments.sync_vehicle_color = True
+
+    if arguments.debug:
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+    else:
+        logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
+
+    synchronization_loop(arguments)
