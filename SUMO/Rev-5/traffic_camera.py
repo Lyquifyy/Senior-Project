@@ -3,6 +3,11 @@ Traffic light camera setup for CARLA.
 
 This module creates a camera sensor at a traffic light location to monitor
 the intersection for the traffic control system.
+
+Frames are saved to disk as before. Additionally, if a frame_callback is
+provided, each qualifying frame is converted to a numpy array in memory
+and passed to the callback - allowing the model to receive frames without
+reading from disk.
 """
 
 import carla
@@ -11,14 +16,18 @@ import weakref
 import threading
 import queue
 
+import numpy as np
+
 
 class TrafficLightCamera:
     """
     Camera sensor attached to a traffic light location.
     Captures images of the intersection for monitoring and analysis.
+
+    Also accepts a frame_callback to forward frames as numpy arrays directly to the ML model.
     """
     
-    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=10):
+    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=20, frame_callback=None):
         """
         Initialize camera at traffic light location.
         
@@ -27,11 +36,14 @@ class TrafficLightCamera:
             tls_id: Traffic light ID (SUMO ID)
             output_dir: Directory to save camera images
             save_interval: Save every Nth frame (default: 10, i.e., save 1 out of 10 frames)
+            frame_callback: Optional callable that receives (tls_id, numpy_array) for each
+                            qualifying frame. Called from the background save thread.
         """
         self.world = world
         self.tls_id = tls_id
         self.output_dir = output_dir
         self.save_interval = save_interval
+        self.frame_callback = frame_callback   # None if not provided
         self.camera = None
         self.target_light = None
 
@@ -46,21 +58,38 @@ class TrafficLightCamera:
         self.setup_camera()
 
     def save_worker(self):
-        """Background thread to save images from the queue."""
+        """
+        Background thread that processes frames from the save queue.
+        For each frame it saves the image to disk and converts the CARLA image to a numpy array and calls frame_callback if provided.
+        """
         while True:
-
             item = self.save_queue.get()
 
-            if item is None:  #stops the thread
+            if item is None:    # shut down the thread
                 break
+
             filename, image = item
 
+            # Save to disk 
             try:
                 image.save_to_disk(filename)
-                print(f"[Camera] Saved {filename}")  # ← moved here
-
+                print(f"[Camera {self.tls_id}] Saved {filename}")
             except Exception as e:
-                print(f"[Camera] Error saving frame to {filename}: {e}")
+                print(f"[Camera {self.tls_id}] Error saving frame to {filename}: {e}")
+
+            # Convert to numpy and forward to callback 
+            if self.frame_callback is not None:
+                try:
+                    # CARLA raw_data is a flat BGRA byte array
+                    array = np.frombuffer(image.raw_data, dtype=np.uint8)
+                    # Reshape to (height, width, 4) - 4 channels: BGRA
+                    array = array.reshape((image.height, image.width, 4))
+                    # Drop the alpha channel → (height, width, 3) BGR
+                    array = array[:, :, :3]
+                    self.frame_callback(self.tls_id, array)
+                except Exception as e:
+                    print(f"[Camera {self.tls_id}] Error in frame_callback: {e}")
+
             self.save_queue.task_done()
     
     def find_traffic_light(self):
@@ -129,32 +158,22 @@ class TrafficLightCamera:
         # Configure camera
         camera_bp.set_attribute('image_size_x', '1920')
         camera_bp.set_attribute('image_size_y', '1080')
-        camera_bp.set_attribute('fov', '90')  # Field of view
-        
+        camera_bp.set_attribute('fov', '90')
 
-        # base_height = 20
-        # base_pitch = -40
-
-        # Optional: Rotate each camera to look toward intersection center
         yaw_adjustments = {
             70: 270,   # Camera 70 looks south
-            71: 90,   # Camera 71 looks west
-            72: 180,     # Camera 72 looks north
-            73: 0     # Camera 73 looks east
+            71: 90,    # Camera 71 looks west
+            72: 180,   # Camera 72 looks north
+            73: 0      # Camera 73 looks east
         }
-
-        # Get yaw for this camera, default to 0
         camera_yaw = yaw_adjustments.get(int(self.tls_id), 0)
 
-
-        # Position offsets for each camera
         position_offsets = {
             70: (10, 0),    # Move east
-            71: (-10, 0),    # Move north
+            71: (-10, 0),   # Move north
             72: (0, -10),   # Move west
-            73: (0, 10)    # Move south
+            73: (0, 10)     # Move south
         }
-
         offset_x, offset_y = position_offsets.get(int(self.tls_id), (10, 0))
 
         # Position camera above intersection, looking down
@@ -166,7 +185,7 @@ class TrafficLightCamera:
             ),
             carla.Rotation(
                 pitch=-30,  # Looking down at 30 degrees
-                yaw= camera_yaw,
+                yaw=camera_yaw,
                 roll=0
             )
         )
@@ -174,20 +193,21 @@ class TrafficLightCamera:
         # Spawn camera
         self.camera = self.world.spawn_actor(camera_bp, camera_transform)
         
-        # Use weak reference to avoid circular reference
         weak_self = weakref.ref(self)
-        
-        # Attach callback to process images
         self.camera.listen(lambda image: TrafficLightCamera.on_image(weak_self, image))
         
         print(f"[Camera] Camera spawned at x={camera_transform.location.x:.2f}, "
               f"y={camera_transform.location.y:.2f}, z={camera_transform.location.z:.2f}")
         print(f"[Camera] Images will be saved to: {self.output_dir}/")
+        if self.frame_callback is not None:
+            print(f"[Camera {self.tls_id}] frame_callback registered, frames will be sent to model.")
     
     @staticmethod
     def on_image(weak_self, image):
         """
-        Callback when camera captures an image.
+        Callback triggered by CARLA each time the camera captures a frame.
+        Filters by save_interval then puts the frame on the save queue.
+        The save_worker thread handles both disk saving and the model callback.
         
         Args:
             weak_self: Weak reference to TrafficLightCamera instance
@@ -197,27 +217,24 @@ class TrafficLightCamera:
         if not self:
             return
         
-        # Only save every Nth frame to reduce I/O load
+        # Only process every Nth frame to reduce load
         if image.frame % self.save_interval != 0:
             return
         
         try:
-            # Save image to disk
             filename = os.path.join(self.output_dir, f'frame_{image.frame:06d}.png')
-            self.save_queue.put_nowait((filename, image)) # drops frame if queue is full
-           
+            self.save_queue.put_nowait((filename, image))
         except queue.Full:
-            print(f"[Camera] Warning: Save queue is full. Dropping frame {image.frame}")
-            pass # skip frame if queue is full to avoid sim stall
+            print(f"[Camera {self.tls_id}] Warning: Save queue full. Dropping frame {image.frame}")
 
     def destroy(self):
         """Clean up camera sensor."""
         if self.camera is not None:
             self.camera.stop()
             self.camera.destroy()
-            print("[Camera] Camera destroyed")
+            print(f"[Camera {self.tls_id}] Camera destroyed")
         
-        self.save_queue.put(None)  # Signal thread to exit
+        self.save_queue.put(None)   # Signal save_worker to exit
         self.save_thread.join(timeout=5)
     
     def get_location(self):
@@ -233,7 +250,7 @@ class TrafficLightCamera:
         return None
 
 
-def setup_camera(world, tls_id="238", output_dir="camera_output"):
+def setup_camera(world, tls_id="238", output_dir="camera_output", frame_callback=None):
     """
     Convenience function to setup a traffic light camera.
     
@@ -241,22 +258,18 @@ def setup_camera(world, tls_id="238", output_dir="camera_output"):
         world: CARLA world object
         tls_id: Traffic light ID
         output_dir: Directory to save images
+        frame_callback: Optional callable - see TrafficLightCamera for signature
         
     Returns:
         TrafficLightCamera instance
     """
-    return TrafficLightCamera(world, tls_id=tls_id, output_dir=output_dir)
-
+    return TrafficLightCamera(world, tls_id=tls_id, output_dir=output_dir, frame_callback=frame_callback)
 
 # ==================================================================================================
 # -- Test/Demo Script ------------------------------------------------------------------------------
 # ==================================================================================================
 
 if __name__ == '__main__':
-    """
-    Demo script to test the camera.
-    Run this standalone to verify camera works.
-    """
     import time
     
     print("="*60)
