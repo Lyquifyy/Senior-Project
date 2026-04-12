@@ -24,6 +24,17 @@ from .sumo_integration.constants import INVALID_ACTOR_ID
 from .sumo_integration.sumo_simulation import SumoSimulation
 from . import traffic_control as core_traffic
 
+try:
+    from .traffic_camera import TrafficLightCamera
+    from .frame_feeder import MultiCameraFeeder
+    from .frame_consumer import FrameConsumer
+    _CORE_TRAFFIC_CAMERA_AVAILABLE = True
+except ImportError:
+    TrafficLightCamera = None
+    MultiCameraFeeder = None
+    FrameConsumer = None
+    _CORE_TRAFFIC_CAMERA_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -180,9 +191,11 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
     # Camera setup (unchanged)
     traffic_cameras = []
     if getattr(args, "enable_camera", False):
-        sys.path.insert(0, str(scenario_dir))
+        camera_feeder = None
+        if _CORE_TRAFFIC_CAMERA_AVAILABLE:
+            camera_feeder = MultiCameraFeeder()
+
         try:
-            from traffic_camera import TrafficLightCamera
             cam_ids_str = (
                 getattr(args, "camera_tls_ids", None)
                 or getattr(args, "camera_tls_id", None)
@@ -202,6 +215,7 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
                         tls_id=str(camera_id),
                         output_dir=out_dir,
                         save_interval=20,
+                        frame_callback=(camera_feeder.on_frame if camera_feeder is not None else None),
                     )
                 )
         except ImportError as e:
@@ -244,6 +258,8 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
                 log_dir,
                 additional={"total_steps": step, "mode": "carla"},
             )
+        if frame_consumer is not None:
+            frame_consumer.stop()
         for cam in traffic_cameras:
             try:
                 cam.destroy()
