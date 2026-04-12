@@ -7,9 +7,7 @@ import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+
 IMG_SIZE = (64, 64)
 MODEL_PATH = "C:/Users/clair/Senior-Project/models/svm_model.pkl"
 SCALER_PATH = "C:/Users/clair/Senior-Project/models/scaler.pkl"
@@ -238,13 +236,14 @@ def main():
         svm, scaler, label_encoder = load_models()
         
         # Predict single image
-        single_image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0005009.jpg"
+        #single_image_path = "C:/Users/clair/Downloads/BITVehicle/vehicle_0009841.jpg"
         #single_image_path = "C:/Users/clair/Downloads/test_car2.jpg"
+        single_image_path = "C:/Users/clair/OneDrive/Pictures/Screenshots/test.png"
         
         if os.path.exists(single_image_path):
             predicted_class, confidence, probabilities = predict_single_image(
                 single_image_path, svm, scaler, label_encoder,
-                bounding_box=None,  # Add bounding box if you have it
+                bounding_box=None,  
                 show_result=True
             )
             
