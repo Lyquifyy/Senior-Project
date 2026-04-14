@@ -12,8 +12,9 @@
         <aside class="sidebar">
             <div class="brand-header">
                 <h2>SUMO MONITOR</h2>
+                <p class="brand-sub">Smart Intersection Dashboard</p>
             </div>
-            
+
             <div class="status-box">
                 <div class="status-row">
                     <span class="label">Status</span>
@@ -27,9 +28,9 @@
 
             <div class="metrics-list">
                 <div class="metric-card">
-                    <label>CO₂ Emissions</label>
+                    <label>CO&#x2082; Emissions</label>
                     <div class="val-group">
-                        <span id="co2Value">0.00</span><small>kg</small>
+                        <span id="co2Value">0.00</span><small>kg/s</small>
                     </div>
                 </div>
                 <div class="metric-card">
@@ -40,7 +41,9 @@
                 </div>
                 <div class="metric-card">
                     <label>Total Vehicles</label>
-                    <div id="totalVehicles" class="val-group">0</div>
+                    <div class="val-group">
+                        <span id="totalVehicles">0</span><small>in sim</small>
+                    </div>
                 </div>
             </div>
         </aside>
@@ -67,7 +70,9 @@
                     </div>
 
                     <div class="junction-core">
-                        <div class="road-markings"></div>
+                        <div class="road-h"></div>
+                        <div class="road-v"></div>
+                        <div class="road-center"></div>
                     </div>
 
                     <div class="arm east">
@@ -89,9 +94,22 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="chart-tray">
-                <canvas id="co2Canvas"></canvas>
+                <div class="chart-panel">
+                    <div class="chart-header">
+                        <span class="chart-title">CO&#x2082; Emissions</span>
+                        <span class="chart-unit">kg/s</span>
+                    </div>
+                    <canvas id="co2Canvas"></canvas>
+                </div>
+                <div class="chart-panel">
+                    <div class="chart-header">
+                        <span class="chart-title">Avg Wait Time</span>
+                        <span class="chart-unit">seconds</span>
+                    </div>
+                    <canvas id="waitCanvas"></canvas>
+                </div>
             </div>
         </main>
     </div>
