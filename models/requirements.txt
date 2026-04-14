@@ -1,0 +1,7 @@
+opencv-python>=4.5
+numpy>=1.21
+scikit-image>=0.19
+matplotlib>=3.5
+joblib>=1.1
+scikit-learn>=1.0
+imbalanced-learn>=0.10

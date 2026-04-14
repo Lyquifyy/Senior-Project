@@ -1,13 +1,17 @@
 :root {
-    --bg-dark: #0f111a;
-    --bg-side: #161925;
-    --border: #2a2e3f;
-    --text: #d1d5db;
-    --accent: #3b82f6;
-    --red: #ef4444;
-    --green: #10b981;
-    --yellow: #f59e0b;
+    --bg-dark:  #0f111a;
+    --bg-side:  #161925;
+    --bg-panel: #1a1e2e;
+    --border:   #2a2e3f;
+    --text:     #d1d5db;
+    --muted:    #6b7280;
+    --accent:   #3b82f6;
+    --red:      #ef4444;
+    --green:    #10b981;
+    --yellow:   #f59e0b;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
 
 body, html {
     margin: 0;
@@ -16,71 +20,110 @@ body, html {
     background: var(--bg-dark);
     font-family: 'Segoe UI', sans-serif;
     color: var(--text);
-    overflow: hidden;
 }
 
+/* ── Layout ─────────────────────────────────────── */
 .app-container {
     display: grid;
-    grid-template-columns: 280px 1fr;
-    height: 100vh;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
 }
 
-/* Sidebar Styling */
+/* ── Sidebar ─────────────────────────────────────── */
 .sidebar {
     background: var(--bg-side);
     border-right: 1px solid var(--border);
-    padding: 2rem;
+    padding: 1.75rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.75rem;
 }
 
 .brand-header h2 {
-    font-size: 1.2rem;
-    letter-spacing: 2px;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
     color: var(--accent);
+    margin: 0 0 4px;
+}
+
+.brand-sub {
     margin: 0;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.5px;
 }
 
 .status-box {
-    background: #1f2335;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
     padding: 1rem;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .status-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    align-items: center;
+    padding: 0.25rem 0;
 }
 
-.status-row .label { color: #6b7280; font-size: 0.8rem; }
+.status-row + .status-row { border-top: 1px solid var(--border); margin-top: 0.4rem; padding-top: 0.65rem; }
+
+.status-row .label { color: var(--muted); font-size: 0.78rem; }
+.status-row .value { font-size: 0.9rem; font-weight: 600; }
+
 .value.offline { color: var(--red); }
-.value.online { color: var(--green); }
+.value.online  { color: var(--green); }
+
+/* Metrics */
+.metrics-list { display: flex; flex-direction: column; gap: 0; }
 
 .metric-card {
     border-bottom: 1px solid var(--border);
     padding: 1rem 0;
 }
 
-.metric-card label { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; }
-.val-group { font-size: 1.8rem; font-weight: bold; margin-top: 0.5rem; }
-.val-group small { font-size: 0.9rem; margin-left: 5px; color: #4b5563; }
+.metric-card:last-child { border-bottom: none; }
 
-/* Main Content & Map */
-.main-content {
-    display: grid;
-    grid-template-rows: 1fr 180px;
-    padding: 2rem;
-    gap: 1rem;
+.metric-card label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
 }
 
+.val-group {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+    color: #f0f2f8;
+}
+
+.val-group small {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--muted);
+}
+
+/* ── Main Content ────────────────────────────────── */
+.main-content {
+    display: grid;
+    grid-template-rows: 1fr 200px;
+    padding: 1.5rem;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+/* ── Intersection Map ────────────────────────────── */
 .intersection-viewport {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #111421;
-    border-radius: 12px;
+    background: #0e1019;
+    border-radius: 14px;
     border: 1px solid var(--border);
 }
 
@@ -91,40 +134,169 @@ body, html {
     gap: 10px;
 }
 
+/* Junction core with road lines */
 .junction-core {
     grid-column: 2; grid-row: 2;
-    background: #2d334a;
-    border: 2px solid #3f4766;
+    background: #1e2235;
+    border: 2px solid #353c5a;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
 }
 
+.road-h, .road-v {
+    position: absolute;
+    background: #2d334a;
+}
+
+.road-h {
+    height: 40%;
+    width: 100%;
+    top: 30%;
+}
+
+.road-v {
+    width: 40%;
+    height: 100%;
+    left: 30%;
+}
+
+.road-center {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #3b4566;
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Arms */
 .arm { display: flex; align-items: center; justify-content: center; gap: 10px; }
 .north { grid-column: 2; grid-row: 1; flex-direction: column; }
 .south { grid-column: 2; grid-row: 3; flex-direction: column-reverse; }
-.east { grid-column: 3; grid-row: 2; flex-direction: row-reverse; }
-.west { grid-column: 1; grid-row: 2; }
+.east  { grid-column: 3; grid-row: 2; flex-direction: row-reverse; }
+.west  { grid-column: 1; grid-row: 2; }
 
 /* Traffic Lights */
 .signal-housing {
-    background: #000;
+    background: #0a0a0a;
     padding: 5px;
-    border-radius: 4px;
+    border-radius: 5px;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    border: 1px solid #2a2e3f;
 }
+
 .signal-housing.horizontal { flex-direction: row; }
 
-.light { width: 12px; height: 12px; border-radius: 50%; background: #222; }
-.light.red.active { background: var(--red); box-shadow: 0 0 8px var(--red); }
-.light.yellow.active { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
-.light.green.active { background: var(--green); box-shadow: 0 0 8px var(--green); }
-
-.counter { font-size: 1.5rem; font-weight: bold; }
-
-.chart-tray {
-    background: var(--bg-side);
-    border-radius: 8px;
-    padding: 1rem;
+.light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #1c1c1c;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
-#co2Canvas { width: 100%; height: 100%; }
+.light.red.active    { background: var(--red);    box-shadow: 0 0 10px var(--red); }
+.light.yellow.active { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+.light.green.active  { background: var(--green);  box-shadow: 0 0 10px var(--green); }
+
+.counter {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #c9d1e0;
+    transition: transform 0.15s ease;
+    min-width: 2ch;
+    text-align: center;
+}
+
+.counter.bump { transform: scale(1.25); }
+
+/* ── Chart Tray ──────────────────────────────────── */
+.chart-tray {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.chart-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.chart-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text);
+}
+
+.chart-unit {
+    font-size: 0.68rem;
+    color: var(--muted);
+}
+
+.chart-panel canvas {
+    width: 100%;
+    flex: 1;
+    display: block;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 900px) {
+    .app-container {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .brand-header { width: 100%; }
+
+    .status-box { flex: 1; min-width: 140px; }
+
+    .metrics-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        flex: 2;
+        gap: 0.5rem;
+    }
+
+    .metric-card {
+        border-bottom: none;
+        border-right: 1px solid var(--border);
+        padding: 0.5rem 1rem 0.5rem 0;
+        flex: 1;
+        min-width: 100px;
+    }
+
+    .main-content {
+        grid-template-rows: 400px 200px;
+    }
+
+    .chart-tray {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+}
