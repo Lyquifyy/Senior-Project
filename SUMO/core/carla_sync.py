@@ -188,7 +188,7 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
             tls_ids, phase_interval, emission_interval_steps,
         )
 
-    # Camera setup (unchanged)
+    # Camera setup
     traffic_cameras = []
     if getattr(args, "enable_camera", False):
         camera_feeder = None
@@ -220,6 +220,19 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
                 )
         except ImportError as e:
             logger.warning("Traffic camera not available: %s", e)
+
+    # Start diagnostic frame consumer if cameras and feeder are active
+    frame_consumer = None
+    if (getattr(args, "enable_camera", False)
+            and _CORE_TRAFFIC_CAMERA_AVAILABLE
+            and camera_feeder is not None):
+        frame_consumer = FrameConsumer(
+            camera_feeder,
+            output_dir=os.path.join(getattr(args, "camera_output_dir", "camera_output"), "consumer"),
+            poll_interval=0.5,
+            save_every=5,
+        )
+        frame_consumer.start()
 
     # -----------------------------------------------------------------------
     # Main loop
