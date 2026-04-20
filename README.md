@@ -9,14 +9,14 @@ This repository contains:
 - **EPA Data** — Raw and cleaned EPA vehicle test data (2008–2025) used for vehicle classifications and emission modeling
 - **SUMO Simulation** — Traffic simulation using SUMO (Simulation of Urban MObility) with traffic light control and emission data collection
 - **Web Dashboard** — Flask-based visualization of simulation data (emissions, traffic lights, lane occupancy)
-- **Vehicle Classification** — MATLAB model for vehicle type classification (in `models/`)
+- **Vehicle Classification** — Python SVM model for vehicle type classification (in `models/`)
 
 ## Directory Structure
 
 ```
 ├── EPA Data Cleaning/    # EPA vehicle test data and cleaning scripts
 ├── flask/                # Web dashboard for traffic/emission visualization
-├── models/               # Vehicle classification (MATLAB)
+├── models/               # Python vehicle classification model
 ├── SUMO/                 # Traffic simulation (Rev-1 through Rev-5, CARLA integration)
 └── README.md
 ```
@@ -34,5 +34,4 @@ This repository contains:
 - **Docker** — Required for the dev container (SUMO/CARLA local environment). Install from [docker.com](https://www.docker.com/get-started/) and ensure Docker is running before reopening in container.
 - Python 3.x
 - SUMO (Simulation of Urban MObility)
-- MATLAB (for vehicle classification model)
 - Flask (for web dashboard)
