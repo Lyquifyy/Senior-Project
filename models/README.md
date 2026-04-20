@@ -1,23 +1,25 @@
 # Vehicle Classification
 
-MATLAB Live Script for vehicle type classification, used in the traffic simulation pipeline.
+Python Script for vehicle type classification, used in the traffic simulation pipeline.
 
 ## Contents
 
 | File | Description |
 |------|-------------|
-| `Vehicle_Classification.mlx` | MATLAB Live Script for classification model |
+| `SVM_Training.ipynb` | Python script for training vehicle classification model |
+| `SVM_Predict.py` | Python script for predicting vehicle type from images |
+
 
 ## Requirements
 
-- MATLAB (with required toolboxes for the script)
+- Python
 - EPA cleaned vehicle data (see `EPA Data Cleaning/`)
 
 ## Usage
 
-1. Open `Vehicle_Classification.mlx` in MATLAB.
-2. Ensure EPA cleaned data is available or paths are set correctly.
-3. Run the Live Script sections as needed.
+1. Open `SVM_Training.ipynb` in VSCode or software of choice and make sure paths are set correctly
+2. Run all code to train and save the model
+3. Open `SVM_Predict.py` and choose an image to predict and run code
 
 ## Relation to Project
 
