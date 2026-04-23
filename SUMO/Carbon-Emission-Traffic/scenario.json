@@ -1,7 +1,7 @@
 {
   "sumocfg": "Town03.sumocfg",
   "control_scope": "all",
-  "tls_ids": ["103", "1221", "1352", "1696", "1820", "238", "356", "498", "576", "655", "861"],
+  "tls_ids": ["238"],
   "emission_dir": "emissionData",
   "telemetry_dir": "emissionData",
   "log_dir": "logs",
@@ -10,13 +10,26 @@
   "controller": {
     "phase_interval": 10,
     "emission_interval": 50,
-    "cooldown": 30,
-    "min_green": 10,
+    "cooldown": 60,
+    "min_green": 20,
+    "yellow_duration": 5,
+    "max_red_steps": 300,
     "weights": {
       "queue": 0.4,
       "wait": 0.3,
       "co2": 0.2,
       "fuel": 0.1
+    },
+    "cam_phase_map": {
+      "70": 0,
+      "71": 1,
+      "72": 2,
+      "73": 4
     }
+  },
+  "baseline": {
+    "phases": [0, 1, 2, 4],
+    "green_seconds": 30,
+    "yellow_seconds": 5
   }
 }

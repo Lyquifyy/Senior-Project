@@ -1,0 +1,28 @@
+# Old model artifacts — replaced by predict_CARLA_grey.py + _grey1 pkl files
+predict_cosim.py
+scaler.pkl
+svm_model.pkl
+vehicle_svm_pipeline_CARLA.pkl
+vehicle_label_encoder_CARLA.pkl
+
+# Old / generated route files — replaced by focused_intersection.rou.xml
+routes.rou.xml
+Carbon-Emission-Traffic/custom.rou.xml
+Carbon-Emission-Traffic/custom.rou.alt.xml
+Carbon-Emission-Traffic/custom.trips.xml
+Carbon-Emission-Traffic/random.trips.xml
+Carbon-Emission-Traffic/vtypes.xml
+
+# Training scripts / notebooks — not part of cosim
+Training_CARLA.ipynb
+CARLA/capture_training_data.py
+CARLA/traffic_camera.py
+
+# Runtime output
+Carbon-Emission-Traffic/logs/
+Carbon-Emission-Traffic/logs_baseline/
+Carbon-Emission-Traffic/emissionData/
+Carbon-Emission-Traffic/emissionData_baseline/
+camera_output/
+__pycache__/
+*.pyc

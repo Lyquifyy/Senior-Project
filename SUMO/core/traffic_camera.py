@@ -6,6 +6,7 @@ intersections and optionally forward frames to a model via a callback.
 """
 
 import carla
+import math
 import os
 import weakref
 import threading
@@ -56,7 +57,7 @@ class TrafficLightCamera:
                 try:
                     array = np.frombuffer(image.raw_data, dtype=np.uint8)
                     array = array.reshape((image.height, image.width, 4))
-                    array = array[:, :, :3]
+                    array = array[:, :, :3][:, :, ::-1]  # BGRA[:,:,:3] is BGR; flip to RGB
                     self.frame_callback(self.tls_id, array)
                 except Exception as e:
                     print(f"[Camera {self.tls_id}] Error in frame_callback: {e}")
@@ -64,36 +65,67 @@ class TrafficLightCamera:
             self.save_queue.task_done()
 
     def find_traffic_light(self):
-        traffic_lights = self.world.get_actors().filter('traffic.traffic_light*')
-        print(f"[Camera] Found {len(traffic_lights)} traffic lights in CARLA")
+        all_tls = list(self.world.get_actors().filter('traffic.traffic_light*'))
+        print(f"[Camera] Found {len(all_tls)} traffic lights in CARLA")
 
-        if len(traffic_lights) == 0:
+        if not all_tls:
             print("[Camera] ERROR: No traffic lights found!")
             return None
 
+        # Try exact CARLA actor ID match first (works when SUMO has assigned IDs)
         try:
             target_id = int(self.tls_id)
-        except ValueError:
-            print(f"[Camera] Warning: Could not convert '{self.tls_id}' to integer")
-            target_id = None
-
-        if target_id is not None:
-            for tl in traffic_lights:
+            for tl in all_tls:
                 if tl.id == target_id:
                     print(f"[Camera] Found exact match for traffic light {self.tls_id}")
                     return tl
+        except ValueError:
+            pass
 
-        sample_ids = []
-        for i, tl in enumerate(traffic_lights):
-            if i >= 5:
-                break
-            sample_ids.append(tl.id)
+        # Fallback: find the main 4-way junction by grouping lights and scoring
+        # by how many quadrants around the group centroid are covered.
+        print(f"[Camera] ID {self.tls_id} not found — searching for main junction ...")
+        visited = set()
+        junctions = []
+        for tl in all_tls:
+            if tl.id in visited:
+                continue
+            try:
+                group = list(tl.get_group_traffic_lights())
+                for t in group:
+                    visited.add(t.id)
+            except Exception:
+                group = [tl]
+                visited.add(tl.id)
+            junctions.append(group)
 
-        print(f"[Camera] Traffic light {self.tls_id} not found by ID")
-        print(f"[Camera] Available traffic light IDs (first 5): {sample_ids}")
+        def _score(group):
+            if len(group) < 2:
+                return 0
+            locs = [t.get_location() for t in group]
+            cx = sum(l.x for l in locs) / len(locs)
+            cy = sum(l.y for l in locs) / len(locs)
+            angles = [math.degrees(math.atan2(l.y - cy, l.x - cx)) % 360
+                      for l in locs]
+            quadrants = len(set(int(a / 90) for a in angles))
+            return quadrants * 100 + len(group)
 
-        target = traffic_lights[0]
-        print(f"[Camera] Using traffic light ID {target.id} at location {target.get_location()}")
+        best_group = max(junctions, key=_score)
+        locs = [t.get_location() for t in best_group]
+        cx = sum(l.x for l in locs) / len(locs)
+        cy = sum(l.y for l in locs) / len(locs)
+
+        # All cameras use the TL nearest the centroid as a shared anchor so
+        # that the ±10 m position offsets in setup_camera() are applied from
+        # the same centre point for every camera.  Using per-camera approach
+        # directions here shifted each anchor to a different spot, breaking the
+        # layout calibrated against a common centre.
+        target = min(best_group,
+                     key=lambda t: (t.get_location().x - cx) ** 2
+                                   + (t.get_location().y - cy) ** 2)
+        print(f"[Camera] Junction fallback: using TL id={target.id} "
+              f"at ({target.get_location().x:.1f}, {target.get_location().y:.1f}) "
+              f"[junction centre ({cx:.1f}, {cy:.1f})]")
         return target
 
     def setup_camera(self):
@@ -109,15 +141,15 @@ class TrafficLightCamera:
 
         blueprint_library = self.world.get_blueprint_library()
         camera_bp = blueprint_library.find('sensor.camera.rgb')
-        camera_bp.set_attribute('image_size_x', '1920')
-        camera_bp.set_attribute('image_size_y', '1080')
-        camera_bp.set_attribute('fov', '90')
+        camera_bp.set_attribute('image_size_x', '256')
+        camera_bp.set_attribute('image_size_y', '256')
+        camera_bp.set_attribute('fov', '45')
 
         yaw_adjustments = {
-            70: 270,
-            71: 90,
-            72: 180,
-            73: 0,
+            70: 260,
+            71: 80,
+            72: 170,
+            73: 350,
         }
         camera_yaw = yaw_adjustments.get(int(self.tls_id), 0)
         position_offsets = {
@@ -134,7 +166,7 @@ class TrafficLightCamera:
                 y=tl_location.y + offset_y,
                 z=tl_location.z + 8,
             ),
-            carla.Rotation(pitch=-30, yaw=camera_yaw, roll=0),
+            carla.Rotation(pitch=-10, yaw=camera_yaw, roll=0),
         )
 
         self.camera = self.world.spawn_actor(camera_bp, camera_transform)
