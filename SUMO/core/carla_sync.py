@@ -29,7 +29,9 @@ try:
     from .frame_feeder import MultiCameraFeeder
     from .frame_consumer import FrameConsumer
     _CORE_TRAFFIC_CAMERA_AVAILABLE = True
-except ImportError:
+except Exception as _import_exc:
+    import logging as _log
+    _log.warning("[carla_sync] Camera/consumer import failed: %s", _import_exc)
     TrafficLightCamera = None
     MultiCameraFeeder = None
     FrameConsumer = None
@@ -188,8 +190,10 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
             tls_ids, phase_interval, emission_interval_steps,
         )
 
-    # Camera setup
+    # Camera setup (unchanged)
     traffic_cameras = []
+    frame_consumer = None
+    camera_feeder = None
     if getattr(args, "enable_camera", False):
         camera_feeder = None
         if _CORE_TRAFFIC_CAMERA_AVAILABLE:
@@ -221,16 +225,16 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
         except ImportError as e:
             logger.warning("Traffic camera not available: %s", e)
 
-    # Start diagnostic frame consumer if cameras and feeder are active
-    frame_consumer = None
+    # Start frame consumer if cameras active
     if (getattr(args, "enable_camera", False)
             and _CORE_TRAFFIC_CAMERA_AVAILABLE
-            and camera_feeder is not None):
+            and camera_feeder is not None
+            and FrameConsumer is not None):
         frame_consumer = FrameConsumer(
             camera_feeder,
             output_dir=os.path.join(getattr(args, "camera_output_dir", "camera_output"), "consumer"),
             poll_interval=0.5,
-            save_every=5,
+            save_every=2,
         )
         frame_consumer.start()
 
@@ -265,17 +269,22 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
 
     except KeyboardInterrupt:
         logger.info("Cancelled by user.")
+    except Exception as exc:
+        logger.error("Simulation loop error: %s", exc)
     finally:
+        if frame_consumer is not None:
+            frame_consumer.stop()
         if network_controller is not None:
             network_controller.write_run_summary(
                 log_dir,
                 additional={"total_steps": step, "mode": "carla"},
             )
-        if frame_consumer is not None:
-            frame_consumer.stop()
         for cam in traffic_cameras:
             try:
                 cam.destroy()
             except Exception:
                 pass
-        synchronization.close()
+        try:
+            synchronization.close()
+        except Exception:
+            pass
