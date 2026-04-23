@@ -220,6 +220,46 @@ def _build_tls_phase_map(tls_id: str) -> Dict[int, List[str]]:
     return phase_map
 
 
+def _find_yellow_phases(tls_id: str) -> List[int]:
+    """Return phase indices that are pure yellow/red-yellow transitions (no green signals)."""
+    import traci
+    programs = traci.trafficlight.getCompleteRedYellowGreenDefinition(tls_id)
+    if not programs:
+        return []
+    yellow = []
+    for idx, phase in enumerate(programs[0].phases):
+        state = phase.state.lower()
+        if "y" in state and "g" not in state:
+            yellow.append(idx)
+    return yellow
+
+
+def _synthesize_yellow_state(state: str) -> str:
+    """Convert a green phase state string to yellow by replacing G/g with y."""
+    return "".join("y" if c in ("G", "g") else c for c in state)
+
+
+def _collect_phase_metrics_from_cameras(
+    frame_consumer,
+    cam_phase_map: Dict[str, int],
+) -> Dict[int, Dict]:
+    """Aggregate camera-based vehicle count and emission score per phase.
+
+    cam_phase_map: {cam_id (str) -> phase_idx (int)}
+    Emission score = emission_weight(dominant_type) * vehicle_count.
+    """
+    phase_data: Dict[int, Dict] = {}
+    for cam_id, phase_idx in cam_phase_map.items():
+        summary = frame_consumer.get_approach_summary(str(cam_id))
+        if phase_idx not in phase_data:
+            phase_data[phase_idx] = {"emission_score": 0.0, "vehicle_count": 0, "dominant_type": None}
+        phase_data[phase_idx]["emission_score"] += summary.get("emission_score", 0.0)
+        phase_data[phase_idx]["vehicle_count"]  += summary.get("vehicle_count", 0)
+        if summary.get("dominant_type"):
+            phase_data[phase_idx]["dominant_type"] = summary["dominant_type"]
+    return phase_data
+
+
 def _collect_phase_metrics(phase_map: Dict[int, List[str]]) -> Dict[int, Dict]:
     """Aggregate live TraCI emission and congestion metrics per phase.
 
@@ -323,62 +363,190 @@ class IntersectionController:
         tls_id: str,
         cooldown: int = 30,
         min_green: int = 10,
+        yellow_duration: int = 3,
+        max_red_steps: int = 300,
+        frame_consumer=None,
+        cam_phase_map: Optional[Dict[str, int]] = None,
     ) -> None:
         self.tls_id = tls_id
         self.cooldown = cooldown
         self.min_green = min_green
+        self.yellow_duration = yellow_duration
+        self.max_red_steps = max_red_steps
+        self._frame_consumer = frame_consumer
+        self._cam_phase_map: Dict[str, int] = cam_phase_map or {}
         self._phase_map: Dict[int, List[str]] = {}
+        self._yellow_phases: List[int] = []
         self._initialized = False
         self._last_switch_step: int = -(cooldown + 1)
+        self._current_phase_start: int = 0
+        self._pending_phase: Optional[int] = None
+        self._yellow_end_step: int = 0
+        self._phase_last_green: Dict[int, int] = {}
 
     def _ensure_init(self) -> None:
         if not self._initialized:
             self._phase_map = _build_tls_phase_map(self.tls_id)
+            self._yellow_phases = _find_yellow_phases(self.tls_id)
             self._initialized = True
             logger.debug(
-                "TLS %s: discovered %d green phases, lane counts: %s",
+                "TLS %s: discovered %d green phases, %d yellow phases, lane counts: %s",
                 self.tls_id,
                 len(self._phase_map),
+                len(self._yellow_phases),
                 {k: len(v) for k, v in self._phase_map.items()},
             )
 
+    @property
+    def is_transitioning(self) -> bool:
+        """True while a yellow intergreen is in progress."""
+        return self._pending_phase is not None
+
+    def tick(self, current_step: int) -> bool:
+        """Apply the pending target phase once the yellow duration has elapsed.
+
+        Must be called every simulation step. Returns True if a phase was applied.
+        """
+        if self._pending_phase is None or current_step < self._yellow_end_step:
+            return False
+        import traci
+        target = self._pending_phase
+        self._pending_phase = None
+        try:
+            traci.trafficlight.setPhase(self.tls_id, target)
+            self._phase_last_green[target] = current_step
+            self._current_phase_start = current_step
+        except Exception as exc:
+            logger.warning(
+                "TLS %s: failed to apply pending phase %d after yellow: %s",
+                self.tls_id, target, exc,
+            )
+        return True
+
     def decide(
         self, current_step: int, weights: Dict[str, float]
-    ) -> Tuple[int, Dict, bool]:
-        """Return (chosen_phase, phase_scores, did_switch_attempt).
+    ) -> Tuple[int, Dict, bool, str]:
+        """Return (chosen_phase, phase_scores, did_switch_attempt, decision_reason).
 
-        Will not switch if cooldown has not elapsed since the last switch.
-        The caller is responsible for actually calling traci.setPhase.
+        decision_reason is one of:
+          "score"       – weighted scoring selected a different phase
+          "score_hold"  – weighted scoring kept the current phase
+          "starvation"  – starvation override selected the most-overdue phase
+          "no_phase_map"– no green phases found; advanced to next phase by default
+
+        Blocks (returns attempted=False) when: a yellow transition is in progress,
+        min_green has not elapsed, or cooldown has not elapsed.
+
+        When switching phases, inserts a yellow intergreen automatically if yellow
+        phases exist in the signal program — the caller must NOT call setPhase when
+        is_transitioning is True after this returns.
         """
         import traci
         self._ensure_init()
         current_phase = traci.trafficlight.getPhase(self.tls_id)
+
+        # Block new decisions while yellow transition is in progress
+        if self._pending_phase is not None:
+            return current_phase, {}, False, ""
+
+        # Enforce minimum green time
+        if current_step - self._current_phase_start < self.min_green:
+            return current_phase, {}, False, ""
+
+        # Enforce cooldown
+        if current_step - self._last_switch_step < self.cooldown:
+            return current_phase, {}, False, ""
+
         programs = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.tls_id)
         num_phases = len(programs[0].phases)
-
-        if current_step - self._last_switch_step < self.cooldown:
-            return current_phase, {}, False
 
         if not self._phase_map:
             default_next = (current_phase + 1) % num_phases
             self._last_switch_step = current_step
-            return default_next, {}, True
+            self._current_phase_start = current_step
+            return default_next, {}, True, "no_phase_map"
 
-        phase_metrics = _collect_phase_metrics(self._phase_map)
-        phase_scores = _score_phases(phase_metrics, weights)
-        if not phase_scores:
-            return current_phase, {}, False
-
-        best_phase = max(phase_scores, key=phase_scores.get)
-        score_export = {
-            str(p): {
-                "score": round(phase_scores[p], 4),
-                **{k: round(v, 4) for k, v in phase_metrics.get(p, {}).items()},
+        if self._frame_consumer and self._cam_phase_map:
+            cam_metrics = _collect_phase_metrics_from_cameras(
+                self._frame_consumer, self._cam_phase_map
+            )
+            phase_scores = {idx: data["emission_score"] for idx, data in cam_metrics.items()}
+            score_export = {
+                str(p): {
+                    "score": round(phase_scores.get(p, 0.0), 4),
+                    "vehicle_count": cam_metrics.get(p, {}).get("vehicle_count", 0),
+                    "dominant_type": cam_metrics.get(p, {}).get("dominant_type"),
+                }
+                for p in phase_scores
             }
-            for p in phase_scores
-        }
+            known_phases = set(self._cam_phase_map.values())
+        else:
+            phase_metrics = _collect_phase_metrics(self._phase_map)
+            phase_scores = _score_phases(phase_metrics, weights)
+            score_export = {
+                str(p): {
+                    "score": round(phase_scores.get(p, 0.0), 4),
+                    **{k: round(v, 4) for k, v in phase_metrics.get(p, {}).items()},
+                }
+                for p in phase_scores
+            }
+            known_phases = set(self._phase_map.keys())
+
+        if not phase_scores:
+            return current_phase, {}, False, ""
+
+        # Starvation prevention: if any phase hasn't had green in max_red_steps,
+        # serve the most overdue one regardless of current scores.
+        threshold = current_step - self.max_red_steps
+        starved = [
+            p for p in known_phases
+            if p != current_phase
+            and self._phase_last_green.get(p, current_step) < threshold
+        ]
+        if starved:
+            best_phase = min(starved, key=lambda p: self._phase_last_green.get(p, 0))
+            reason = "starvation"
+        else:
+            best_phase = max(phase_scores, key=phase_scores.get)
+            reason = "score"
+
         self._last_switch_step = current_step
-        return best_phase, score_export, True
+
+        if best_phase == current_phase:
+            self._phase_last_green[current_phase] = current_step
+            return current_phase, score_export, True, "score_hold"
+
+        logger.info(
+            "TLS %s step %d: %s phase %d→%d | scores %s",
+            self.tls_id, current_step, reason, current_phase, best_phase,
+            {p: round(s, 3) for p, s in phase_scores.items()},
+        )
+
+        # Initiate transition: use a defined yellow phase if one exists,
+        # otherwise synthesize yellow from the current green state string.
+        if self._yellow_phases:
+            yellow_idx = self._yellow_phases[0]
+            try:
+                traci.trafficlight.setPhase(self.tls_id, yellow_idx)
+            except Exception as exc:
+                logger.warning(
+                    "TLS %s: failed to set yellow phase %d: %s",
+                    self.tls_id, yellow_idx, exc,
+                )
+        else:
+            try:
+                current_state = programs[0].phases[current_phase].state
+                traci.trafficlight.setRedYellowGreenState(
+                    self.tls_id, _synthesize_yellow_state(current_state)
+                )
+            except Exception as exc:
+                logger.warning(
+                    "TLS %s: failed to set synthetic yellow state: %s",
+                    self.tls_id, exc,
+                )
+        self._pending_phase = best_phase
+        self._yellow_end_step = current_step + self.yellow_duration
+        return best_phase, score_export, True, reason
 
     def collect_lane_data(self) -> Dict[str, List[Dict]]:
         """Return per-lane vehicle emission and motion data for all controlled lanes."""
@@ -427,11 +595,19 @@ class NetworkController:
         weights: Optional[Dict[str, float]] = None,
         cooldown: int = 30,
         min_green: int = 10,
+        yellow_duration: int = 3,
+        max_red_steps: int = 300,
+        frame_consumer=None,
+        cam_phase_map: Optional[Dict[str, int]] = None,
     ) -> None:
         self.tls_ids = tls_ids          # None → discover all at first step
         self.weights = weights or {"queue": 0.4, "wait": 0.3, "co2": 0.2, "fuel": 0.1}
         self.cooldown = cooldown
         self.min_green = min_green
+        self.yellow_duration = yellow_duration
+        self.max_red_steps = max_red_steps
+        self._frame_consumer = frame_consumer
+        self._cam_phase_map: Dict[str, int] = cam_phase_map or {}
         self._controllers: Dict[str, IntersectionController] = {}
         self._initialized = False
         # Cumulative run metrics (updated each emit snapshot)
@@ -439,12 +615,30 @@ class NetworkController:
         self._cumulative_fuel_ml = 0.0
         self._snapshot_count = 0
 
+    def set_frame_consumer(self, frame_consumer, cam_phase_map: Dict[str, int]) -> None:
+        """Wire up camera-based scoring after the FrameConsumer has started.
+
+        Must be called before the first step_all() tick.
+        """
+        self._frame_consumer = frame_consumer
+        self._cam_phase_map = {str(k): int(v) for k, v in cam_phase_map.items()}
+        logger.info(
+            "NetworkController: camera scoring enabled — cam→phase map: %s",
+            self._cam_phase_map,
+        )
+
     def _init(self) -> None:
         import traci
         ids = self.tls_ids or list(traci.trafficlight.getIDList())
         for tls_id in ids:
             self._controllers[tls_id] = IntersectionController(
-                tls_id, cooldown=self.cooldown, min_green=self.min_green
+                tls_id,
+                cooldown=self.cooldown,
+                min_green=self.min_green,
+                yellow_duration=self.yellow_duration,
+                max_red_steps=self.max_red_steps,
+                frame_consumer=self._frame_consumer,
+                cam_phase_map=self._cam_phase_map if self._cam_phase_map else None,
             )
         self._initialized = True
         logger.info(
@@ -497,24 +691,30 @@ class NetworkController:
                 logger.warning("Could not get phase for TLS %s; skipping.", tls_id)
                 continue
 
+            # Apply any pending yellow→target transition every step.
+            ctrl.tick(simulation_step)
+
             chosen_phase = current_phase
             phase_scores: Dict = {}
             switched = False
 
             if do_phase:
-                chosen_phase, phase_scores, attempted = ctrl.decide(
+                chosen_phase, phase_scores, attempted, decision_reason = ctrl.decide(
                     simulation_step, self.weights
                 )
                 if attempted and chosen_phase != current_phase:
-                    try:
-                        traci.trafficlight.setPhase(tls_id, chosen_phase)
-                        switched = True
-                    except Exception as exc:
-                        logger.warning(
-                            "Failed to set phase %d for TLS %s: %s",
-                            chosen_phase, tls_id, exc,
-                        )
-                        chosen_phase = current_phase
+                    # When a yellow transition was just initiated inside decide(),
+                    # is_transitioning is True and the phase was already set there.
+                    if not ctrl.is_transitioning:
+                        try:
+                            traci.trafficlight.setPhase(tls_id, chosen_phase)
+                        except Exception as exc:
+                            logger.warning(
+                                "Failed to set phase %d for TLS %s: %s",
+                                chosen_phase, tls_id, exc,
+                            )
+                            chosen_phase = current_phase
+                    switched = True
 
                 decisions.append({
                     "step": simulation_step,
@@ -522,6 +722,7 @@ class NetworkController:
                     "current_phase": current_phase,
                     "selected_phase": chosen_phase,
                     "switch_executed": switched,
+                    "decision_reason": decision_reason,
                     "phase_scores": phase_scores,
                 })
 
@@ -618,9 +819,12 @@ def run_standalone_network(
     log_dir: Union[str, Path],
     phase_interval: int = 10,
     emission_interval: int = 50,
-    cooldown: int = 30,
+    cooldown: int = 60,
+    min_green: int = 20,
     weights: Optional[Dict[str, float]] = None,
     gui_sleep: float = 0.0,
+    yellow_duration: int = 5,
+    max_red_steps: int = 300,
 ) -> None:
     """Run SUMO standalone with network-wide emission-aware traffic control.
 
@@ -633,6 +837,9 @@ def run_standalone_network(
         tls_ids=tls_ids,
         weights=weights,
         cooldown=cooldown,
+        min_green=min_green,
+        yellow_duration=yellow_duration,
+        max_red_steps=max_red_steps,
     )
     logger.info("Starting network-wide SUMO: %s", " ".join(sumo_cmd))
     traci.start(sumo_cmd)
@@ -692,6 +899,208 @@ def step_network(
     )
 
 
+# ---------------------------------------------------------------------------
+# Passive intersection helpers (always-green for non-controlled TLS)
+# ---------------------------------------------------------------------------
+
+def make_tls_always_green(tls_ids: List[str]) -> Dict[str, str]:
+    """Build the all-green state string for each TLS.
+
+    Call once after traci.start(). Returns {tls_id: state_string} to pass
+    to apply_always_green() every simulation step.
+    """
+    import traci
+    green_states: Dict[str, str] = {}
+    for tls_id in tls_ids:
+        try:
+            n = len(traci.trafficlight.getRedYellowGreenState(tls_id))
+            green_states[tls_id] = "G" * n
+            logger.info("TLS %s: %d signals pinned to all-green", tls_id, n)
+        except Exception as exc:
+            logger.warning("Could not read TLS %s state: %s", tls_id, exc)
+    return green_states
+
+
+def apply_always_green(green_states: Dict[str, str]) -> None:
+    """Re-apply all-green states every step so SUMO's program cannot override them."""
+    import traci
+    for tls_id, state in green_states.items():
+        try:
+            traci.trafficlight.setRedYellowGreenState(tls_id, state)
+        except Exception as exc:
+            logger.debug("Could not apply green state to TLS %s: %s", tls_id, exc)
+
+
+# ---------------------------------------------------------------------------
+# Fixed-cycle controller (real-world baseline)
+# ---------------------------------------------------------------------------
+
+class FixedCycleController:
+    """Fixed-cycle traffic light controller for real-world baseline comparison.
+
+    Rotates through a defined list of green phases on a fixed timer, inserting
+    a yellow intergreen between each.  Implements the same step_all /
+    write_run_summary interface as NetworkController so carla_sync can use it
+    as a drop-in replacement.
+
+    Timing is supplied in simulation steps.  Convert from real-world seconds
+    using the same _sec_to_steps helper used for NetworkController.
+
+    Typical real-world suburban 4-way: 30 s green / 5 s yellow per phase
+    → ~140 s full cycle.
+    """
+
+    def __init__(
+        self,
+        tls_ids: Optional[List[str]] = None,
+        phases: Optional[List[int]] = None,
+        green_steps: int = 600,
+        yellow_steps: int = 100,
+    ) -> None:
+        self.tls_ids = tls_ids
+        self.phases = phases or [0, 1, 2, 4]
+        self.green_steps = green_steps
+        self.yellow_steps = yellow_steps
+        self._state: Dict[str, Dict] = {}
+        self._initialized = False
+        self._cumulative_co2_mg = 0.0
+        self._cumulative_fuel_ml = 0.0
+        self._snapshot_count = 0
+
+    def _init(self) -> None:
+        import traci
+        ids = self.tls_ids or list(traci.trafficlight.getIDList())
+        for tls_id in ids:
+            self._state[tls_id] = {
+                "phase_idx": 0,
+                "steps_in_phase": 0,
+                "in_yellow": False,
+            }
+            try:
+                traci.trafficlight.setPhase(tls_id, self.phases[0])
+            except Exception:
+                pass
+        self._initialized = True
+        logger.info(
+            "FixedCycleController: %d TLS | phases=%s | green=%d steps | yellow=%d steps",
+            len(self._state), self.phases, self.green_steps, self.yellow_steps,
+        )
+
+    def step_all(
+        self,
+        simulation_step: int,
+        telemetry_dir: Union[str, Path],
+        log_dir: Optional[Union[str, Path]] = None,
+        phase_interval: int = 1,
+        emission_interval: int = 50,
+    ) -> Dict:
+        import traci
+        if not self._initialized:
+            self._init()
+
+        decisions: List[Dict] = []
+        net_co2 = 0.0
+        net_fuel = 0.0
+
+        for tls_id, state in self._state.items():
+            try:
+                current_phase = traci.trafficlight.getPhase(tls_id)
+            except Exception:
+                continue
+
+            state["steps_in_phase"] += 1
+            switched = False
+            reason = ""
+
+            if state["in_yellow"]:
+                if state["steps_in_phase"] >= self.yellow_steps:
+                    state["phase_idx"] = (state["phase_idx"] + 1) % len(self.phases)
+                    next_phase = self.phases[state["phase_idx"]]
+                    try:
+                        traci.trafficlight.setPhase(tls_id, next_phase)
+                    except Exception:
+                        pass
+                    state["in_yellow"] = False
+                    state["steps_in_phase"] = 0
+                    switched = True
+                    reason = "fixed_cycle"
+                    logger.debug("FixedCycle TLS %s → phase %d", tls_id, next_phase)
+            else:
+                if state["steps_in_phase"] >= self.green_steps:
+                    yellow_phases = _find_yellow_phases(tls_id)
+                    try:
+                        if yellow_phases:
+                            traci.trafficlight.setPhase(tls_id, yellow_phases[0])
+                        else:
+                            programs = traci.trafficlight.getCompleteRedYellowGreenDefinition(tls_id)
+                            cur_state = programs[0].phases[current_phase].state
+                            traci.trafficlight.setRedYellowGreenState(
+                                tls_id, _synthesize_yellow_state(cur_state)
+                            )
+                    except Exception:
+                        pass
+                    state["in_yellow"] = True
+                    state["steps_in_phase"] = 0
+                    switched = True
+                    reason = "fixed_cycle_yellow"
+
+            if switched and log_dir:
+                decisions.append({
+                    "step": simulation_step,
+                    "tls_id": tls_id,
+                    "current_phase": current_phase,
+                    "selected_phase": self.phases[state["phase_idx"]],
+                    "switch_executed": True,
+                    "decision_reason": reason,
+                    "phase_scores": {},
+                })
+
+        do_emit = emission_interval > 0 and simulation_step % emission_interval == 0 and simulation_step > 0
+        if do_emit:
+            for tls_id in self._state:
+                try:
+                    lanes = set(traci.trafficlight.getControlledLanes(tls_id))
+                    for lane_id in lanes:
+                        for vid in traci.lane.getLastStepVehicleIDs(lane_id):
+                            net_co2  += traci.vehicle.getCO2Emission(vid)
+                            net_fuel += traci.vehicle.getFuelConsumption(vid)
+                except Exception:
+                    pass
+            self._cumulative_co2_mg  += net_co2
+            self._cumulative_fuel_ml += net_fuel
+            self._snapshot_count += 1
+
+        if log_dir and decisions:
+            _append_decision_log(decisions, log_dir)
+
+        return {
+            "step": simulation_step,
+            "network_totals": {
+                "co2_mg": net_co2,
+                "co2_kg": round(net_co2 / 1_000_000, 6),
+            },
+        }
+
+    def write_run_summary(
+        self,
+        log_dir: Union[str, Path],
+        additional: Optional[Dict] = None,
+    ) -> None:
+        summary: Dict = {
+            "controller_type": "fixed_cycle",
+            "total_co2_kg": round(self._cumulative_co2_mg / 1_000_000, 4),
+            "total_fuel_ml": round(self._cumulative_fuel_ml, 2),
+            "emission_snapshots_collected": self._snapshot_count,
+            "controlled_intersections": list(self._state.keys()),
+            "fixed_cycle_phases": self.phases,
+            "green_steps": self.green_steps,
+            "yellow_steps": self.yellow_steps,
+        }
+        if additional:
+            summary.update(additional)
+        _write_run_summary(summary, log_dir)
+
+
 __all__ = [
     # Backward-compatible single-intersection API
     "change_light_phase",
@@ -707,11 +1116,18 @@ __all__ = [
     "NetworkController",
     "run_standalone_network",
     "step_network",
+    # Fixed-cycle baseline
+    "FixedCycleController",
+    # Passive intersection helpers (always-green)
+    "make_tls_always_green",
+    "apply_always_green",
     # Telemetry helpers
     "_write_network_snapshot",
     "_append_decision_log",
     "_write_run_summary",
     "_build_tls_phase_map",
+    "_find_yellow_phases",
+    "_synthesize_yellow_state",
     "_collect_phase_metrics",
     "_score_phases",
 ]

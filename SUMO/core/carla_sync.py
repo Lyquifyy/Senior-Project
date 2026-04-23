@@ -153,6 +153,7 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
     sumo_simulation = SumoSimulation(
         args.sumo_cfg_file, args.step_length, args.sumo_host,
         args.sumo_port, args.sumo_gui, args.client_order,
+        extra_args=getattr(args, "sumo_extra_args", None),
     )
     carla_simulation = CarlaSimulation(args.carla_host, args.carla_port, args.step_length)
     synchronization = SimulationSynchronization(
@@ -169,26 +170,69 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
     log_dir.mkdir(parents=True, exist_ok=True)
     emission_dir.mkdir(parents=True, exist_ok=True)
 
-    # Intervals and weights from scenario controller config (set in run_carla_mode)
-    phase_interval = getattr(args, "controller_phase_interval", 200)
-    emission_interval_steps = getattr(args, "controller_emission_interval", 400)
-    cooldown = getattr(args, "controller_cooldown", 30)
+    # Config values are in real-world seconds; convert to simulation steps.
+    _sl = args.step_length  # e.g. 0.05 s/step for CARLA
+    def _sec_to_steps(attr: str, default_sec: float) -> int:
+        return max(1, int(getattr(args, attr, default_sec) / _sl))
+
+    phase_interval        = _sec_to_steps("controller_phase_interval", 10)
+    emission_interval_steps = _sec_to_steps("controller_emission_interval", 50)
+    cooldown              = _sec_to_steps("controller_cooldown", 60)
+    min_green             = _sec_to_steps("controller_min_green", 20)
+    yellow_duration       = _sec_to_steps("controller_yellow_duration", 5)
+    max_red_steps         = _sec_to_steps("controller_max_red_steps", 300)
     weights = getattr(args, "controller_weights", None)
+
+    logger.info(
+        "CARLA co-sim: step_length=%.3fs — phase_interval=%d steps, "
+        "cooldown=%d steps, min_green=%d steps, yellow=%d steps",
+        _sl, phase_interval, cooldown, min_green, yellow_duration,
+    )
 
     # Network-wide controller (Carbon-Emission-Traffic scenario)
     network_controller: Optional[core_traffic.NetworkController] = None
+    passive_green_states: dict = {}
+    baseline_mode = getattr(args, "baseline_mode", False)
     if enable_control and control_scope == "all":
+        import traci as _traci
         tls_ids = getattr(args, "tls_ids", None)
-        network_controller = core_traffic.NetworkController(
-            tls_ids=tls_ids,
-            weights=weights,
-            cooldown=cooldown,
-        )
-        logger.info(
-            "CARLA co-sim: network-wide controller active (tls_ids=%s, "
-            "phase_interval=%d, emission_interval=%d)",
-            tls_ids, phase_interval, emission_interval_steps,
-        )
+
+        if baseline_mode:
+            network_controller = core_traffic.FixedCycleController(
+                tls_ids=tls_ids,
+                phases=getattr(args, "baseline_phases", [0, 1, 2, 4]),
+                green_steps=max(1, int(getattr(args, "baseline_green_seconds", 30) / _sl)),
+                yellow_steps=max(1, int(getattr(args, "baseline_yellow_seconds", 5) / _sl)),
+            )
+            logger.info(
+                "CARLA co-sim: BASELINE fixed-cycle controller (tls_ids=%s, "
+                "green=%.0fs, yellow=%.0fs)",
+                tls_ids,
+                getattr(args, "baseline_green_seconds", 30),
+                getattr(args, "baseline_yellow_seconds", 5),
+            )
+        else:
+            network_controller = core_traffic.NetworkController(
+                tls_ids=tls_ids,
+                weights=weights,
+                cooldown=cooldown,
+                min_green=min_green,
+                yellow_duration=yellow_duration,
+                max_red_steps=max_red_steps,
+            )
+            logger.info(
+                "CARLA co-sim: network-wide controller active (tls_ids=%s, "
+                "phase_interval=%d steps, emission_interval=%d steps)",
+                tls_ids, phase_interval, emission_interval_steps,
+            )
+
+        # Pin every non-controlled intersection to all-green so they never
+        # obstruct traffic. State is re-applied every step to prevent SUMO's
+        # own program from overriding it.
+        controlled = set(tls_ids or [])
+        passive_ids = [t for t in _traci.trafficlight.getIDList() if t not in controlled]
+        passive_green_states = core_traffic.make_tls_always_green(passive_ids)
+        logger.info("Passive TLS pinned to all-green: %s", passive_ids)
 
     # Camera setup (unchanged)
     traffic_cameras = []
@@ -238,6 +282,16 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
         )
         frame_consumer.start()
 
+        if network_controller is not None and not baseline_mode:
+            cam_phase_map = getattr(args, "cam_phase_map", None)
+            if cam_phase_map:
+                network_controller.set_frame_consumer(frame_consumer, cam_phase_map)
+            else:
+                logger.warning(
+                    "Cameras active but no cam_phase_map configured — "
+                    "traffic control will fall back to TraCI emission scoring."
+                )
+
     # -----------------------------------------------------------------------
     # Main loop
     # -----------------------------------------------------------------------
@@ -246,6 +300,9 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
         while True:
             start = time.time()
             synchronization.tick()
+
+            if passive_green_states:
+                core_traffic.apply_always_green(passive_green_states)
 
             if enable_control:
                 if network_controller is not None:

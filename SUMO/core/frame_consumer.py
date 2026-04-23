@@ -54,6 +54,14 @@ _YOLO_VEHICLE_CLASSES = {2, 3, 5, 7}  # car, motorcycle, bus, truck
 _YOLO_CONFIDENCE = 0.25
 _LOCK_THRESHOLD  = 0.90  # confidence at which a classification is locked in
 
+# Emission weight per vehicle type — used to score approaches for traffic control
+_EMISSION_WEIGHTS: dict[str, float] = {
+    "Large (Bus/Truck)":    4.0,
+    "Medium (SUV/Microbus)": 2.0,
+    "Small (Sedan/Minivan)": 1.0,
+    "No vehicle":            0.0,
+}
+
 # ---------------------------------------------------------------------------
 # Per-camera ROI — normalized (x_min, y_min, x_max, y_max) as fractions of
 # image dimensions.  Only vehicles whose YOLO center falls inside this box
@@ -186,6 +194,7 @@ class FrameConsumer:
         self._last_frame_hash: dict[str, int] = {}
         self._locked_result: dict[str, dict | None] = {}   # cam_id -> locked classification
         self._locked_center: dict[str, tuple | None] = {}  # cam_id -> (cx, cy) of locked vehicle
+        self._approach_summary: dict[str, dict] = {}       # cam_id -> {vehicle_count, emission_score, dominant_type}
 
         os.makedirs(self._output_dir, exist_ok=True)
         logger.info("[FrameConsumer] Output directory: %s", self._output_dir)
@@ -323,10 +332,24 @@ class FrameConsumer:
                                     result['predicted_class'],
                                     result['confidence'] * 100,
                                 )
+
+                            # Update approach summary for traffic control
+                            vehicle_type = result.get('predicted_class') or 'No vehicle'
+                            n_vehicles = len(roi_boxes)
+                            self._approach_summary[cam_id] = {
+                                'vehicle_count': n_vehicles,
+                                'emission_score': _EMISSION_WEIGHTS.get(vehicle_type, 1.0) * n_vehicles,
+                                'dominant_type': vehicle_type,
+                            }
                         else:
-                            # No vehicle in ROI — clear the lock for this camera
+                            # No vehicle in ROI — clear the lock and approach summary
                             self._locked_result[cam_id] = None
                             self._locked_center[cam_id] = None
+                            self._approach_summary[cam_id] = {
+                                'vehicle_count': 0,
+                                'emission_score': 0.0,
+                                'dominant_type': None,
+                            }
                     else:
                         logger.warning(
                             "[FrameConsumer] YOLO not available — skipping frame %d", count
@@ -364,6 +387,17 @@ class FrameConsumer:
             cv2.imwrite(path.replace('.jpg', '_bgr.jpg'),
                         cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
             self._total_saved[cam_id] += 1
+
+    def get_approach_summary(self, cam_id: str) -> dict:
+        """Return the latest vehicle count and emission score for one camera approach.
+
+        Safe to call from any thread; returns zeros if no data yet.
+        """
+        return self._approach_summary.get(str(cam_id), {
+            'vehicle_count': 0,
+            'emission_score': 0.0,
+            'dominant_type': None,
+        })
 
     def _log_summary(self):
         if not self._total_received:

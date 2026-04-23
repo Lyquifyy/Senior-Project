@@ -122,7 +122,10 @@ def _run_standalone_network(scenario_dir: Path, config: dict, args) -> None:
     ctrl_cfg = config.get("controller", {})
     phase_interval = ctrl_cfg.get("phase_interval", 10)
     emission_interval = ctrl_cfg.get("emission_interval", 50)
-    cooldown = ctrl_cfg.get("cooldown", 30)
+    cooldown = ctrl_cfg.get("cooldown", 60)
+    min_green = ctrl_cfg.get("min_green", 20)
+    yellow_duration = ctrl_cfg.get("yellow_duration", 5)
+    max_red_steps = ctrl_cfg.get("max_red_steps", 300)
     weights = ctrl_cfg.get("weights", None)
 
     _generate_trips_if_needed(scenario_dir, config, args)
@@ -132,9 +135,9 @@ def _run_standalone_network(scenario_dir: Path, config: dict, args) -> None:
 
     logger.info(
         "Launching network-wide controller: %d intersections, "
-        "phase_interval=%d, emission_interval=%d, cooldown=%d",
+        "phase_interval=%d, emission_interval=%d, cooldown=%d, min_green=%d, yellow_duration=%d",
         len(tls_ids) if tls_ids else 0,
-        phase_interval, emission_interval, cooldown,
+        phase_interval, emission_interval, cooldown, min_green, yellow_duration,
     )
     run_standalone_network(
         sumo_cmd=sumo_cmd,
@@ -144,6 +147,9 @@ def _run_standalone_network(scenario_dir: Path, config: dict, args) -> None:
         phase_interval=phase_interval,
         emission_interval=emission_interval,
         cooldown=cooldown,
+        min_green=min_green,
+        yellow_duration=yellow_duration,
+        max_red_steps=max_red_steps,
         weights=weights,
         gui_sleep=0.5 if getattr(args, "sumo_gui", False) else 0.0,
     )
@@ -160,8 +166,13 @@ def run_carla_mode(scenario_dir: Path, config: dict, args) -> None:
 
     sumocfg = config["sumocfg"]
     tls_id = args.tls_id or config.get("tls_id", "238")
-    emission_dir = scenario_dir / config.get("emission_dir", "emissionData")
-    log_dir = scenario_dir / config.get("log_dir", "logs")
+    baseline_mode = getattr(args, "baseline", False)
+    args.baseline_mode = baseline_mode
+
+    # Use separate output dirs so adaptive and baseline logs don't overwrite each other
+    dir_suffix = "_baseline" if baseline_mode else ""
+    emission_dir = scenario_dir / (config.get("emission_dir", "emissionData") + dir_suffix)
+    log_dir      = scenario_dir / (config.get("log_dir", "logs") + dir_suffix)
     emission_dir.mkdir(parents=True, exist_ok=True)
     log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -170,15 +181,38 @@ def run_carla_mode(scenario_dir: Path, config: dict, args) -> None:
     args.tls_ids = config.get("tls_ids")
     args.log_dir = str(log_dir)
     ctrl_cfg = config.get("controller", {})
-    args.controller_phase_interval = ctrl_cfg.get("phase_interval", 200)
-    args.controller_emission_interval = ctrl_cfg.get("emission_interval", 400)
-    args.controller_cooldown = ctrl_cfg.get("cooldown", 30)
+    # All values stored as real-world seconds; carla_sync converts to steps.
+    args.controller_phase_interval = ctrl_cfg.get("phase_interval", 10)
+    args.controller_emission_interval = ctrl_cfg.get("emission_interval", 50)
+    args.controller_cooldown = ctrl_cfg.get("cooldown", 60)
+    args.controller_min_green = ctrl_cfg.get("min_green", 20)
+    args.controller_yellow_duration = ctrl_cfg.get("yellow_duration", 5)
+    args.controller_max_red_steps = ctrl_cfg.get("max_red_steps", 300)
     args.controller_weights = ctrl_cfg.get("weights")
+    raw_map = ctrl_cfg.get("cam_phase_map")
+    args.cam_phase_map = {str(k): int(v) for k, v in raw_map.items()} if raw_map else None
+
+    # Baseline-specific settings
+    baseline_cfg = config.get("baseline", {})
+    args.baseline_phases       = baseline_cfg.get("phases", [0, 1, 2, 4])
+    args.baseline_green_seconds  = baseline_cfg.get("green_seconds", 30)
+    args.baseline_yellow_seconds = baseline_cfg.get("yellow_seconds", 5)
+
+    # Override SUMO output paths so both runs' files coexist
+    args.sumo_extra_args = [
+        "--tripinfo-output", str(log_dir / "sumo_tripinfo.xml"),
+        "--summary-output",  str(log_dir / "sumo_summary.xml"),
+        "--emission-output", str(emission_dir / "sumo_emissions.xml"),
+    ]
 
     _generate_trips_if_needed(scenario_dir, config, args)
 
     args.sumo_cfg_file = str(scenario_dir / sumocfg)
     args.tls_id = tls_id
+
+    label = "BASELINE (fixed-cycle)" if baseline_mode else "ADAPTIVE (camera-weighted)"
+    logger.info("Run mode: %s — logs → %s", label, log_dir)
+
     run_sync_loop(args, emission_dir, scenario_dir)
 
 
@@ -221,6 +255,10 @@ def main():
         help="Traffic light ownership in CARLA co-sim; use 'sumo' with --enable-traffic-control",
     )
     parser.add_argument("--enable-traffic-control", action="store_true")
+    parser.add_argument(
+        "--baseline", action="store_true",
+        help="Run fixed-cycle baseline controller instead of adaptive camera-weighted controller",
+    )
     parser.add_argument("--enable-camera", action="store_true")
     parser.add_argument("--camera-tls-id", default="70")
     parser.add_argument("--camera-tls-ids", default=None)

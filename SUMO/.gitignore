@@ -20,6 +20,9 @@ CARLA/traffic_camera.py
 
 # Runtime output
 Carbon-Emission-Traffic/logs/
+Carbon-Emission-Traffic/logs_baseline/
+Carbon-Emission-Traffic/emissionData/
+Carbon-Emission-Traffic/emissionData_baseline/
 camera_output/
 __pycache__/
 *.pyc
