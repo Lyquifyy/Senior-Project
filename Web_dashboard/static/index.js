@@ -3,6 +3,83 @@ const co2History  = [];
 const waitHistory = [];
 const MAX_HISTORY = 30;
 
+// ── Camera tabs — built dynamically from what's actually on disk ─────
+(() => {
+    const tabsEl  = document.getElementById('cameraTabs');
+    const hintEl  = document.getElementById('cameraHint');
+    const imgEl   = document.getElementById('cameraFeed');
+    if (!tabsEl || !imgEl) return;
+
+    let currentCams = [];
+    let activeCam   = null;
+
+    const prettyLabel = cam => {
+        // e.g. "nw" → "NW", "south" → "South", "east_2" → "East 2"
+        const [base, suffix] = cam.split('_');
+        const core = base.length <= 2 ? base.toUpperCase()
+                                      : base.charAt(0).toUpperCase() + base.slice(1);
+        return suffix ? `${core} ${suffix}` : core;
+    };
+
+    const rebuildTabs = cams => {
+        if (hintEl && hintEl.parentNode === tabsEl) tabsEl.removeChild(hintEl);
+        tabsEl.innerHTML = '';
+        cams.forEach(cam => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'camera-tab';
+            btn.dataset.cam = cam;
+            const pretty = prettyLabel(cam);
+            btn.textContent = pretty;
+            btn.setAttribute('aria-label', `Show ${pretty} camera feed`);
+            btn.setAttribute('aria-pressed', cam === activeCam ? 'true' : 'false');
+            btn.addEventListener('click', () => selectCam(cam));
+            tabsEl.appendChild(btn);
+        });
+    };
+
+    const selectCam = cam => {
+        activeCam = cam;
+        tabsEl.querySelectorAll('.camera-tab').forEach(t => {
+            const on = t.dataset.cam === cam;
+            t.classList.toggle('active', on);
+            t.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        // Cache-bust so the browser drops the old MJPEG connection.
+        imgEl.src = `/camera/${cam}?t=${Date.now()}`;
+        imgEl.alt = `Live CARLA camera feed — ${prettyLabel(cam)} approach`;
+    };
+
+    const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+
+    const poll = async () => {
+        try {
+            const r = await fetch('/cameras', { cache: 'no-store' });
+            if (!r.ok) return;
+            const data = await r.json();
+            const cams = (data.on_disk || []).slice().sort();
+            if (!same(cams, currentCams)) {
+                currentCams = cams;
+                if (!activeCam || !cams.includes(activeCam)) activeCam = cams[0] || null;
+                rebuildTabs(cams);
+                if (activeCam) selectCam(activeCam);
+            }
+        } catch (_) { /* server transient — just retry next tick */ }
+    };
+
+    // Poll aggressively at first (cameras appear seconds after co-sim starts),
+    // then slow down once we have tabs.
+    poll();
+    const id = setInterval(() => {
+        poll();
+        if (currentCams.length > 0) {
+            clearInterval(id);
+            // Slower steady-state poll in case cameras drop/reappear.
+            setInterval(poll, 5000);
+        }
+    }, 1000);
+})();
+
 // ── Connection ──────────────────────────────────────
 socket.on('connect', () => {
     const el = document.getElementById('statusText');
@@ -18,10 +95,11 @@ socket.on('disconnect', () => {
 
 // ── Simulation Update ───────────────────────────────
 socket.on('simulation_update', (data) => {
-    // Sidebar metrics
-    document.getElementById('simStep').textContent      = data.step;
-    document.getElementById('co2Value').textContent     = data.co2.toFixed(2);
-    document.getElementById('waitValue').textContent    = data.avg_wait_time.toFixed(1);
+    // Sidebar metrics — values come from the server already rounded to
+    // whole numbers; just display them.
+    document.getElementById('simStep').textContent       = data.step;
+    document.getElementById('co2Value').textContent      = Math.round(data.co2);
+    document.getElementById('waitValue').textContent     = Math.round(data.avg_wait_time);
     document.getElementById('totalVehicles').textContent = data.total_vehicles;
 
     // Vehicle counters with bump animation
@@ -58,6 +136,12 @@ function bumpCounter(id, newVal) {
     if (!el) return;
     const prev = parseInt(el.textContent, 10);
     el.textContent = newVal;
+    // Keep the accessible name in sync with the visible number so screen
+    // reader users navigating to the counter hear the current count without
+    // flooding them with every tick's update.
+    const direction = id.replace('count', '').toLowerCase();
+    el.setAttribute('aria-label',
+        `${newVal} vehicle${newVal === 1 ? '' : 's'} at ${direction} approach`);
     if (newVal !== prev) {
         el.classList.remove('bump');
         void el.offsetWidth; // force reflow to restart transition
@@ -72,6 +156,10 @@ function updateLightUI(containerId, activeColor) {
     container.querySelectorAll('.light').forEach(l => l.classList.remove('active'));
     const target = container.querySelector(`.${activeColor.toLowerCase()}`);
     if (target) target.classList.add('active');
+    // Update the accessible name so signal state is conveyed non-visually.
+    const direction = containerId.replace('light', '').toLowerCase();
+    container.setAttribute('aria-label',
+        `${direction.charAt(0).toUpperCase() + direction.slice(1)} signal: ${activeColor}`);
 }
 
 // ── Chart Drawing ────────────────────────────────────
@@ -115,8 +203,8 @@ function drawChart(canvasId, history, lineColor, fillColor) {
         ctx.lineTo(W - PAD_R, y);
         ctx.stroke();
 
-        ctx.fillStyle = '#6b7280';
-        ctx.fillText(v.toFixed(1), PAD_L - 4, y + 4);
+        ctx.fillStyle = '#9ba1b3';
+        ctx.fillText(Math.round(v).toString(), PAD_L - 4, y + 4);
     }
 
     // Filled area under line

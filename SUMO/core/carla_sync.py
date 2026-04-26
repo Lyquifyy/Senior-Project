@@ -12,6 +12,7 @@ Traffic control behaviour:
 """
 
 import logging
+import math
 import os
 import sys
 import time
@@ -148,6 +149,163 @@ class SimulationSynchronization(object):
         self.sumo.close()
 
 
+# ---------------------------------------------------------------------------
+# Geometry-driven camera placement
+# ---------------------------------------------------------------------------
+#
+# CARLA traffic-light actor IDs are assigned at spawn time and aren't stable
+# across sessions. Hardcoding IDs (70/71/72/73 + per-ID yaw/offset dicts) was
+# fragile — a different session assigns different IDs and the cameras all
+# collapse to the fallback anchor. Instead, discover the intersection's
+# traffic-light group at runtime and derive each camera's placement from its
+# own geometry relative to the group centroid.
+# ---------------------------------------------------------------------------
+
+def _group_traffic_lights(world) -> list[list]:
+    """Return groups of traffic lights in the current CARLA world."""
+    all_tls = list(world.get_actors().filter("traffic.traffic_light*"))
+    visited: set[int] = set()
+    groups: list[list] = []
+    for tl in all_tls:
+        if tl.id in visited:
+            continue
+        try:
+            g = list(tl.get_group_traffic_lights())
+        except Exception:
+            g = [tl]
+        for t in g:
+            visited.add(t.id)
+        groups.append(g)
+    return groups
+
+
+def _centroid_xy(group) -> tuple[float, float]:
+    locs = [t.get_location() for t in group]
+    cx = sum(l.x for l in locs) / len(locs)
+    cy = sum(l.y for l in locs) / len(locs)
+    return cx, cy
+
+
+def _pick_intersection_group(world, target_xy: Optional[tuple[float, float]] = None):
+    """Pick the best traffic-light group for cameras.
+
+    If target_xy is provided, picks the group whose centroid is closest.
+    Otherwise scores by quadrant coverage × group size (favouring 4-way junctions).
+    Returns None if no groups exist.
+    """
+    groups = _group_traffic_lights(world)
+    if not groups:
+        return None
+
+    if target_xy is not None:
+        tx, ty = target_xy
+        return min(
+            groups,
+            key=lambda g: (lambda c: (c[0] - tx) ** 2 + (c[1] - ty) ** 2)(_centroid_xy(g)),
+        )
+
+    def score(g) -> float:
+        cx, cy = _centroid_xy(g)
+        locs = [t.get_location() for t in g]
+        angles = [math.degrees(math.atan2(l.y - cy, l.x - cx)) % 360 for l in locs]
+        quads = len(set(int(a / 90) for a in angles))
+        return quads * 100 + len(g)
+
+    return max(groups, key=score)
+
+
+_COMPASS_8 = ("east", "ne", "north", "nw", "west", "sw", "south", "se")
+
+
+def _compass_label(angle_deg: float) -> str:
+    """Map a [0, 360) angle to an 8-direction compass label.
+
+    Junctions in Town03 are often diagonally oriented — their 4 lights sit at
+    NE/NW/SE/SW corners rather than N/E/S/W. A 4-direction snap collapses
+    diagonal corners into the same label. Using 8 directions keeps each corner
+    distinct no matter the junction orientation.
+    """
+    a = angle_deg % 360
+    # Each 45° slice centred on a cardinal direction.
+    bucket = int(((a + 22.5) % 360) // 45)
+    return _COMPASS_8[bucket]
+
+
+def _compute_camera_placements(group, camera_height: float = 8.0,
+                               forward_offset_m: float = 0.0,
+                               lateral_offset_m: float = 0.0,
+                               pitch_deg: float = -20.0,
+                               yaw_offset_deg: float = 0.0
+                               ) -> list[tuple[str, "carla.Transform"]]:
+    """Derive (label, carla.Transform) for each light in the group.
+
+    Each camera is mounted on its traffic light's pole and looks in the SAME
+    direction as the light's bulb — which is the direction drivers approaching
+    the intersection on the lane this light controls are coming from. So the
+    camera naturally frames "the stop line + its approach lane", like a real
+    red-light / enforcement camera.
+
+    Parameters
+    ----------
+    camera_height : float
+        Metres above the traffic-light actor's ground location.
+    forward_offset_m : float
+        Metres to shift the camera ALONG its facing direction (+ = out toward
+        the lane it's watching; − = back into the intersection).
+    lateral_offset_m : float
+        Metres to shift the camera PERPENDICULAR to its facing direction, to
+        centre it over the lane set. + = camera's right, − = camera's left.
+        Poles usually sit at one edge of the road, so a few metres of lateral
+        offset is typical to centre the view.
+    pitch_deg : float
+        Downward pitch. −20° frames the road surface without losing context.
+    yaw_offset_deg : float
+        Added to the light's yaw. Common values: 0, 90, 180, 270 depending on
+        how CARLA authored the light's forward direction on your map.
+    """
+    import carla
+    placements: list[tuple[str, carla.Transform]] = []
+    used_labels: dict[str, int] = {}
+    for tl in group:
+        tl_transform = tl.get_transform()
+        tl_loc = tl_transform.location
+        tl_yaw = tl_transform.rotation.yaw
+
+        # Camera yaw matches the light's own facing direction (plus optional
+        # offset for maps where the reported yaw is 90/180/270 from expected).
+        camera_yaw = tl_yaw + yaw_offset_deg
+
+        # Forward unit vector (CARLA yaw 0° = +X, left-handed coord system →
+        # yaw 90° = +Y). Right vector is 90° CW from forward.
+        yaw_rad = math.radians(camera_yaw)
+        fx = math.cos(yaw_rad)
+        fy = math.sin(yaw_rad)
+        # Camera's right = rotate forward 90° clockwise in CARLA's Z-up
+        # left-handed system: (fx, fy) → (-fy, fx) gives left, so right is
+        # (fy, -fx). We use the driver-intuitive convention "+ = right".
+        rx = fy
+        ry = -fx
+
+        cam_x = tl_loc.x + fx * forward_offset_m + rx * lateral_offset_m
+        cam_y = tl_loc.y + fy * forward_offset_m + ry * lateral_offset_m
+        cam_z = tl_loc.z + camera_height
+
+        # Label by the compass direction the camera is *pointing* — that's the
+        # approach lane this feed is watching.
+        label = _compass_label(camera_yaw)
+        used_labels[label] = used_labels.get(label, 0) + 1
+        if used_labels[label] > 1:
+            label = f"{label}_{used_labels[label]}"
+
+        transform = carla.Transform(
+            carla.Location(x=cam_x, y=cam_y, z=cam_z),
+            carla.Rotation(pitch=pitch_deg, yaw=camera_yaw, roll=0.0),
+        )
+        placements.append((label, transform))
+
+    return placements
+
+
 def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
     """Run CARLA-SUMO co-simulation loop. emission_dir and scenario_dir are absolute."""
     sumo_simulation = SumoSimulation(
@@ -234,40 +392,85 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
         passive_green_states = core_traffic.make_tls_always_green(passive_ids)
         logger.info("Passive TLS pinned to all-green: %s", passive_ids)
 
-    # Camera setup (unchanged)
+    # Camera setup — geometry-driven (ignores the legacy ID-based lists and
+    # instead discovers the target junction's traffic-light group at runtime).
     traffic_cameras = []
     frame_consumer = None
     camera_feeder = None
+    camera_labels: list[str] = []
     if getattr(args, "enable_camera", False):
-        camera_feeder = None
         if _CORE_TRAFFIC_CAMERA_AVAILABLE:
             camera_feeder = MultiCameraFeeder()
 
         try:
-            cam_ids_str = (
-                getattr(args, "camera_tls_ids", None)
-                or getattr(args, "camera_tls_id", None)
-                or args.tls_id
-            )
-            camera_ids = [int(x.strip()) for x in str(cam_ids_str).split(",")]
-            base_out = getattr(args, "camera_output_dir", "camera_output")
-            for camera_id in camera_ids:
-                out_dir = (
-                    os.path.join(base_out, f"camera_{camera_id}")
-                    if len(camera_ids) > 1
-                    else base_out
+            # Resolve target intersection in CARLA world coordinates. Priority:
+            #   1. Explicit args.camera_target_xy (env override).
+            #   2. SUMO junction position for the controlled TLS, transformed
+            #      via BridgeHelper.offset — this is the "right" one because
+            #      it's the junction SUMO is actually running logic on.
+            #   3. None → _pick_intersection_group falls back to best-scored
+            #      4-way group in the world.
+            target_xy = getattr(args, "camera_target_xy", None)
+            if target_xy is None:
+                args_tls_ids = getattr(args, "tls_ids", None) or []
+                sumo_tls = (
+                    (args_tls_ids[0] if args_tls_ids else None)
+                    or getattr(args, "tls_id", None)
                 )
-                traffic_cameras.append(
-                    TrafficLightCamera(
-                        carla_simulation.world,
-                        tls_id=str(camera_id),
-                        output_dir=out_dir,
-                        save_interval=20,
-                        frame_callback=(camera_feeder.on_frame if camera_feeder is not None else None),
+                if sumo_tls:
+                    try:
+                        import traci as _traci
+                        sx, sy = _traci.junction.getPosition(sumo_tls)
+                        ox, oy = BridgeHelper.offset
+                        # SUMO→CARLA: carla.x = sumo.x - off.x ; carla.y = -(sumo.y - off.y)
+                        carla_x = sx - ox
+                        carla_y = -(sy - oy)
+                        target_xy = (carla_x, carla_y)
+                        logger.info(
+                            "Camera target: SUMO junction %s at SUMO (%.1f, %.1f) "
+                            "→ CARLA (%.1f, %.1f)",
+                            sumo_tls, sx, sy, carla_x, carla_y,
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "Could not resolve SUMO junction %s position: %s — "
+                            "falling back to best-scored 4-way group.",
+                            sumo_tls, exc,
+                        )
+            group = _pick_intersection_group(carla_simulation.world, target_xy=target_xy)
+            if group is None:
+                logger.warning("Camera setup: no traffic-light groups found in world.")
+            else:
+                cx, cy = _centroid_xy(group)
+                placements = _compute_camera_placements(
+                    group,
+                    camera_height=getattr(args, "camera_height_m", 8.0),
+                    forward_offset_m=getattr(args, "camera_forward_m", 0.0),
+                    lateral_offset_m=getattr(args, "camera_lateral_m", 0.0),
+                    pitch_deg=getattr(args, "camera_pitch_deg", -20.0),
+                    yaw_offset_deg=getattr(args, "camera_yaw_offset_deg", 0.0),
+                )
+                logger.info(
+                    "Camera setup: group of %d lights at centroid (%.1f, %.1f) — "
+                    "placing %d cameras.",
+                    len(group), cx, cy, len(placements),
+                )
+                base_out = getattr(args, "camera_output_dir", "camera_output")
+                for label, transform in placements:
+                    traffic_cameras.append(
+                        TrafficLightCamera(
+                            carla_simulation.world,
+                            tls_id=label,
+                            output_dir=os.path.join(base_out, f"camera_{label}"),
+                            save_interval=20,
+                            frame_callback=(camera_feeder.on_frame if camera_feeder is not None else None),
+                            camera_transform=transform,
+                        )
                     )
-                )
-        except ImportError as e:
-            logger.warning("Traffic camera not available: %s", e)
+                    camera_labels.append(label)
+                logger.info("Camera labels (compass-direction-based): %s", camera_labels)
+        except Exception as e:
+            logger.warning("Camera setup failed: %s", e, exc_info=True)
 
     # Start frame consumer if cameras active
     if (getattr(args, "enable_camera", False)
@@ -279,6 +482,7 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
             output_dir=os.path.join(getattr(args, "camera_output_dir", "camera_output"), "consumer"),
             poll_interval=0.5,
             save_every=2,
+            show_roi_box=getattr(args, "camera_show_roi", True),
         )
         frame_consumer.start()
 

@@ -24,12 +24,14 @@ class TrafficLightCamera:
     a model or downstream system.
     """
 
-    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=20, frame_callback=None):
+    def __init__(self, world, tls_id="238", output_dir="camera_output", save_interval=20,
+                 frame_callback=None, camera_transform=None):
         self.world = world
         self.tls_id = tls_id
         self.output_dir = output_dir
         self.save_interval = save_interval
         self.frame_callback = frame_callback
+        self.explicit_transform = camera_transform
         self.camera = None
         self.target_light = None
 
@@ -129,45 +131,59 @@ class TrafficLightCamera:
         return target
 
     def setup_camera(self):
-        self.target_light = self.find_traffic_light()
-        if not self.target_light:
-            print("[Camera] Cannot setup camera without traffic light")
-            return
-
-        tl_transform = self.target_light.get_transform()
-        tl_location = tl_transform.location
-
-        print(f"[Camera] Traffic light location: x={tl_location.x:.2f}, y={tl_location.y:.2f}, z={tl_location.z:.2f}")
-
         blueprint_library = self.world.get_blueprint_library()
         camera_bp = blueprint_library.find('sensor.camera.rgb')
-        camera_bp.set_attribute('image_size_x', '256')
-        camera_bp.set_attribute('image_size_y', '256')
-        camera_bp.set_attribute('fov', '45')
+        # Resolution env-configurable — dashboard benefits from higher res,
+        # pure model-feed runs can stay at 256 to save inference compute.
+        cam_size = os.getenv('CAMERA_IMAGE_SIZE', '200')
+        cam_fov  = os.getenv('CAMERA_IMAGE_FOV',  '45')
+        camera_bp.set_attribute('image_size_x', cam_size)
+        camera_bp.set_attribute('image_size_y', cam_size)
+        camera_bp.set_attribute('fov', cam_fov)
 
-        yaw_adjustments = {
-            70: 260,
-            71: 80,
-            72: 170,
-            73: 350,
-        }
-        camera_yaw = yaw_adjustments.get(int(self.tls_id), 0)
-        position_offsets = {
-            70: (10, 0),
-            71: (-10, 0),
-            72: (0, -10),
-            73: (0, 10),
-        }
-        offset_x, offset_y = position_offsets.get(int(self.tls_id), (10, 0))
+        if self.explicit_transform is not None:
+            # Caller has computed placement from junction geometry — use it
+            # directly and skip the hardcoded-ID lookup path.
+            camera_transform = self.explicit_transform
+            print(
+                f"[Camera {self.tls_id}] Using explicit transform: "
+                f"loc=({camera_transform.location.x:.1f}, "
+                f"{camera_transform.location.y:.1f}, "
+                f"{camera_transform.location.z:.1f}) "
+                f"yaw={camera_transform.rotation.yaw:.1f}"
+            )
+        else:
+            self.target_light = self.find_traffic_light()
+            if not self.target_light:
+                print("[Camera] Cannot setup camera without traffic light")
+                return
 
-        camera_transform = carla.Transform(
-            carla.Location(
-                x=tl_location.x + offset_x,
-                y=tl_location.y + offset_y,
-                z=tl_location.z + 8,
-            ),
-            carla.Rotation(pitch=-10, yaw=camera_yaw, roll=0),
-        )
+            tl_transform = self.target_light.get_transform()
+            tl_location = tl_transform.location
+            print(f"[Camera] Traffic light location: x={tl_location.x:.2f}, y={tl_location.y:.2f}, z={tl_location.z:.2f}")
+
+            yaw_adjustments = {70: 260, 71: 80, 72: 170, 73: 350}
+            try:
+                key = int(self.tls_id)
+            except (TypeError, ValueError):
+                key = None
+            camera_yaw = yaw_adjustments.get(key, 0)
+            position_offsets = {
+                70: (10, 0),
+                71: (-10, 0),
+                72: (0, -10),
+                73: (0, 10),
+            }
+            offset_x, offset_y = position_offsets.get(key, (10, 0))
+
+            camera_transform = carla.Transform(
+                carla.Location(
+                    x=tl_location.x + offset_x,
+                    y=tl_location.y + offset_y,
+                    z=tl_location.z + 8,
+                ),
+                carla.Rotation(pitch=-10, yaw=camera_yaw, roll=0),
+            )
 
         self.camera = self.world.spawn_actor(camera_bp, camera_transform)
         weak_self = weakref.ref(self)

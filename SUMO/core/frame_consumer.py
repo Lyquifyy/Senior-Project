@@ -179,11 +179,16 @@ class FrameConsumer:
     """
 
     def __init__(self, feeder, output_dir: str = "frame_consumer_output",
-                 poll_interval: float = 0.5, save_every: int = 5):
+                 poll_interval: float = 0.5, save_every: int = 5,
+                 show_roi_box: bool = True):
         self._feeder = feeder
         self._output_dir = os.path.abspath(output_dir)
         self._poll_interval = poll_interval
         self._save_every = save_every
+        # Whether to burn the cyan ROI rectangle onto saved frames. The ROI
+        # is a debug overlay showing which region gets classified — useful
+        # when tuning the model, noise when the frames are just for viewing.
+        self._show_roi_box = show_roi_box
 
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True, name="FrameConsumer")
@@ -357,7 +362,8 @@ class FrameConsumer:
 
                 # -- Save annotated frame ---------------------------------
                 if self._save_every > 0 and count % self._save_every == 0:
-                    roi = _CAMERA_ROI.get(str(cam_id), _DEFAULT_ROI)
+                    roi = (_CAMERA_ROI.get(str(cam_id), _DEFAULT_ROI)
+                           if self._show_roi_box else None)
                     annotated = _annotate_frame(frame, detections, roi=roi)
                     self._save_frame(cam_id, count, annotated, detections)
 

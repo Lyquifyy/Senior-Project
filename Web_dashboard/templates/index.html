@@ -3,116 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUMO Web Dashboard</title>
+    <meta name="description" content="Real-time monitoring dashboard for a SUMO/CARLA smart-intersection simulation — vehicle counts, emissions, wait times, and live camera feeds.">
+    <meta name="color-scheme" content="dark">
+    <title>SUMO Monitor — Smart Intersection Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
     <div class="app-container">
-        <aside class="sidebar">
-            <div class="brand-header">
-                <h2>SUMO MONITOR</h2>
+        <aside class="sidebar" aria-label="Simulation status and metrics">
+            <header class="brand-header">
+                <h1>SUMO Monitor</h1>
                 <p class="brand-sub">Smart Intersection Dashboard</p>
-            </div>
+            </header>
 
-            <div class="status-box">
+            <dl class="status-box" aria-label="Connection">
                 <div class="status-row">
-                    <span class="label">Status</span>
-                    <span id="statusText" class="value offline">Disconnected</span>
+                    <dt>Status</dt>
+                    <dd id="statusText" class="value offline" role="status" aria-live="polite">Disconnected</dd>
                 </div>
                 <div class="status-row">
-                    <span class="label">Step</span>
-                    <span id="simStep" class="value">0</span>
+                    <dt>Step</dt>
+                    <dd id="simStep" class="value num">0</dd>
                 </div>
-            </div>
+            </dl>
 
-            <div class="metrics-list">
+            <dl class="metrics-list" aria-label="Live metrics">
                 <div class="metric-card">
-                    <label>CO&#x2082; Emissions</label>
-                    <div class="val-group">
-                        <span id="co2Value">0.00</span><small>kg/s</small>
-                    </div>
+                    <dt>CO<sub>2</sub> emissions</dt>
+                    <dd class="val-group">
+                        <span id="co2Value" class="num">0</span><small>g/s</small>
+                    </dd>
                 </div>
                 <div class="metric-card">
-                    <label>Avg Wait Time</label>
-                    <div class="val-group">
-                        <span id="waitValue">0.0</span><small>s</small>
-                    </div>
+                    <dt>Average wait time</dt>
+                    <dd class="val-group">
+                        <span id="waitValue" class="num">0</span><small>s</small>
+                    </dd>
                 </div>
                 <div class="metric-card">
-                    <label>Total Vehicles</label>
-                    <div class="val-group">
-                        <span id="totalVehicles">0</span><small>in sim</small>
-                    </div>
+                    <dt>Total vehicles</dt>
+                    <dd class="val-group">
+                        <span id="totalVehicles" class="num">0</span><small>in sim</small>
+                    </dd>
                 </div>
-            </div>
+            </dl>
         </aside>
 
-        <main class="main-content">
-            <div class="intersection-viewport">
-                <div class="map-grid">
-                    <div class="arm north">
-                        <div class="signal-housing" id="lightNorth">
-                            <div class="light red"></div>
-                            <div class="light yellow"></div>
-                            <div class="light green"></div>
+        <main id="main-content" class="main-content">
+            <div class="viewport-row">
+                <section class="intersection-viewport" aria-labelledby="diagramTitle">
+                    <h2 id="diagramTitle" class="sr-only">Intersection diagram</h2>
+                    <div class="map-grid" role="presentation">
+                        <div class="arm north">
+                            <div class="signal-housing" id="lightNorth"
+                                 role="img" aria-label="North signal: red">
+                                <div class="light red" aria-hidden="true"></div>
+                                <div class="light yellow" aria-hidden="true"></div>
+                                <div class="light green" aria-hidden="true"></div>
+                            </div>
+                            <div class="counter num" id="countNorth"
+                                 aria-label="Vehicles at north approach">0</div>
                         </div>
-                        <div class="counter" id="countNorth">0</div>
-                    </div>
 
-                    <div class="arm west">
-                        <div class="counter" id="countWest">0</div>
-                        <div class="signal-housing horizontal" id="lightWest">
-                            <div class="light red"></div>
-                            <div class="light yellow"></div>
-                            <div class="light green"></div>
+                        <div class="arm west">
+                            <div class="counter num" id="countWest"
+                                 aria-label="Vehicles at west approach">0</div>
+                            <div class="signal-housing horizontal" id="lightWest"
+                                 role="img" aria-label="West signal: red">
+                                <div class="light red" aria-hidden="true"></div>
+                                <div class="light yellow" aria-hidden="true"></div>
+                                <div class="light green" aria-hidden="true"></div>
+                            </div>
+                        </div>
+
+                        <div class="junction-core" aria-hidden="true">
+                            <div class="road-h"></div>
+                            <div class="road-v"></div>
+                            <div class="road-center"></div>
+                        </div>
+
+                        <div class="arm east">
+                            <div class="signal-housing horizontal" id="lightEast"
+                                 role="img" aria-label="East signal: red">
+                                <div class="light red" aria-hidden="true"></div>
+                                <div class="light yellow" aria-hidden="true"></div>
+                                <div class="light green" aria-hidden="true"></div>
+                            </div>
+                            <div class="counter num" id="countEast"
+                                 aria-label="Vehicles at east approach">0</div>
+                        </div>
+
+                        <div class="arm south">
+                            <div class="counter num" id="countSouth"
+                                 aria-label="Vehicles at south approach">0</div>
+                            <div class="signal-housing" id="lightSouth"
+                                 role="img" aria-label="South signal: red">
+                                <div class="light red" aria-hidden="true"></div>
+                                <div class="light yellow" aria-hidden="true"></div>
+                                <div class="light green" aria-hidden="true"></div>
+                            </div>
                         </div>
                     </div>
+                </section>
 
-                    <div class="junction-core">
-                        <div class="road-h"></div>
-                        <div class="road-v"></div>
-                        <div class="road-center"></div>
-                    </div>
-
-                    <div class="arm east">
-                        <div class="signal-housing horizontal" id="lightEast">
-                            <div class="light red"></div>
-                            <div class="light yellow"></div>
-                            <div class="light green"></div>
+                <section class="camera-viewport" aria-labelledby="cameraTitle">
+                    <header class="camera-header">
+                        <h2 id="cameraTitle" class="camera-title">CARLA Camera Feed</h2>
+                        <div class="camera-tabs" id="cameraTabs"
+                             role="group" aria-label="Camera selection">
+                            <span class="camera-hint" id="cameraHint" role="status">Waiting for cameras…</span>
                         </div>
-                        <div class="counter" id="countEast">0</div>
+                    </header>
+                    <div class="camera-stage">
+                        <img id="cameraFeed" alt="Live CARLA camera feed — no camera selected yet">
                     </div>
-
-                    <div class="arm south">
-                        <div class="counter" id="countSouth">0</div>
-                        <div class="signal-housing" id="lightSouth">
-                            <div class="light red"></div>
-                            <div class="light yellow"></div>
-                            <div class="light green"></div>
-                        </div>
-                    </div>
-                </div>
+                </section>
             </div>
 
-            <div class="chart-tray">
-                <div class="chart-panel">
-                    <div class="chart-header">
-                        <span class="chart-title">CO&#x2082; Emissions</span>
-                        <span class="chart-unit">kg/s</span>
-                    </div>
-                    <canvas id="co2Canvas"></canvas>
-                </div>
-                <div class="chart-panel">
-                    <div class="chart-header">
-                        <span class="chart-title">Avg Wait Time</span>
-                        <span class="chart-unit">seconds</span>
-                    </div>
-                    <canvas id="waitCanvas"></canvas>
-                </div>
+            <div class="chart-tray" aria-label="Metric history">
+                <figure class="chart-panel">
+                    <figcaption class="chart-header">
+                        <h2 class="chart-title">CO<sub>2</sub> emissions</h2>
+                        <span class="chart-unit" aria-hidden="true">g/s</span>
+                    </figcaption>
+                    <canvas id="co2Canvas" role="img"
+                            aria-label="CO2 emissions over the most recent 30 simulation steps"></canvas>
+                </figure>
+                <figure class="chart-panel">
+                    <figcaption class="chart-header">
+                        <h2 class="chart-title">Average wait time</h2>
+                        <span class="chart-unit" aria-hidden="true">seconds</span>
+                    </figcaption>
+                    <canvas id="waitCanvas" role="img"
+                            aria-label="Average vehicle wait time over the most recent 30 simulation steps"></canvas>
+                </figure>
             </div>
         </main>
     </div>
+
     <script src="{{ url_for('static', filename='index.js') }}"></script>
 </body>
 </html>
