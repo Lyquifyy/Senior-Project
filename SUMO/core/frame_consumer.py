@@ -54,10 +54,11 @@ _YOLO_VEHICLE_CLASSES = {2, 3, 5, 7}  # car, motorcycle, bus, truck
 _YOLO_CONFIDENCE = 0.25
 _LOCK_THRESHOLD  = 0.90  # confidence at which a classification is locked in
 
-# Emission weight per vehicle type — used to score approaches for traffic control
+# Emission weights per vehicle type — normalized ratios from updated emissions data.
+# Small baseline = 285.90 g/mi. Medium = 341.32 g/mi → 1.194. Large = 1557.38 g/mi → 5.447.
 _EMISSION_WEIGHTS: dict[str, float] = {
-    "Large (Bus/Truck)":    4.0,
-    "Medium (SUV/Microbus)": 2.0,
+    "Large (Bus/Truck)":     5.447,
+    "Medium (SUV/Microbus)": 1.194,
     "Small (Sedan/Minivan)": 1.0,
     "No vehicle":            0.0,
 }
@@ -69,8 +70,8 @@ _EMISSION_WEIGHTS: dict[str, float] = {
 # vehicles in far lanes.  Tune these values by looking at the saved frames.
 # ---------------------------------------------------------------------------
 _CAMERA_ROI: dict[str, tuple] = {
-    "70": (0.20, 0.30, 0.80, 0.70),
-    "71": (0.20, 0.30, 0.80, 0.70),
+    "70": (0.15, 0.20, 0.85, 0.80),
+    "71": (0.15, 0.20, 0.85, 0.80),
     "72": (0.20, 0.30, 0.70, 0.65),
     "73": (0.25, 0.30, 0.70, 0.65),
 }

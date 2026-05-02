@@ -72,6 +72,14 @@
             "vClass": "truck",
             "guiShape": "truck"
         },
+        "vehicle.carlamotors.european_hgv": {
+            "vClass": "truck",
+            "guiShape": "truck"
+        },
+        "vehicle.mitsubishi.fusorosa": {
+            "vClass": "truck",
+            "guiShape": "truck"
+        },
         "vehicle.yamaha.yzf": {
             "vClass": "motorcycle"
         },

@@ -26,27 +26,29 @@
            22 = past west exit      68  = past north exit
          ================================================================ -->
 
-    <flow id="fe_sm_s"  type="small_car"   from="24"  to="3"  begin="0"   end="3600" period="45"/>
-    <flow id="fs_sm_e"  type="small_car"   from="-4"  to="30" begin="3"   end="3600" period="45"/>
-    <flow id="fw_sm_e"  type="small_car"   from="-23" to="30" begin="5"   end="3600" period="45"/>
-    <flow id="fn_sm_e"  type="small_car"   from="-69" to="30" begin="8"   end="3600" period="45"/>
-    <flow id="fe_md_s"  type="medium_van"  from="24"  to="3"  begin="10"  end="3600" period="90"/>
-    <flow id="fs_sm_n"  type="small_car"   from="-4"  to="68" begin="13"  end="3600" period="45"/>
-    <flow id="fw_md_e"  type="medium_van"  from="-23" to="30" begin="15"  end="3600" period="90"/>
-    <flow id="fn_sm_w"  type="small_car"   from="-69" to="22" begin="16"  end="3600" period="45"/>
-    <flow id="fn_md_e"  type="medium_van"  from="-69" to="30" begin="20"  end="3600" period="90"/>
-    <flow id="fe_sm_n"  type="small_car"   from="24"  to="68" begin="22"  end="3600" period="45"/>
-    <flow id="fs_sm_w"  type="small_car"   from="-4"  to="22" begin="25"  end="3600" period="45"/>
-    <flow id="fw_sm_s"  type="small_car"   from="-23" to="3"  begin="27"  end="3600" period="45"/>
-    <flow id="fe_tk_s"  type="large_truck" from="24"  to="3"  begin="30"  end="3600" period="180"/>
-    <flow id="fn_sm_s"  type="small_car"   from="-69" to="3"  begin="32"  end="3600" period="45"/>
-    <flow id="fs_md_e"  type="medium_van"  from="-4"  to="30" begin="35"  end="3600" period="90"/>
-    <flow id="fw_tk_e"  type="large_truck" from="-23" to="30" begin="45"  end="3600" period="180"/>
-    <flow id="fn_tk_s"  type="large_truck" from="-69" to="3"  begin="60"  end="3600" period="180"/>
-    <flow id="fs_tk_w"  type="large_truck" from="-4"  to="22" begin="75"  end="3600" period="180"/>
-    <flow id="fe_bs_n"  type="large_bus"   from="24"  to="68" begin="90"  end="3600" period="180"/>
-    <flow id="fs_bs_n"  type="large_bus"   from="-4"  to="68" begin="105" end="3600" period="180"/>
-    <flow id="fw_bs_e"  type="large_bus"   from="-23" to="30" begin="120" end="3600" period="180"/>
-    <flow id="fn_bs_e"  type="large_bus"   from="-69" to="30" begin="150" end="3600" period="180"/>
+    <flow id="fe_tk_n"  type="large_truck" from="24"  to="68" begin="0"   end="3600" period="120"/>
+    <flow id="fs_tk_w"  type="large_truck" from="-4"  to="22" begin="3"   end="3600" period="120"/>
+    <flow id="fw_tk_s"  type="large_truck" from="-23" to="3"  begin="5"   end="3600" period="120"/>
+    <flow id="fn_tk_e"  type="large_truck" from="-69" to="30" begin="8"   end="3600" period="120"/>
+    <flow id="fe_bs_s"  type="large_bus"   from="24"  to="3"  begin="10"  end="3600" period="120"/>
+    <flow id="fs_bs_e"  type="large_bus"   from="-4"  to="30" begin="13"  end="3600" period="120"/>
+    <flow id="fw_bs_n"  type="large_bus"   from="-23" to="68" begin="15"  end="3600" period="120"/>
+    <flow id="fn_bs_w"  type="large_bus"   from="-69" to="22" begin="18"  end="3600" period="120"/>
+    <flow id="fe_md_s"  type="medium_van"  from="24"  to="3"  begin="20"  end="3600" period="120"/>
+    <flow id="fw_md_e"  type="medium_van"  from="-23" to="30" begin="23"  end="3600" period="120"/>
+    <flow id="fn_md_e"  type="medium_van"  from="-69" to="30" begin="25"  end="3600" period="120"/>
+    <flow id="fs_md_e"  type="medium_van"  from="-4"  to="30" begin="28"  end="3600" period="120"/>
+    <flow id="fe_sm_s"  type="small_car"   from="24"  to="3"  begin="30"  end="3600" period="150"/>
+    <flow id="fs_sm_e"  type="small_car"   from="-4"  to="30" begin="35"  end="3600" period="150"/>
+    <flow id="fw_sm_e"  type="small_car"   from="-23" to="30" begin="40"  end="3600" period="150"/>
+    <flow id="fn_sm_e"  type="small_car"   from="-69" to="30" begin="45"  end="3600" period="150"/>
+    <flow id="fs_sm_n"  type="small_car"   from="-4"  to="68" begin="50"  end="3600" period="150"/>
+    <flow id="fn_sm_w"  type="small_car"   from="-69" to="22" begin="55"  end="3600" period="150"/>
+    <flow id="fe_sm_n"  type="small_car"   from="24"  to="68" begin="60"  end="3600" period="150"/>
+    <flow id="fs_sm_w"  type="small_car"   from="-4"  to="22" begin="65"  end="3600" period="150"/>
+    <flow id="fw_sm_s"  type="small_car"   from="-23" to="3"  begin="70"  end="3600" period="150"/>
+    <flow id="fn_sm_s"  type="small_car"   from="-69" to="3"  begin="75"  end="3600" period="150"/>
+    <flow id="fw_md_s"  type="medium_van"  from="-23" to="3"  begin="80"  end="3600" period="120"/>
+    <flow id="fn_md_w"  type="medium_van"  from="-69" to="22" begin="82"  end="3600" period="120"/>
 
 </routes>

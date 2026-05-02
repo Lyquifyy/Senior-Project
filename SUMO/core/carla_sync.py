@@ -307,14 +307,17 @@ def run_sync_loop(args, emission_dir: Path, scenario_dir: Path):
             if enable_control:
                 if network_controller is not None:
                     # Network-wide: uses all lights, writes full telemetry
-                    core_traffic.step_network(
-                        network_controller,
-                        step,
-                        str(emission_dir),
-                        str(log_dir),
-                        phase_interval=phase_interval,
-                        emission_interval=emission_interval_steps,
-                    )
+                    try:
+                        core_traffic.step_network(
+                            network_controller,
+                            step,
+                            str(emission_dir),
+                            str(log_dir),
+                            phase_interval=phase_interval,
+                            emission_interval=emission_interval_steps,
+                        )
+                    except Exception as _ctrl_exc:
+                        logger.error("step_network failed at step %d: %s", step, _ctrl_exc, exc_info=True)
                 else:
                     # Single-intersection backward-compat path
                     core_traffic.step(args.tls_id, step, str(emission_dir))

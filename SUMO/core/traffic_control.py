@@ -331,10 +331,10 @@ def _write_network_snapshot(snapshot: Dict, telemetry_dir: Union[str, Path]) -> 
         json.dump(snapshot, f, indent=2)
 
 
-def _append_decision_log(decisions: List[Dict], log_dir: Union[str, Path]) -> None:
+def _append_decision_log(decisions: List[Dict], log_dir: Union[str, Path], mode: str = "a") -> None:
     p = Path(log_dir)
     p.mkdir(parents=True, exist_ok=True)
-    with (p / "phase_decisions.jsonl").open("a", encoding="utf-8") as f:
+    with (p / "phase_decisions.jsonl").open(mode, encoding="utf-8") as f:
         for record in decisions:
             f.write(json.dumps(record) + "\n")
 
@@ -383,19 +383,27 @@ class IntersectionController:
         self._pending_phase: Optional[int] = None
         self._yellow_end_step: int = 0
         self._phase_last_green: Dict[int, int] = {}
+        self._committed_phase: Optional[int] = None   # phase we actively hold each tick
+        self._committed_yellow: Optional[int] = None  # yellow phase to re-enforce during transition
+        self._starvation_mode: bool = False  # bypass cooldown on recovery from starvation switch
 
     def _ensure_init(self) -> None:
         if not self._initialized:
+            import traci
             self._phase_map = _build_tls_phase_map(self.tls_id)
             self._yellow_phases = _find_yellow_phases(self.tls_id)
             self._initialized = True
-            logger.debug(
-                "TLS %s: discovered %d green phases, %d yellow phases, lane counts: %s",
-                self.tls_id,
-                len(self._phase_map),
-                len(self._yellow_phases),
-                {k: len(v) for k, v in self._phase_map.items()},
-            )
+
+            # Diagnostic: log every phase's full state string so we can
+            # confirm which phase number gives green to which direction.
+            programs = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.tls_id)
+            if programs:
+                logger.info("=== TLS %s signal program ===", self.tls_id)
+                for idx, phase in enumerate(programs[0].phases):
+                    tag = "GREEN" if idx in self._phase_map else ("YELLOW" if idx in self._yellow_phases else "OTHER")
+                    logger.info("  Phase %2d [%s]: %s", idx, tag, phase.state)
+                logger.info("  Green phases: %s", list(self._phase_map.keys()))
+                logger.info("  Yellow phases: %s", self._yellow_phases)
 
     @property
     def is_transitioning(self) -> bool:
@@ -414,6 +422,8 @@ class IntersectionController:
         self._pending_phase = None
         try:
             traci.trafficlight.setPhase(self.tls_id, target)
+            self._committed_phase = target
+            self._committed_yellow = None
             self._phase_last_green[target] = current_step
             self._current_phase_start = current_step
         except Exception as exc:
@@ -453,8 +463,9 @@ class IntersectionController:
         if current_step - self._current_phase_start < self.min_green:
             return current_phase, {}, False, ""
 
-        # Enforce cooldown
-        if current_step - self._last_switch_step < self.cooldown:
+        # Enforce cooldown (bypassed on the first decision after a starvation switch
+        # so recovery back to main traffic only waits min_green, not a full cooldown).
+        if not self._starvation_mode and current_step - self._last_switch_step < self.cooldown:
             return current_phase, {}, False, ""
 
         programs = traci.trafficlight.getCompleteRedYellowGreenDefinition(self.tls_id)
@@ -479,7 +490,7 @@ class IntersectionController:
                 }
                 for p in phase_scores
             }
-            known_phases = set(self._cam_phase_map.values())
+            known_phases = set(self._cam_phase_map.values()) | set(self._phase_map.keys())
         else:
             phase_metrics = _collect_phase_metrics(self._phase_map)
             phase_scores = _score_phases(phase_metrics, weights)
@@ -501,19 +512,35 @@ class IntersectionController:
         starved = [
             p for p in known_phases
             if p != current_phase
-            and self._phase_last_green.get(p, current_step) < threshold
+            and self._phase_last_green.get(p, 0) < threshold
         ]
         if starved:
             best_phase = min(starved, key=lambda p: self._phase_last_green.get(p, 0))
             reason = "starvation"
+            self._starvation_mode = True   # let the recovery switch skip cooldown
         else:
-            best_phase = max(phase_scores, key=phase_scores.get)
-            reason = "score"
+            self._starvation_mode = False  # back to normal after any score-based decision
+            best_score = max(phase_scores.values(), default=0.0)
+            if best_score == 0.0:
+                # No vehicles detected anywhere — hold current phase, don't switch blindly.
+                best_phase = current_phase
+                reason = "score_hold"
+            else:
+                candidate = max(phase_scores, key=phase_scores.get)
+                current_score = phase_scores.get(current_phase, 0.0)
+                if candidate != current_phase and phase_scores[candidate] < current_score * 1.25:
+                    # Margin too small to justify a switch — hold current phase.
+                    best_phase = current_phase
+                    reason = "score_hold"
+                else:
+                    best_phase = candidate
+                    reason = "score"
 
         self._last_switch_step = current_step
 
         if best_phase == current_phase:
             self._phase_last_green[current_phase] = current_step
+            self._committed_phase = current_phase
             return current_phase, score_export, True, "score_hold"
 
         logger.info(
@@ -528,6 +555,8 @@ class IntersectionController:
             yellow_idx = self._yellow_phases[0]
             try:
                 traci.trafficlight.setPhase(self.tls_id, yellow_idx)
+                self._committed_yellow = yellow_idx
+                self._committed_phase = None
             except Exception as exc:
                 logger.warning(
                     "TLS %s: failed to set yellow phase %d: %s",
@@ -536,6 +565,8 @@ class IntersectionController:
         else:
             try:
                 current_state = programs[0].phases[current_phase].state
+                self._committed_yellow = -1  # sentinel: use synthesized yellow
+                self._committed_phase = None
                 traci.trafficlight.setRedYellowGreenState(
                     self.tls_id, _synthesize_yellow_state(current_state)
                 )
@@ -610,6 +641,7 @@ class NetworkController:
         self._cam_phase_map: Dict[str, int] = cam_phase_map or {}
         self._controllers: Dict[str, IntersectionController] = {}
         self._initialized = False
+        self._first_log_write = True
         # Cumulative run metrics (updated each emit snapshot)
         self._cumulative_co2_mg = 0.0
         self._cumulative_fuel_ml = 0.0
@@ -693,6 +725,16 @@ class NetworkController:
 
             # Apply any pending yellow→target transition every step.
             ctrl.tick(simulation_step)
+
+            # Re-enforce our committed state every tick so SUMO's own signal
+            # program timer can never auto-advance past what we've decided.
+            try:
+                if ctrl._committed_phase is not None:
+                    traci.trafficlight.setPhase(tls_id, ctrl._committed_phase)
+                elif ctrl._committed_yellow is not None and ctrl._committed_yellow >= 0:
+                    traci.trafficlight.setPhase(tls_id, ctrl._committed_yellow)
+            except Exception:
+                pass
 
             chosen_phase = current_phase
             phase_scores: Dict = {}
@@ -785,7 +827,8 @@ class NetworkController:
             self._snapshot_count += 1
 
         if log_dir and decisions and do_phase:
-            _append_decision_log(decisions, log_dir)
+            _append_decision_log(decisions, log_dir, mode="w" if self._first_log_write else "a")
+            self._first_log_write = False
 
         return network_snapshot
 
@@ -963,6 +1006,7 @@ class FixedCycleController:
         self.yellow_steps = yellow_steps
         self._state: Dict[str, Dict] = {}
         self._initialized = False
+        self._first_log_write = True
         self._cumulative_co2_mg = 0.0
         self._cumulative_fuel_ml = 0.0
         self._snapshot_count = 0
@@ -1071,7 +1115,8 @@ class FixedCycleController:
             self._snapshot_count += 1
 
         if log_dir and decisions:
-            _append_decision_log(decisions, log_dir)
+            _append_decision_log(decisions, log_dir, mode="w" if self._first_log_write else "a")
+            self._first_log_write = False
 
         return {
             "step": simulation_step,

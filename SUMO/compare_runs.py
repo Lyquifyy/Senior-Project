@@ -17,7 +17,7 @@ from xml.etree import ElementTree as ET
 
 
 def parse_tripinfo(tripinfo_path: Path) -> dict:
-    """Extract per-vehicle timing stats from SUMO tripinfo XML."""
+    """Extract per-vehicle timing and emission stats from SUMO tripinfo XML."""
     if not tripinfo_path.exists():
         return {}
 
@@ -27,6 +27,7 @@ def parse_tripinfo(tripinfo_path: Path) -> dict:
     waiting_times = []
     durations = []
     time_losses = []
+    co2_mg_list = []  # CO2_abs is in mg per vehicle
 
     for trip in root.findall("tripinfo"):
         try:
@@ -35,27 +36,37 @@ def parse_tripinfo(tripinfo_path: Path) -> dict:
             time_losses.append(float(trip.get("timeLoss", 0)))
         except (TypeError, ValueError):
             continue
+        em = trip.find("emissions")
+        if em is not None:
+            try:
+                co2_mg_list.append(float(em.get("CO2_abs", 0)))
+            except (TypeError, ValueError):
+                pass
 
     if not durations:
         return {}
 
+    total_co2_kg = round(sum(co2_mg_list) / 1_000_000, 4) if co2_mg_list else None
+
     return {
-        "vehicles_completed": len(durations),
+        "vehicles_completed":  len(durations),
         "avg_waiting_time_s":  round(sum(waiting_times) / len(waiting_times), 2),
         "avg_trip_duration_s": round(sum(durations)     / len(durations),     2),
         "avg_time_loss_s":     round(sum(time_losses)   / len(time_losses),   2),
+        "total_co2_kg":        total_co2_kg,
     }
 
 
 def parse_run_summary(summary_path: Path) -> dict:
-    """Extract CO2 and vehicle totals from run_summary.json written by the controller."""
+    """Extract timing config from run_summary.json (green/yellow step counts only)."""
     if not summary_path.exists():
         return {}
     with open(summary_path, encoding="utf-8") as f:
         data = json.load(f)
+    # CO2 from run_summary is snapshot-based (unreliable); use tripinfo instead.
     return {
-        "total_co2_kg":           data.get("total_co2_kg", None),
-        "total_vehicles_completed": data.get("total_vehicles_completed", None),
+        "green_steps":  data.get("green_steps", None),
+        "yellow_steps": data.get("yellow_steps", None),
     }
 
 
@@ -71,7 +82,7 @@ def _pct_change(adaptive, baseline) -> str:
 def _co2_per_vehicle(total_co2_kg, vehicles) -> float | None:
     if total_co2_kg is None or not vehicles:
         return None
-    return round(total_co2_kg * 1_000_000 / vehicles, 1)  # grams
+    return round(total_co2_kg * 1_000 / vehicles, 1)  # kg → g per vehicle
 
 
 def print_report(adaptive: dict, baseline: dict, scenario: str = "") -> None:
